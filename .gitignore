@@ -1,0 +1,96 @@
+# 忽略Maven生成的目录和文件
+target/
+.mvn/
+mvnw
+mvnw.cmd
+
+# 忽略IDE的配置文件
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+nbproject/
+
+# SonarLint
+sonar-project.properties
+
+# 忽略构建过程中产生的日志和报告文件
+*.log
+*.report
+
+# 忽略本地编译生成的Java类文件
+**/*.class
+
+# 忽略Maven的wrapper配置（如果你不使用Maven Wrapper）
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# 忽略其他常见的不需要提交的文件
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.exe
+*.dll
+*.class
+*.o
+*.so
+*.dylib
+*.ncb
+*.suo
+*.obj
+*.pdb
+*.pch
+*.vsp
+*.vspscc
+*.vssscc
+*.pdb
+*.ipch
+*.user
+*.aps
+*.ilk
+*.meta
+*.pch
+*.pdb
+*.sln
+*.suo
+*.vbw
+*.vbx
+*.vsp
+*.vspx
+*.vsscc
+
+# 如果你使用Git LFS来管理大文件，忽略LFS的指针文件
+# 但请确保你的仓库已经正确配置了Git LFS
+# !*.lfs
+
+# 忽略本地配置文件（例如数据库连接配置）
+# 这些文件应该包含敏感信息，因此不应该被提交
+# application.properties
+# application.yml
+# application-*.properties
+# application-*.yml
+# database.properties
+# database.yml
+# config/*.properties
+# config/*.yml
+
+# 如果你有特定的文件或目录需要忽略，可以添加在这里
+# 例如：
+# doc/
+# temp_data/
+
+# 忽略所有以~结尾的备份文件
+*~
