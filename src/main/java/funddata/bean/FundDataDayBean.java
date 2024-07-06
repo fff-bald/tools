@@ -42,8 +42,8 @@ public class FundDataDayBean {
         FundDataDayBean res = new FundDataDayBean();
         res.date = date;
         res.price = Double.parseDouble(p);
-        res.allPrize = Double.parseDouble(ap);
-        res.change = c.length() == 0 ? 0 : Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
+        res.allPrize = ap.contains("%") ? Double.parseDouble(ap.substring(0, ap.indexOf("%") - 1)) : Double.parseDouble(ap);
+        res.change = c.isEmpty() ? 0 : Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
         res.buyState = buyState;
         res.sellState = sellState;
         return res;

@@ -9,7 +9,7 @@ import java.util.List;
  * @author cjl
  * @since 2024/7/4 22:19
  */
-public class FundDataBean {
+public class FundDataBean implements Comparable<FundDataBean> {
     /**
      * 基金id
      */
@@ -26,11 +26,26 @@ public class FundDataBean {
     private String type;
 
     /**
+     * 规模
+     */
+    private String money;
+
+    /**
+     * 管理人
+     */
+    private String manager;
+
+    /**
      * 基金每日数据，日期新的放在前面
      */
     private List<FundDataDayBean> dayBeanList = new LinkedList<>();
 
     // ---------- 计算值 ----------
+
+    /**
+     * 存续时间
+     */
+    private int durationDay;
 
     /**
      * 最新一日申购状态
@@ -42,18 +57,25 @@ public class FundDataBean {
      */
     private String sellState;
 
-    public static FundDataBean valueOf(String id, String name, String type) {
+    /**
+     * 复利年化收益率(百分比)
+     */
+    private double yearChange;
+
+    /**
+     * 上涨日数比例
+     */
+    private double upDayRate;
+
+    /**
+     * 日涨跌幅标准差
+     */
+    private double dayStandardDeviation;
+
+    public static FundDataBean valueOf(String id) {
         FundDataBean res = new FundDataBean();
         res.id = id;
-        res.name = name;
-        res.type = type;
         return res;
-    }
-
-    public void cal() {
-        FundDataDayBean curDay = this.dayBeanList.get(0);
-        this.buyState = curDay.getBuyState();
-        this.sellState = curDay.getSellState();
     }
 
     public String getId() {
@@ -104,15 +126,73 @@ public class FundDataBean {
         this.sellState = sellState;
     }
 
+    public String getMoney() {
+        return money;
+    }
+
+    public void setMoney(String money) {
+        this.money = money;
+    }
+
+    public String getManager() {
+        return manager;
+    }
+
+    public void setManager(String manager) {
+        this.manager = manager;
+    }
+
+    public double getYearChange() {
+        return yearChange;
+    }
+
+    public void setYearChange(double yearChange) {
+        this.yearChange = yearChange;
+    }
+
+    public double getUpDayRate() {
+        return upDayRate;
+    }
+
+    public void setUpDayRate(double upDayRate) {
+        this.upDayRate = upDayRate;
+    }
+
+    public double getDayStandardDeviation() {
+        return dayStandardDeviation;
+    }
+
+    public void setDayStandardDeviation(double dayStandardDeviation) {
+        this.dayStandardDeviation = dayStandardDeviation;
+    }
+
+    public int getDurationDay() {
+        return durationDay;
+    }
+
+    public void setDurationDay(int durationDay) {
+        this.durationDay = durationDay;
+    }
+
+    @Override
+    public int compareTo(FundDataBean o) {
+        return this.getId().compareTo(o.getId());
+    }
+
     @Override
     public String toString() {
         return "FundDataBean{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", dayBeanList=" + dayBeanList +
+                ", money='" + money + '\'' +
+                ", manager='" + manager + '\'' +
+                ", durationDay=" + durationDay +
                 ", buyState='" + buyState + '\'' +
                 ", sellState='" + sellState + '\'' +
+                ", yearChange=" + yearChange +
+                ", upDayRate=" + upDayRate +
+                ", dayStandardDeviation=" + dayStandardDeviation +
                 '}';
     }
 }

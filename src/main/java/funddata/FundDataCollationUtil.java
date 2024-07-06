@@ -1,22 +1,20 @@
 package funddata;
 
-import funddata.bean.FundDataBean;
-import funddata.bean.FundDataDayBean;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import utils.NewUtil;
+import utils.TimeUtil;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static funddata.constant.FundDataConstant.ALL_FUND_IDS_URL;
 
 /**
  * 工具类
@@ -26,47 +24,15 @@ import java.util.regex.Pattern;
  */
 public class FundDataCollationUtil {
 
-    // 基金ID数据存在一个js文件里
-    private static final String ALL_FUND_IDS_URL = "https://fund.eastmoney.com/js/fundcode_search.js";
 
-    private static final String FUND_DAY_CHANGE_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=%s&sdate=1976-01-01&edate=%s&per=40&page=%s";
-
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    // ---------- Wed data ----------
 
     /**
-     * 按照基金信息，获取基金每日数据
-     *
-     * @param bean
-     */
-    public static void getFundDayChangeFromWeb(FundDataBean bean) {
-        try {
-            int limit = Integer.MAX_VALUE;
-            for (int i = 1; i <= limit; i++) {
-                // 构建url
-                String finalUrl = String.format(FUND_DAY_CHANGE_URL, bean.getId(), sdf.format(new Date()), i);
-                Document document = Jsoup.connect(finalUrl).get();
-
-                // 解析数据
-                for (Element tr : document.select("tbody").select("tr")) {
-                    Elements td = tr.select("td");
-                    FundDataDayBean fundDataDayBean = FundDataDayBean.valueOf(td.get(0).text(), td.get(1).text(), td.get(2).text(), td.get(3).text(), td.get(4).text(), td.get(5).text());
-                    bean.getDayBeanList().add(fundDataDayBean);
-                }
-                if (i == 1) {
-                    limit = getPagesValue(document.html());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 获取全量基金初始化信息
+     * 获取全量基金ID
      *
      * @return
      */
-    public static List<FundDataBean> getAllFundIdsFromWeb() {
+    public static Set<String> getAllFundIdsFromWeb() {
         List<String> stringFromText = null;
         try {
             URL url = new URL(ALL_FUND_IDS_URL);
@@ -97,18 +63,17 @@ public class FundDataCollationUtil {
             e.printStackTrace();
         }
 
-        List<FundDataBean> res = new LinkedList<>();
+        Set<String> res = NewUtil.treeSet();
         int count = 0;
         for (int i = 0; i < stringFromText.size(); i += 5) {
-            FundDataBean bean = FundDataBean.valueOf(stringFromText.get(i), stringFromText.get(i + 2), stringFromText.get(i + 3));
-            res.add(bean);
+            res.add(stringFromText.get(i));
             count++;
         }
         System.out.println("基金总数：" + count);
         return res;
     }
 
-    // ---------- private method ----------
+    // ---------- String handler ----------
 
     /**
      * 从一个字符串中分离出所有被双引号（"）包围的内容
@@ -116,7 +81,7 @@ public class FundDataCollationUtil {
      * @param line
      * @return
      */
-    private static List<String> getStringFromText(String line) {
+    public static List<String> getStringFromText(String line) {
         // 定义正则表达式，匹配双引号内的内容
         // 注意：这里使用非贪婪模式(.*?)来确保只匹配到最近的双引号
         Pattern pattern = Pattern.compile("\"(.*?)\"");
@@ -139,7 +104,7 @@ public class FundDataCollationUtil {
      * @param input
      * @return
      */
-    private static int getPagesValue(String input) {
+    public static int getPagesValue(String input) {
         // 使用正则表达式匹配"pages:"后面跟着的数字
         String regex = "pages:(\\d+)";
 
@@ -155,5 +120,17 @@ public class FundDataCollationUtil {
 
         // 如果没有找到匹配项，返回一个默认值或抛出异常
         throw new IllegalArgumentException("No 'pages' value found in the input string.");
+    }
+
+    // ---------- cal ----------
+
+    /**
+     * 计算复利年化收益率（按照一年365天来算）
+     *
+     * @return
+     */
+    public static double calYearChange(long day, double startPrice, double endPrice) {
+        double year = day * 1.0d / 365;
+        return Math.pow(endPrice / startPrice, 1.0d / year) - 1;
     }
 }

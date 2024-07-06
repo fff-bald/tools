@@ -1,7 +1,6 @@
 package utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * @author: cjl
@@ -9,11 +8,20 @@ import java.util.HashMap;
  * @description: new容器统一管理工具
  **/
 public class NewUtil {
-    public static <T> ArrayList<T> arrayList() {
+    public static <T> List<T> arrayList() {
         return new ArrayList<>(4);
     }
 
-    public static <K, V> HashMap<K, V> hashMap() {
+    public static <K, V> Map<K, V> hashMap() {
         return new HashMap<>(4);
     }
+
+    public static <K> Set<K> hashSet() {
+        return new HashSet<>(4);
+    }
+
+    public static <K extends Comparable<K>> Set<K> treeSet() {
+        return new TreeSet<>();
+    }
+
 }

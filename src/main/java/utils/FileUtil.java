@@ -42,13 +42,14 @@ public class FileUtil {
     /**
      * 逐行写入文件
      *
-     * @param path 文件路径
+     * @param path
      * @param lines
+     * @param isAppend 是否为追加写入
      */
-    public static void writeFileByLine(String path, List<String> lines) {
+    public static void writeFileByLine(String path, List<String> lines, boolean isAppend) {
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(path));
+            writer = new BufferedWriter(new FileWriter(path, isAppend));
             for (String line : lines) {
                 writer.write(line);
                 writer.newLine(); // 添加新行，如果你需要
