@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @description: 爬虫，功能有图片爬取
+ * @description: 爬虫，爬取网页图片demo
  * @author: cjl
  * @date: 2024-06-01 22:56
  **/
@@ -34,7 +34,7 @@ public class ImageCrawlerApp {
         }
     }
 
-    public static void crawlImages(String url) throws IOException {
+    private static void crawlImages(String url) throws IOException {
         // 设置请求头，模拟浏览器访问
         Document doc = Jsoup.connect(url).userAgent(USER_AGENT).get();
 
@@ -70,7 +70,7 @@ public class ImageCrawlerApp {
 
     private static void downloadImage(String imageUrl, Path saveDir) throws IOException {
         URL url = new URL(imageUrl);
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("User-Agent", USER_AGENT);
         InputStream in = new BufferedInputStream(connection.getInputStream());
         String fileName = url.getFile();

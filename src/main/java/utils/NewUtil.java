@@ -23,5 +23,4 @@ public class NewUtil {
     public static <K extends Comparable<K>> Set<K> treeSet() {
         return new TreeSet<>();
     }
-
 }

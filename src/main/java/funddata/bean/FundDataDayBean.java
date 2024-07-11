@@ -1,5 +1,7 @@
 package funddata.bean;
 
+import utils.StringUtil;
+
 /**
  * 基金单天数据
  *
@@ -40,10 +42,10 @@ public class FundDataDayBean {
 
     public static FundDataDayBean valueOf(String date, String p, String ap, String c, String buyState, String sellState) {
         FundDataDayBean res = new FundDataDayBean();
-        res.date = date;
-        res.price = Double.parseDouble(p);
-        res.allPrize = ap.contains("%") ? Double.parseDouble(ap.substring(0, ap.indexOf("%") - 1)) : Double.parseDouble(ap);
-        res.change = c.isEmpty() ? 0 : Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
+        res.date = StringUtil.isBlank(date) ? "" : date;
+        res.price = StringUtil.isBlank(p) ? 0 : Double.parseDouble(p);
+        res.allPrize = StringUtil.isBlank(ap) ? 0 : Double.parseDouble(ap);
+        res.change = StringUtil.isBlank(c) ? 0 : Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
         res.buyState = buyState;
         res.sellState = sellState;
         return res;
@@ -96,7 +98,6 @@ public class FundDataDayBean {
     public void setSellState(String sellState) {
         this.sellState = sellState;
     }
-
 
     @Override
     public String toString() {

@@ -24,8 +24,8 @@ public class TimeUtil {
      * 计算两个日期间的天数差
      *
      * @param start 起始时间 格式为yyyy-MM-dd
-     * @param end   结束时间
-     * @return 两个日期间隔的天数，同一天返回0
+     * @param end   结束时间 格式为yyyy-MM-dd
+     * @return 返回两个日期间隔的天数，同一天返回0
      */
     public static long calYearBetween(String start, String end) {
         LocalDate startDate = LocalDate.parse(start, YYYY_MM_DD_DTF);
