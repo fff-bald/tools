@@ -47,5 +47,6 @@ public class FundDataCollationApp {
                 res.clear();
             }
         }
+        FileUtil.writeFileByLine(path, res, true);
     }
 }
