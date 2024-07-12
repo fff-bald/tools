@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.LogUtil;
 import utils.StringUtil;
 import utils.TimeUtil;
 
@@ -83,7 +84,7 @@ public class FundDataBeanFactory {
             bean.setMoney(m.substring(m.indexOf("：") + 1, m.indexOf("（")));
             bean.setManager(tbody.select("a").get(2).text());
         } catch (IndexOutOfBoundsException ioE) {
-            System.out.println(String.format("【%s】【updateFundDataFromWeb】响应内容长度：%s", bean.getId(), document.text().length()));
+            LogUtil.info(LOG_NAME, "【%s】【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据", bean.getId(), document.text().length());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,21 +170,53 @@ public class FundDataBeanFactory {
      */
     private void dataClean(FundDataBean bean) {
         List<FundDataDayBean> dayBeanList = bean.getDayBeanList();
-        for (int i = 0; i < dayBeanList.size(); i++) {
+
+        // 第一天如果也没有数据可以直接设置为1
+        FundDataDayBean startDay = dayBeanList.get(dayBeanList.size() - 1);
+        if (startDay.getAllPrize() == Double.MIN_VALUE) {
+            startDay.setAllPrize(1);
+        }
+        if (startDay.getPrice() == Double.MIN_VALUE) {
+            startDay.setPrice(1);
+        }
+        if (startDay.getChange() == Double.MIN_VALUE) {
+            startDay.setChange(0);
+        }
+
+        for (int i = dayBeanList.size() - 1; i >= 0; i--) {
             FundDataDayBean dayBean = dayBeanList.get(i);
-            // 1、尝试补足累计净值
-            if (dayBean.getAllPrize() == 0 && i + 1 < dayBeanList.size()) {
-                FundDataDayBean preDayBean = dayBeanList.get(i + 1);
-                if (preDayBean == null) {
-                    dayBean.setAllPrize(preDayBean.getAllPrize() * (1 + dayBean.getChange()));
+
+            // 尝试修复累计净值数据
+            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+                boolean isSuccess = false;
+                // 1、尝试用今天的变化值和昨天的累积净值修复数据
+                if (dayBean.getChange() != Double.MIN_VALUE && i + 1 < dayBeanList.size()) {
+                    FundDataDayBean preDayBean = dayBeanList.get(i + 1);
+                    if (preDayBean.getAllPrize() != Double.MIN_VALUE) {
+                        dayBean.setAllPrize(preDayBean.getAllPrize() * (1 + dayBean.getChange()));
+                        isSuccess = true;
+                    }
                 }
-            } else if (dayBean.getAllPrize() == 0) {
-                System.out.println(String.format("【%s】尝试补足累计净值失败，%s", bean.getId(), dayBean));
+
+                // 2、尝试用明天的累积净值和变化值修复数据
+                FundDataDayBean lastDayBean = dayBeanList.get(i - 1);
+                if (lastDayBean.getChange() != Double.MIN_VALUE && lastDayBean.getAllPrize() != Double.MIN_VALUE) {
+                    isSuccess = true;
+                    dayBean.setAllPrize(lastDayBean.getAllPrize() / (1 + lastDayBean.getChange()));
+                }
             }
-            // 2、尝试补足当天变化值
-            if (dayBean.getChange() == 0 && i + 1 < dayBeanList.size()) {
+
+            // 尝试修复当天变化值
+            if (dayBean.getChange() == Double.MIN_VALUE && i + 1 < dayBeanList.size()) {
                 FundDataDayBean preDayBean = dayBeanList.get(i + 1);
-                dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getAllPrize());
+                if (dayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getAllPrize() != Double.MIN_VALUE) {
+                    dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getAllPrize());
+                }
+            }
+
+            // ---------- 输出处理过还不合法的数据 ----------
+            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+                LogUtil.error(LOG_NAME, "【%s】累计净值异常，%s", bean.getId(), dayBean);
             }
         }
     }

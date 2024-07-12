@@ -40,6 +40,33 @@ public class FileUtil {
     }
 
     /**
+     * 将字符串写入文件
+     *
+     * @param path
+     * @param str
+     * @param isAppend 是否为追加写入
+     */
+    public static void writeStringToFile(String path, String str, boolean isAppend) {
+        BufferedWriter writer = null;
+        checkDirectory(path);
+        try {
+            writer = new BufferedWriter(new FileWriter(path, isAppend));
+            writer.write(str);
+            writer.newLine(); // 添加新行，如果你需要
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
      * 逐行写入文件
      *
      * @param path
@@ -48,6 +75,7 @@ public class FileUtil {
      */
     public static void writeFileByLine(String path, List<String> lines, boolean isAppend) {
         BufferedWriter writer = null;
+        checkDirectory(path);
         try {
             writer = new BufferedWriter(new FileWriter(path, isAppend));
             for (String line : lines) {
@@ -63,6 +91,29 @@ public class FileUtil {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    /**
+     * 检查所有文件目录是否创建，有没创建的就创建
+     *
+     * @param filePath
+     */
+    private static void checkDirectory(String filePath) {
+        // 从文件路径中分离出目录部分
+        File file = new File(filePath);
+        File directory = file.getParentFile();
+
+        // 检查目录是否存在，如果不存在则创建它
+        if (!directory.exists()) {
+            boolean result = directory.mkdirs();
+
+            if (result) {
+                System.out.println("目录创建成功: " + directory.getAbsolutePath());
+            } else {
+                System.out.println("目录创建失败，请检查权限或磁盘空间");
+                // 在这里可以添加额外的错误处理逻辑
             }
         }
     }

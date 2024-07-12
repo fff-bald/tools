@@ -43,9 +43,9 @@ public class FundDataDayBean {
     public static FundDataDayBean valueOf(String date, String p, String ap, String c, String buyState, String sellState) {
         FundDataDayBean res = new FundDataDayBean();
         res.date = StringUtil.isBlank(date) ? "" : date;
-        res.price = StringUtil.isBlank(p) ? 0 : Double.parseDouble(p);
-        res.allPrize = StringUtil.isBlank(ap) ? 0 : Double.parseDouble(ap);
-        res.change = StringUtil.isBlank(c) ? 0 : Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
+        res.price = StringUtil.isBlank(p) ? Double.MIN_VALUE : Double.parseDouble(p);
+        res.allPrize = StringUtil.isBlank(ap) ? Double.MIN_VALUE : Double.parseDouble(ap);
+        res.change = StringUtil.isBlank(c) ? Double.MIN_VALUE : Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
         res.buyState = buyState;
         res.sellState = sellState;
         return res;
