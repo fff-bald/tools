@@ -19,8 +19,8 @@ import static funddata.constant.FundDataConstant.LOG_NAME;
  * @since 2024/7/12 21:42
  */
 public class FundDataGetRunnable implements Runnable {
-    private static final String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
-    private static final List<FundDataBean> resList = NewUtil.arrayList();
+    private static final String PATH = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
+    private static final List<FundDataBean> RES_LIST = NewUtil.arrayList();
     private String id;
     private boolean needSave = false;
 
@@ -35,9 +35,9 @@ public class FundDataGetRunnable implements Runnable {
         try {
             FundDataBeanFactory factory = FundDataBeanFactory.getInstance();
             FundDataBean bean = factory.createBean(this.id);
-            FileUtil.writeStringToFile(path, "'" + FundDataCollationUtil.getAllFieldValuesExceptList(bean), true);
+            FileUtil.writeStringToFile(PATH, "'" + FundDataCollationUtil.getAllFieldValuesExceptList(bean), true);
             if (needSave) {
-                resList.add(bean);
+                RES_LIST.add(bean);
             }
         } catch (Exception e) {
             LogUtil.error(LOG_NAME, "【%s】发生异常", this.id);
