@@ -62,28 +62,56 @@ public class FundDayBean implements Comparable<FundDayBean> {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getDate() {
         return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public double getPrice() {
         return price;
     }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public double getAllPrize() {
         return allPrize;
+    }
+
+    public void setAllPrize(double allPrize) {
+        this.allPrize = allPrize;
     }
 
     public double getChange() {
         return change;
     }
 
+    public void setChange(double change) {
+        this.change = change;
+    }
+
     public String getBuyState() {
         return buyState;
     }
 
+    public void setBuyState(String buyState) {
+        this.buyState = buyState;
+    }
+
     public String getSellState() {
         return sellState;
+    }
+
+    public void setSellState(String sellState) {
+        this.sellState = sellState;
     }
 
     @Override
