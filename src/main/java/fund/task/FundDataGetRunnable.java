@@ -1,14 +1,14 @@
-package funddata.task;
+package fund.task;
 
-import funddata.FundDataBeanFactory;
-import funddata.bean.FundDataBean;
+import fund.FundBeanFactory;
+import fund.bean.FundBean;
 import utils.*;
 
 import java.util.Date;
 import java.util.List;
 
-import static funddata.constant.FundDataConstant.FILE_ABSOLUTE_PATH;
-import static funddata.constant.FundDataConstant.LOG_NAME;
+import static fund.constant.FundConstant.FILE_ABSOLUTE_PATH;
+import static fund.constant.FundConstant.LOG_NAME;
 
 /**
  * @author cjl
@@ -16,7 +16,7 @@ import static funddata.constant.FundDataConstant.LOG_NAME;
  */
 public class FundDataGetRunnable implements Runnable {
     private static final String PATH = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
-    private static final List<FundDataBean> RES_LIST = NewUtil.arrayList();
+    private static final List<FundBean> RES_LIST = NewUtil.arrayList();
     private final String id;
     private boolean needSave = false;
 
@@ -29,8 +29,8 @@ public class FundDataGetRunnable implements Runnable {
     public void run() {
         long start = TimeUtil.now();
         try {
-            FundDataBeanFactory factory = FundDataBeanFactory.getInstance();
-            FundDataBean bean = factory.createBean(this.id);
+            FundBeanFactory factory = FundBeanFactory.getInstance();
+            FundBean bean = factory.createBean(this.id);
             FileUtil.writeStringToFile(PATH, "'" + ReflectUtil.getAllFieldValuesExceptList(bean), true);
             if (needSave) {
                 RES_LIST.add(bean);

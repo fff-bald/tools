@@ -1,4 +1,4 @@
-package funddata.bean;
+package fund.bean;
 
 import utils.StringUtil;
 
@@ -8,7 +8,7 @@ import utils.StringUtil;
  * @author cjl
  * @since 2024/7/4 23:28
  */
-public class FundDataDayBean implements Comparable<FundDataDayBean> {
+public class FundDayBean implements Comparable<FundDayBean> {
 
     /**
      * id
@@ -46,8 +46,8 @@ public class FundDataDayBean implements Comparable<FundDataDayBean> {
      */
     private String sellState;
 
-    public static FundDataDayBean valueOf(String id, String date, String p, String ap, String c, String buyState, String sellState) {
-        FundDataDayBean res = new FundDataDayBean();
+    public static FundDayBean valueOf(String id, String date, String p, String ap, String c, String buyState, String sellState) {
+        FundDayBean res = new FundDayBean();
         res.id = id;
         res.date = StringUtil.isBlank(date) ? "" : date;
         res.price = StringUtil.isBlank(p) ? Double.MIN_VALUE : Double.parseDouble(p);
@@ -58,64 +58,36 @@ public class FundDataDayBean implements Comparable<FundDataDayBean> {
         return res;
     }
 
-    public String getDate() {
-        return date;
+    public String getId() {
+        return id;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public String getDate() {
+        return date;
     }
 
     public double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     public double getAllPrize() {
         return allPrize;
-    }
-
-    public void setAllPrize(double allPrize) {
-        this.allPrize = allPrize;
     }
 
     public double getChange() {
         return change;
     }
 
-    public void setChange(double change) {
-        this.change = change;
-    }
-
     public String getBuyState() {
         return buyState;
-    }
-
-    public void setBuyState(String buyState) {
-        this.buyState = buyState;
     }
 
     public String getSellState() {
         return sellState;
     }
 
-    public void setSellState(String sellState) {
-        this.sellState = sellState;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     @Override
-    public int compareTo(FundDataDayBean o) {
+    public int compareTo(FundDayBean o) {
         // 字符串顺序，从大到小
         return o.getDate().compareTo(this.getDate());
     }

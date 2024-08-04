@@ -1,8 +1,8 @@
-package funddata.utils;
+package fund.utils;
 
-import funddata.bean.FundDataBean;
-import funddata.bean.FundDataDayBean;
-import funddata.bean.FundDataMonthBean;
+import fund.bean.FundBean;
+import fund.bean.FundDayBean;
+import fund.bean.FundMonthBean;
 import utils.NewUtil;
 import utils.TimeUtil;
 
@@ -29,12 +29,12 @@ public class FundCalUtil {
      * @param time
      * @return
      */
-    public static void setThreeYearChange(FundDataBean bean, List<FundDataDayBean> dayList, Date time) {
+    public static void setThreeYearChange(FundBean bean, List<FundDayBean> dayList, Date time) {
         LocalDate today = TimeUtil.convertDateToLocalDate(time);
         LocalDate ago = today.minusYears(3);
-        FundDataDayBean startDateBean = null;
-        FundDataDayBean endDayBean = dayList.get(0);
-        for (FundDataDayBean dayBean : dayList) {
+        FundDayBean startDateBean = null;
+        FundDayBean endDayBean = dayList.get(0);
+        for (FundDayBean dayBean : dayList) {
             LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
             if (ago.isBefore(localDate) || ago.isEqual(localDate)) {
                 startDateBean = dayBean;
@@ -54,7 +54,7 @@ public class FundCalUtil {
      *
      * @return
      */
-    public static double calMostReduceRate(List<FundDataDayBean> netValues) {
+    public static double calMostReduceRate(List<FundDayBean> netValues) {
 
         if (netValues == null || netValues.isEmpty() || netValues.size() == 1) {
             return 0.0;
@@ -63,7 +63,7 @@ public class FundCalUtil {
         double peak = netValues.get(0).getAllPrize(); // 初始峰值为列表的第一个值
         double maxDrawDown = 0.0; // 最大回撤初始化为0
 
-        for (FundDataDayBean dayBean : netValues) {
+        for (FundDayBean dayBean : netValues) {
             double netValue = dayBean.getAllPrize();
             if (netValue > peak) {
                 // 如果当前净值高于之前的峰值，则更新峰值
@@ -87,25 +87,25 @@ public class FundCalUtil {
      *
      * @param bean
      */
-    public static void calMonthData(FundDataBean bean) {
-        List<FundDataDayBean> dayList = bean.getDayBeanList();
-        List<FundDataMonthBean> monthBeans = NewUtil.arrayList();
-        Map<Integer, Double> monthlyGrowth = NewUtil.hashMap();
+    public static void calMonthData(FundBean bean) {
+        List<FundDayBean> dayList = bean.getDayBeanList();
+        List<FundMonthBean> monthBeans = NewUtil.arrayList();
+        Map<Integer, FundDayBean> monthlyGrowth = NewUtil.hashMap();
         for (int index = dayList.size() - 1; index >= 0; index--) {
-            FundDataDayBean dayBean = dayList.get(index);
+            FundDayBean dayBean = dayList.get(index);
             LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
             Double value = dayBean.getAllPrize();
             int yearMonth = localDate.getYear() * 100 + localDate.getMonthValue();
 
             if (!monthlyGrowth.containsKey(yearMonth)) {
                 // 如果是新月份，记录月初的值
-                monthlyGrowth.put(yearMonth, value);
+                monthlyGrowth.put(yearMonth, dayBean);
             }
 
             // 检查是否是月末，计算增长量
             if (index == 0 || LocalDate.parse(dayList.get(index - 1).getDate(), YYYY_MM_DD_DTF).getMonthValue() != localDate.getMonthValue()) {
-                FundDataMonthBean monthBean = FundDataMonthBean.valueOf(localDate.getYear(), localDate.getMonthValue());
-                monthBean.setChange(100 * (dayBean.getAllPrize() - monthlyGrowth.get(yearMonth)) / monthlyGrowth.get(yearMonth));
+                FundMonthBean monthBean = FundMonthBean.valueOf(localDate.getYear(),
+                        localDate.getMonthValue(), monthlyGrowth.get(yearMonth), dayBean);
                 monthBeans.add(monthBean);
             }
         }
@@ -113,14 +113,14 @@ public class FundCalUtil {
         bean.setMonthBeanList(monthBeans);
 
         double upMonthNum = 0;
-        for (FundDataMonthBean monthBean : monthBeans) {
+        for (FundMonthBean monthBean : monthBeans) {
             if (monthBean.getChange() >= 0) {
                 upMonthNum++;
             }
         }
         bean.setUpMonthRate(100 * upMonthNum / monthBeans.size());
 
-        List<Double> growthRates = monthBeans.stream().map(FundDataMonthBean::getChange).collect(Collectors.toList());
+        List<Double> growthRates = monthBeans.stream().map(FundMonthBean::getChange).collect(Collectors.toList());
         bean.setMonthStandardDeviation(calculateStandardDeviation(growthRates));
     }
 

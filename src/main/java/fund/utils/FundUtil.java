@@ -1,4 +1,4 @@
-package funddata.utils;
+package fund.utils;
 
 import utils.NewUtil;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static funddata.constant.FundDataConstant.ALL_FUND_IDS_URL;
+import static fund.constant.FundConstant.ALL_FUND_IDS_URL;
 
 /**
  * 工具类

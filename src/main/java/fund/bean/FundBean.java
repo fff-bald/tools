@@ -1,9 +1,8 @@
-package funddata.bean;
+package fund.bean;
 
-import funddata.utils.FundDataBaseUtil;
+import fund.utils.FundDataBaseUtil;
 import tag.DescriptionField;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,7 +11,7 @@ import java.util.List;
  * @author cjl
  * @since 2024/7/4 22:19
  */
-public class FundDataBean implements Comparable<FundDataBean> {
+public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "基金id")
     private String id;
 
@@ -39,12 +38,12 @@ public class FundDataBean implements Comparable<FundDataBean> {
     /**
      * 基金每日数据，日期新的放在前面
      */
-    private List<FundDataDayBean> dayBeanList;
+    private List<FundDayBean> dayBeanList;
 
     /**
-     * 基金每日数据，日期新的放在前面
+     * 基金每月数据，日期新的放在后面
      */
-    private List<FundDataMonthBean> monthBeanList;
+    private List<FundMonthBean> monthBeanList;
 
     // ---------- 计算值 ----------
     @DescriptionField(value = "存续时间")
@@ -83,8 +82,8 @@ public class FundDataBean implements Comparable<FundDataBean> {
     @DescriptionField(value = "最新一日赎回状态")
     private String sellState;
 
-    public static FundDataBean valueOf(String id) {
-        FundDataBean res = new FundDataBean();
+    public static FundBean valueOf(String id) {
+        FundBean res = new FundBean();
         res.id = id;
         res.dayBeanList = FundDataBaseUtil.getData(id);
         return res;
@@ -114,11 +113,11 @@ public class FundDataBean implements Comparable<FundDataBean> {
         this.type = type;
     }
 
-    public List<FundDataDayBean> getDayBeanList() {
+    public List<FundDayBean> getDayBeanList() {
         return dayBeanList;
     }
 
-    public void setDayBeanList(List<FundDataDayBean> dayBeanList) {
+    public void setDayBeanList(List<FundDayBean> dayBeanList) {
         this.dayBeanList = dayBeanList;
     }
 
@@ -194,11 +193,11 @@ public class FundDataBean implements Comparable<FundDataBean> {
         this.lockTime = lockTime;
     }
 
-    public List<FundDataMonthBean> getMonthBeanList() {
+    public List<FundMonthBean> getMonthBeanList() {
         return monthBeanList;
     }
 
-    public void setMonthBeanList(List<FundDataMonthBean> monthBeanList) {
+    public void setMonthBeanList(List<FundMonthBean> monthBeanList) {
         this.monthBeanList = monthBeanList;
     }
 
@@ -251,7 +250,7 @@ public class FundDataBean implements Comparable<FundDataBean> {
     }
 
     @Override
-    public int compareTo(FundDataBean o) {
+    public int compareTo(FundBean o) {
         // 字符串顺序，从小到大
         return this.getId().compareTo(o.getId());
     }

@@ -18,11 +18,11 @@ public class FileUtil {
      */
     public static List<String> readFileByLine(String path) {
         List<String> res = NewUtil.arrayList();
-        BufferedReader reader = null;
         File file = new File(path);
         if (!file.exists()) {
             return res;
         }
+        BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(path));
             String line;
@@ -51,8 +51,9 @@ public class FileUtil {
      * @param isAppend 是否为追加写入
      */
     public static void writeStringToFile(String path, String str, boolean isAppend) {
+        checkAndBuildDirectory(path);
+
         BufferedWriter writer = null;
-        checkDirectory(path);
         try {
             writer = new BufferedWriter(new FileWriter(path, isAppend));
             writer.write(str);
@@ -78,8 +79,9 @@ public class FileUtil {
      * @param isAppend 是否为追加写入
      */
     public static void writeFileByLine(String path, List<String> lines, boolean isAppend) {
+        checkAndBuildDirectory(path);
+
         BufferedWriter writer = null;
-        checkDirectory(path);
         try {
             writer = new BufferedWriter(new FileWriter(path, isAppend));
             for (String line : lines) {
@@ -100,11 +102,11 @@ public class FileUtil {
     }
 
     /**
-     * 检查所有文件目录是否创建，有没创建的就创建
+     * 检查所有文件目录是否创建，存在没创建的就创建
      *
      * @param filePath
      */
-    private static void checkDirectory(String filePath) {
+    private static void checkAndBuildDirectory(String filePath) {
         // 从文件路径中分离出目录部分
         File file = new File(filePath);
         File directory = file.getParentFile();

@@ -1,6 +1,6 @@
-package funddata.utils;
+package fund.utils;
 
-import funddata.bean.FundDataDayBean;
+import fund.bean.FundDayBean;
 import utils.FileUtil;
 import utils.JsonUtil;
 import utils.LogUtil;
@@ -9,7 +9,7 @@ import utils.NewUtil;
 import java.util.Collections;
 import java.util.List;
 
-import static funddata.constant.FundDataConstant.LOG_NAME;
+import static fund.constant.FundConstant.LOG_NAME;
 
 /**
  * 数据库工具类
@@ -21,7 +21,7 @@ public class FundDataBaseUtil {
 
     private static final String INIT_PATH = ".\\fund_data\\%s.txt";
 
-    public static void add(FundDataDayBean dataDayBean, boolean isCheck) {
+    public static void add(FundDayBean dataDayBean, boolean isCheck) {
         if (isCheck && checkExist(dataDayBean)) {
             return;
         }
@@ -34,14 +34,14 @@ public class FundDataBaseUtil {
         }
     }
 
-    public static List<FundDataDayBean> getData(String id) {
+    public static List<FundDayBean> getData(String id) {
         String filePath = getFilePath(id);
         List<String> strings = FileUtil.readFileByLine(filePath);
-        List<FundDataDayBean> res = NewUtil.arrayList();
+        List<FundDayBean> res = NewUtil.arrayList();
         for (String str : strings) {
             if (str.contains(id)) {
                 try {
-                    FundDataDayBean dayBean = JsonUtil.toObject(str, FundDataDayBean.class);
+                    FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
                     res.add(dayBean);
                 } catch (Exception e) {
                     LogUtil.error(LOG_NAME, "【%s】每日信息反序列化异常，%s", id, str);
@@ -52,8 +52,8 @@ public class FundDataBaseUtil {
         return res;
     }
 
-    public static boolean checkExist(FundDataDayBean dataDayBean) {
-        for (FundDataDayBean dayBean : getData(dataDayBean.getId())) {
+    public static boolean checkExist(FundDayBean dataDayBean) {
+        for (FundDayBean dayBean : getData(dataDayBean.getId())) {
             if (dayBean.getDate().equals(dataDayBean.getDate())) {
                 return true;
             }

@@ -11,11 +11,11 @@ import org.jsoup.select.Elements;
  */
 public class HtmlUtil {
     /**
-     * 返回文本内容包含特定字符串的Element，存在多个返回第一个
+     * 返回html文本内容包含特定字符串的Element
      *
      * @param tag
      * @param tagText
-     * @return
+     * @return 存在多个返回仅第一个，找不到就抛异常
      */
     public static Element findElement(Elements tag, String tagText) {
         for (Element res : tag) {

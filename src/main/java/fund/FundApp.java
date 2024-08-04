@@ -1,8 +1,8 @@
-package funddata;
+package fund;
 
-import funddata.bean.FundDataBean;
-import funddata.task.FundDataGetRunnable;
-import funddata.utils.FundUtil;
+import fund.bean.FundBean;
+import fund.task.FundDataGetRunnable;
+import fund.utils.FundUtil;
 import utils.FileUtil;
 import utils.ReflectUtil;
 import utils.TimeUtil;
@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static funddata.constant.FundDataConstant.FILE_ABSOLUTE_PATH;
+import static fund.constant.FundConstant.FILE_ABSOLUTE_PATH;
 
 /**
  * 基金数据爬取整理APP
@@ -22,7 +22,7 @@ import static funddata.constant.FundDataConstant.FILE_ABSOLUTE_PATH;
  * @author cjl
  * @since 2024/7/4.
  */
-public class FundDataCollationApp {
+public class FundApp {
     /**
      * 入口方法
      *
@@ -52,7 +52,7 @@ public class FundDataCollationApp {
 
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundDataBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
 
         for (String id : allIds) {
             FundDataGetRunnable task = new FundDataGetRunnable(id, false);
@@ -79,7 +79,7 @@ public class FundDataCollationApp {
         String testId = "008480";
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
         FileUtil.deleteFile(path);
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundDataBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
         FundDataGetRunnable task = new FundDataGetRunnable(testId, false);
         Thread thread = new Thread(task);
         thread.start();
