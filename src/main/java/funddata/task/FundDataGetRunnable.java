@@ -1,12 +1,8 @@
 package funddata.task;
 
 import funddata.FundDataBeanFactory;
-import funddata.FundDataCollationUtil;
 import funddata.bean.FundDataBean;
-import utils.FileUtil;
-import utils.LogUtil;
-import utils.NewUtil;
-import utils.TimeUtil;
+import utils.*;
 
 import java.util.Date;
 import java.util.List;
@@ -35,7 +31,7 @@ public class FundDataGetRunnable implements Runnable {
         try {
             FundDataBeanFactory factory = FundDataBeanFactory.getInstance();
             FundDataBean bean = factory.createBean(this.id);
-            FileUtil.writeStringToFile(PATH, "'" + FundDataCollationUtil.getAllFieldValuesExceptList(bean), true);
+            FileUtil.writeStringToFile(PATH, "'" + ReflectUtil.getAllFieldValuesExceptList(bean), true);
             if (needSave) {
                 RES_LIST.add(bean);
             }

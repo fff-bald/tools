@@ -2,15 +2,20 @@ package funddata;
 
 import funddata.bean.FundDataBean;
 import funddata.bean.FundDataDayBean;
+import funddata.utils.FundCalUtil;
+import funddata.utils.FundDataBaseUtil;
+import funddata.utils.FundUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.HtmlUtil;
 import utils.LogUtil;
 import utils.StringUtil;
 import utils.TimeUtil;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +47,7 @@ public class FundDataBeanFactory {
 
     public FundDataBean createBean(String id) {
         FundDataBean fundDataBean = FundDataBean.valueOf(id);
-        // 从网络获取基金信息
+        // 1、从网络获取基金信息
         updateFundDataFromWeb(fundDataBean);
 
         String type = fundDataBean.getType();
@@ -50,8 +55,10 @@ public class FundDataBeanFactory {
             return fundDataBean;
         }
 
-        // 从网络获取每日数据
+        // 2、从网络获取每日数据
         updateFundDayChangeFromWeb(fundDataBean, TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
+
+        // 3、计算格式参数
         calFundData(fundDataBean);
         return fundDataBean;
     }
@@ -78,11 +85,19 @@ public class FundDataBeanFactory {
             String url = String.format(FUND_DATA_GET_URL, bean.getId());
             document = Jsoup.connect(url).get();
             bean.setName(document.select("span.funCur-FundName").get(0).text());
+
             Element tbody = document.select("tbody").get(2);
             bean.setType(tbody.select("a").get(0).text());
-            String m = tbody.select("td").get(1).text();
-            bean.setMoney(m.substring(m.indexOf("：") + 1, m.indexOf("（")));
+
+            String money = tbody.select("td").get(1).text();
+            bean.setMoney(money.substring(money.indexOf("：") + 1, money.indexOf("（")));
             bean.setManager(tbody.select("a").get(2).text());
+
+            String lockTime = null;
+            if (tbody.text().contains("封闭期")) {
+                lockTime = HtmlUtil.findElement(tbody.children(), "封闭期").text();
+            }
+            bean.setLockTime(StringUtil.isBlank(lockTime) ? "无封闭期" : lockTime.substring(lockTime.indexOf("：") + 1));
         } catch (IndexOutOfBoundsException ioE) {
             LogUtil.info(LOG_NAME, "【%s】【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据", bean.getId(), document.text().length());
         } catch (IOException e) {
@@ -106,15 +121,20 @@ public class FundDataBeanFactory {
                 // 解析数据
                 for (Element tr : document.select("tbody").select("tr")) {
                     Elements td = tr.select("td");
-                    FundDataDayBean fundDataDayBean = FundDataDayBean.valueOf(td.get(0).text(), td.get(1).text(), td.get(2).text(), td.get(3).text(), td.get(4).text(), td.get(5).text());
+                    FundDataDayBean fundDataDayBean = FundDataDayBean.valueOf(bean.getId(), td.get(0).text(), td.get(1).text(), td.get(2).text(), td.get(3).text(), td.get(4).text(), td.get(5).text());
+                    if (FundDataBaseUtil.checkExist(fundDataDayBean)) {
+                        break;
+                    }
                     bean.getDayBeanList().add(fundDataDayBean);
+                    FundDataBaseUtil.add(fundDataDayBean, false);
                 }
 
                 // 当读取的是第一页时，有额外数据需要获取
                 if (i == 1) {
-                    limit = FundDataCollationUtil.getPagesValue(document.html());
+                    limit = FundUtil.getPagesValue(document.html());
                 }
             }
+            Collections.sort(bean.getDayBeanList());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,17 +150,30 @@ public class FundDataBeanFactory {
         dataClean(bean);
 
         List<FundDataDayBean> dayList = bean.getDayBeanList();
+        Collections.sort(dayList);
+
         FundDataDayBean endDay = dayList.get(0);
         FundDataDayBean startDay = dayList.get(dayList.size() - 1);
+
+        // 设置基金存续时间
         long totalDay = TimeUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
         bean.setDurationDay((int) totalDay);
         int tradingDay = dayList.size();
 
+        // 设置最新一日申购状态和赎回状态
         bean.setBuyState(endDay.getBuyState());
         bean.setSellState(endDay.getSellState());
 
-        // 年化收益率
-        bean.setYearChange(100 * FundDataCollationUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
+        // 设置复利年化收益率
+        bean.setYearChangePro(100 * FundUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
+        // 设置年化收益率
+        bean.setYearChange(100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize() / (totalDay / 365));
+
+        // 设置三年期年化收益率
+        FundCalUtil.setThreeYearChange(bean, dayList, new Date());
+
+        // 设置历史最大回撤
+        bean.setReduceRate(FundCalUtil.calMostReduceRate(dayList));
 
         // 上升比例
         double upDay = 0;
@@ -160,7 +193,6 @@ public class FundDataBeanFactory {
             standardDeviation += Math.pow(dayBean.getChange() - changeAverage, 2);
         }
         bean.setDayStandardDeviation(Math.sqrt(standardDeviation / (tradingDay - 1)));
-
     }
 
     /**
@@ -170,6 +202,11 @@ public class FundDataBeanFactory {
      */
     private void dataClean(FundDataBean bean) {
         List<FundDataDayBean> dayBeanList = bean.getDayBeanList();
+
+        if (dayBeanList.isEmpty()) {
+            LogUtil.error(LOG_NAME, "【%s】基金每日数据为空，%s", bean.getId(), bean);
+            return;
+        }
 
         // 第一天如果也没有数据可以直接设置为1
         FundDataDayBean startDay = dayBeanList.get(dayBeanList.size() - 1);

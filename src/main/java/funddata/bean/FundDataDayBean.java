@@ -8,7 +8,13 @@ import utils.StringUtil;
  * @author cjl
  * @since 2024/7/4 23:28
  */
-public class FundDataDayBean {
+public class FundDataDayBean implements Comparable<FundDataDayBean> {
+
+    /**
+     * id
+     */
+    private String id;
+
 
     /**
      * 当天日期
@@ -40,8 +46,9 @@ public class FundDataDayBean {
      */
     private String sellState;
 
-    public static FundDataDayBean valueOf(String date, String p, String ap, String c, String buyState, String sellState) {
+    public static FundDataDayBean valueOf(String id, String date, String p, String ap, String c, String buyState, String sellState) {
         FundDataDayBean res = new FundDataDayBean();
+        res.id = id;
         res.date = StringUtil.isBlank(date) ? "" : date;
         res.price = StringUtil.isBlank(p) ? Double.MIN_VALUE : Double.parseDouble(p);
         res.allPrize = StringUtil.isBlank(ap) ? Double.MIN_VALUE : Double.parseDouble(ap);
@@ -99,15 +106,16 @@ public class FundDataDayBean {
         this.sellState = sellState;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
-    public String toString() {
-        return "FundDataDayBean{" +
-                "date='" + date + '\'' +
-                ", price=" + price +
-                ", allPrize=" + allPrize +
-                ", change=" + change +
-                ", buyState='" + buyState + '\'' +
-                ", sellState='" + sellState + '\'' +
-                '}';
+    public int compareTo(FundDataDayBean o) {
+        return o.getDate().compareTo(this.getDate());
     }
 }

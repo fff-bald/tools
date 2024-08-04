@@ -117,4 +117,13 @@ public class FileUtil {
             }
         }
     }
+
+    public static void deleteFile(String path) {
+        File file = new File(path);
+        if (file.delete()) {
+            System.out.println(path + " 文件已被删除");
+        } else {
+            System.out.println(path + " 文件删除失败");
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package funddata.bean;
 
+import funddata.utils.FundDataBaseUtil;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,9 +38,19 @@ public class FundDataBean implements Comparable<FundDataBean> {
     private String manager;
 
     /**
+     * 封闭期
+     */
+    private String lockTime;
+
+    /**
      * 基金每日数据，日期新的放在前面
      */
-    private List<FundDataDayBean> dayBeanList = new LinkedList<>();
+    private List<FundDataDayBean> dayBeanList;
+
+    /**
+     * 基金每日数据，日期新的放在前面
+     */
+    private List<FundDataMonthBean> monthBeanList = new LinkedList<>();
 
     // ---------- 计算值 ----------
 
@@ -60,12 +72,37 @@ public class FundDataBean implements Comparable<FundDataBean> {
     /**
      * 复利年化收益率(百分比)
      */
+    private double yearChangePro;
+
+    /**
+     * 年化收益率(百分比)
+     */
     private double yearChange;
+
+    /**
+     * 三年年化收益率(百分比)
+     */
+    private double threeYearChange;
+
+    /**
+     * 复利三年年化收益率(百分比)
+     */
+    private double threeYearChangePro;
 
     /**
      * 上涨日数比例
      */
     private double upDayRate;
+
+    /**
+     * 上涨月份比例
+     */
+    private double upMonthRate;
+
+    /**
+     * 最大回撤
+     */
+    private double reduceRate;
 
     /**
      * 日涨跌幅标准差
@@ -75,6 +112,7 @@ public class FundDataBean implements Comparable<FundDataBean> {
     public static FundDataBean valueOf(String id) {
         FundDataBean res = new FundDataBean();
         res.id = id;
+        res.dayBeanList = FundDataBaseUtil.getData(id);
         return res;
     }
 
@@ -174,25 +212,64 @@ public class FundDataBean implements Comparable<FundDataBean> {
         this.durationDay = durationDay;
     }
 
-    @Override
-    public int compareTo(FundDataBean o) {
-        return this.getId().compareTo(o.getId());
+    public String getLockTime() {
+        return lockTime;
+    }
+
+    public void setLockTime(String lockTime) {
+        this.lockTime = lockTime;
+    }
+
+    public List<FundDataMonthBean> getMonthBeanList() {
+        return monthBeanList;
+    }
+
+    public void setMonthBeanList(List<FundDataMonthBean> monthBeanList) {
+        this.monthBeanList = monthBeanList;
+    }
+
+    public double getYearChangePro() {
+        return yearChangePro;
+    }
+
+    public void setYearChangePro(double yearChangePro) {
+        this.yearChangePro = yearChangePro;
+    }
+
+    public double getThreeYearChange() {
+        return threeYearChange;
+    }
+
+    public void setThreeYearChange(double threeYearChange) {
+        this.threeYearChange = threeYearChange;
+    }
+
+    public double getThreeYearChangePro() {
+        return threeYearChangePro;
+    }
+
+    public void setThreeYearChangePro(double threeYearChangePro) {
+        this.threeYearChangePro = threeYearChangePro;
+    }
+
+    public double getUpMonthRate() {
+        return upMonthRate;
+    }
+
+    public void setUpMonthRate(double upMonthRate) {
+        this.upMonthRate = upMonthRate;
+    }
+
+    public double getReduceRate() {
+        return reduceRate;
+    }
+
+    public void setReduceRate(double reduceRate) {
+        this.reduceRate = reduceRate;
     }
 
     @Override
-    public String toString() {
-        return "FundDataBean{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", money='" + money + '\'' +
-                ", manager='" + manager + '\'' +
-                ", durationDay=" + durationDay +
-                ", buyState='" + buyState + '\'' +
-                ", sellState='" + sellState + '\'' +
-                ", yearChange=" + yearChange +
-                ", upDayRate=" + upDayRate +
-                ", dayStandardDeviation=" + dayStandardDeviation +
-                '}';
+    public int compareTo(FundDataBean o) {
+        return this.getId().compareTo(o.getId());
     }
 }

@@ -2,7 +2,9 @@ package funddata;
 
 import funddata.bean.FundDataBean;
 import funddata.task.FundDataGetRunnable;
+import funddata.utils.FundUtil;
 import utils.FileUtil;
+import utils.ReflectUtil;
 import utils.TimeUtil;
 
 import java.util.Date;
@@ -27,7 +29,11 @@ public class FundDataCollationApp {
      * @param args
      */
     public static void main(String[] args) {
+        test();
+        // work();
+    }
 
+    private static void work() {
         // 构建一个按照参数创建的线程池
         int corePoolSize = 1; // 核心线程数
         int maximumPoolSize = 3; // 最大线程数
@@ -45,8 +51,8 @@ public class FundDataCollationApp {
 
 
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
-        Set<String> allIds = FundDataCollationUtil.getAllFundIdsFromWeb();
-        FileUtil.writeStringToFile(path, FundDataCollationUtil.getAllFieldsExceptList(FundDataBean.class), true);
+        Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsExceptList(FundDataBean.class), true);
 
         for (String id : allIds) {
             FundDataGetRunnable task = new FundDataGetRunnable(id, false);
@@ -67,5 +73,15 @@ public class FundDataCollationApp {
             // 注意：通常不建议在捕获到InterruptedException后直接调用shutdownNow()，因为这可能会留下未完成的任务
             Thread.currentThread().interrupt(); // 重新设置中断状态
         }
+    }
+
+    private static void test() {
+        String testId = "004062";
+        String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
+        FileUtil.deleteFile(path);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsExceptList(FundDataBean.class), true);
+        FundDataGetRunnable task = new FundDataGetRunnable(testId, false);
+        Thread thread = new Thread(task);
+        thread.start();
     }
 }

@@ -1,0 +1,71 @@
+package funddata.utils;
+
+import funddata.bean.FundDataDayBean;
+import utils.FileUtil;
+import utils.JsonUtil;
+import utils.LogUtil;
+import utils.NewUtil;
+
+import java.util.Collections;
+import java.util.List;
+
+import static funddata.constant.FundDataConstant.LOG_NAME;
+
+/**
+ * 数据库工具类
+ *
+ * @author cjl
+ * @since 2024/8/4 13:50
+ */
+public class FundDataBaseUtil {
+
+    private static final String INIT_PATH = ".\\fund_data\\%s.txt";
+
+    public static void add(FundDataDayBean dataDayBean, boolean isCheck) {
+        if (isCheck && checkExist(dataDayBean)) {
+            return;
+        }
+
+        String id = dataDayBean.getId();
+        try {
+            FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), true);
+        } catch (Exception e) {
+            LogUtil.error(LOG_NAME, "【%s】每日信息序列化异常，%s", dataDayBean.getId(), dataDayBean.toString());
+        }
+    }
+
+    public static List<FundDataDayBean> getData(String id) {
+        String filePath = getFilePath(id);
+        List<String> strings = FileUtil.readFileByLine(filePath);
+        List<FundDataDayBean> res = NewUtil.arrayList();
+        for (String str : strings) {
+            if (str.contains(id)) {
+                try {
+                    FundDataDayBean dayBean = JsonUtil.toObject(str, FundDataDayBean.class);
+                    res.add(dayBean);
+                } catch (Exception e) {
+                    LogUtil.error(LOG_NAME, "【%s】每日信息反序列化异常，%s", id, str);
+                }
+            }
+        }
+        Collections.sort(res);
+        return res;
+    }
+
+    public static boolean checkExist(FundDataDayBean dataDayBean) {
+        for (FundDataDayBean dayBean : getData(dataDayBean.getId())) {
+            if (dayBean.getDate().equals(dataDayBean.getDate())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // ---------- private ----------
+
+    private static String getFilePath(String id) {
+        int fileNum = id.hashCode() % 100;
+        return String.format(INIT_PATH, fileNum);
+    }
+}
