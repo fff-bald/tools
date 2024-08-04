@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static funddata.constant.FundDataConstant.*;
 
@@ -38,7 +39,6 @@ public class FundDataBeanFactory {
     private static final String INGORE_FUND_TYPE = "货币型-普通货币";
 
     private FundDataBeanFactory() {
-
     }
 
     public static FundDataBeanFactory getInstance() {
@@ -115,7 +115,7 @@ public class FundDataBeanFactory {
             int limit = Integer.MAX_VALUE;
             for (int i = 1; i <= limit; i++) {
                 // 构建url
-                String finalUrl = String.format(FUND_DAY_CHANGE_URL, bean.getId(), startDate, now, i);
+                String finalUrl = String.format(FUND_DAY_CHANGE_URL, bean.getId(), START_DATE, now, i);
                 Document document = Jsoup.connect(finalUrl).get();
 
                 // 解析数据
@@ -165,34 +165,31 @@ public class FundDataBeanFactory {
         bean.setSellState(endDay.getSellState());
 
         // 设置复利年化收益率
-        bean.setYearChangePro(100 * FundUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
+        bean.setYearChangePro(100 * FundCalUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
         // 设置年化收益率
         bean.setYearChange(100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize() / (totalDay / 365));
 
         // 设置三年期年化收益率
         FundCalUtil.setThreeYearChange(bean, dayList, new Date());
 
+        // 计算月份数据
+        FundCalUtil.calMonthData(bean);
+
         // 设置历史最大回撤
-        bean.setReduceRate(FundCalUtil.calMostReduceRate(dayList));
+        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList));
 
         // 上升比例
         double upDay = 0;
-        double changeSum = 0;
         for (FundDataDayBean dayBean : bean.getDayBeanList()) {
             if (dayBean.getChange() >= 0) {
                 upDay++;
             }
-            changeSum += dayBean.getChange();
         }
         bean.setUpDayRate(100 * upDay / tradingDay);
 
         // 标准差
-        double standardDeviation = 0;
-        double changeAverage = changeSum / tradingDay;
-        for (FundDataDayBean dayBean : bean.getDayBeanList()) {
-            standardDeviation += Math.pow(dayBean.getChange() - changeAverage, 2);
-        }
-        bean.setDayStandardDeviation(Math.sqrt(standardDeviation / (tradingDay - 1)));
+        List<Double> growthRates = dayList.stream().map(FundDataDayBean::getChange).collect(Collectors.toList());
+        bean.setDayStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
     }
 
     /**

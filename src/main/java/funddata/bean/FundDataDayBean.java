@@ -116,6 +116,7 @@ public class FundDataDayBean implements Comparable<FundDataDayBean> {
 
     @Override
     public int compareTo(FundDataDayBean o) {
+        // 字符串顺序，从大到小
         return o.getDate().compareTo(this.getDate());
     }
 }

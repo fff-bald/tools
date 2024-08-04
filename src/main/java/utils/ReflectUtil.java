@@ -1,5 +1,7 @@
 package utils;
 
+import tag.DescriptionField;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class ReflectUtil {
     }
 
     /**
-     * 获取类的所有字段名称，用逗号隔开，排除掉List类型
+     * 获取类的所有字段内容，用逗号隔开，排除掉List类型
      *
      * @param obj
      * @return
@@ -67,6 +69,28 @@ public class ReflectUtil {
         }
 
         // 使用逗号将字段值连接起来
+        return String.join(",", fieldValues);
+    }
+
+    /**
+     * 获取类的所有字段DescriptionField内容，用逗号隔开，排除掉List类型
+     *
+     * @param clazz
+     * @return
+     */
+    public static String getAllFieldsDescList(Class<?> clazz) {
+        List<String> fieldValues = new ArrayList<>();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            // 检查字段类型是否不是List
+            if (!List.class.isAssignableFrom(field.getType()) && field.isAnnotationPresent(DescriptionField.class)) {
+                DescriptionField printValue = field.getAnnotation(DescriptionField.class);
+                fieldValues.add(printValue.value());
+            }
+        }
+
+        // 使用逗号连接起来
         return String.join(",", fieldValues);
     }
 }

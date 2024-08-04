@@ -1,6 +1,7 @@
 package funddata.bean;
 
 import funddata.utils.FundDataBaseUtil;
+import tag.DescriptionField;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,34 +13,27 @@ import java.util.List;
  * @since 2024/7/4 22:19
  */
 public class FundDataBean implements Comparable<FundDataBean> {
-    /**
-     * 基金id
-     */
+    @DescriptionField(value = "基金id")
     private String id;
 
-    /**
-     * 名字
-     */
+
+    @DescriptionField(value = "名字")
     private String name;
 
-    /**
-     * 类型
-     */
+
+    @DescriptionField(value = "类型")
     private String type;
 
-    /**
-     * 规模
-     */
+
+    @DescriptionField(value = "规模")
     private String money;
 
-    /**
-     * 管理人
-     */
+
+    @DescriptionField(value = "管理人")
     private String manager;
 
-    /**
-     * 封闭期
-     */
+
+    @DescriptionField(value = "封闭期")
     private String lockTime;
 
     /**
@@ -50,64 +44,44 @@ public class FundDataBean implements Comparable<FundDataBean> {
     /**
      * 基金每日数据，日期新的放在前面
      */
-    private List<FundDataMonthBean> monthBeanList = new LinkedList<>();
+    private List<FundDataMonthBean> monthBeanList;
 
     // ---------- 计算值 ----------
-
-    /**
-     * 存续时间
-     */
+    @DescriptionField(value = "存续时间")
     private int durationDay;
 
-    /**
-     * 最新一日申购状态
-     */
-    private String buyState;
-
-    /**
-     * 最新一日赎回状态
-     */
-    private String sellState;
-
-    /**
-     * 复利年化收益率(百分比)
-     */
-    private double yearChangePro;
-
-    /**
-     * 年化收益率(百分比)
-     */
-    private double yearChange;
-
-    /**
-     * 三年年化收益率(百分比)
-     */
-    private double threeYearChange;
-
-    /**
-     * 复利三年年化收益率(百分比)
-     */
-    private double threeYearChangePro;
-
-    /**
-     * 上涨日数比例
-     */
+    @DescriptionField(value = "上涨日数比例")
     private double upDayRate;
 
-    /**
-     * 上涨月份比例
-     */
+    @DescriptionField(value = "上涨月份比例")
     private double upMonthRate;
 
-    /**
-     * 最大回撤
-     */
-    private double reduceRate;
-
-    /**
-     * 日涨跌幅标准差
-     */
+    @DescriptionField(value = "日涨跌幅标准差")
     private double dayStandardDeviation;
+
+    @DescriptionField(value = "月涨跌幅标准差")
+    private double monthStandardDeviation;
+
+    @DescriptionField(value = "最大回撤")
+    private double mostReduceRate;
+
+    @DescriptionField(value = "复利年化收益率(百分比)")
+    private double yearChangePro;
+
+    @DescriptionField(value = "年化收益率(百分比)")
+    private double yearChange;
+
+    @DescriptionField(value = "三年年化收益率(百分比)")
+    private double threeYearChange;
+
+    @DescriptionField(value = "复利三年年化收益率(百分比)")
+    private double threeYearChangePro;
+
+    @DescriptionField(value = "最新一日申购状态")
+    private String buyState;
+
+    @DescriptionField(value = "最新一日赎回状态")
+    private String sellState;
 
     public static FundDataBean valueOf(String id) {
         FundDataBean res = new FundDataBean();
@@ -260,16 +234,25 @@ public class FundDataBean implements Comparable<FundDataBean> {
         this.upMonthRate = upMonthRate;
     }
 
-    public double getReduceRate() {
-        return reduceRate;
+    public double getMostReduceRate() {
+        return mostReduceRate;
     }
 
-    public void setReduceRate(double reduceRate) {
-        this.reduceRate = reduceRate;
+    public void setMostReduceRate(double mostReduceRate) {
+        this.mostReduceRate = mostReduceRate;
+    }
+
+    public double getMonthStandardDeviation() {
+        return monthStandardDeviation;
+    }
+
+    public void setMonthStandardDeviation(double monthStandardDeviation) {
+        this.monthStandardDeviation = monthStandardDeviation;
     }
 
     @Override
     public int compareTo(FundDataBean o) {
+        // 字符串顺序，从小到大
         return this.getId().compareTo(o.getId());
     }
 }

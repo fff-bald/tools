@@ -2,11 +2,15 @@ package funddata.utils;
 
 import funddata.bean.FundDataBean;
 import funddata.bean.FundDataDayBean;
+import funddata.bean.FundDataMonthBean;
+import utils.NewUtil;
 import utils.TimeUtil;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static utils.TimeUtil.YYYY_MM_DD_DTF;
 
@@ -42,7 +46,7 @@ public class FundCalUtil {
         // 年化收益率
         bean.setThreeYearChange(100 * (endDayBean.getAllPrize() - startDateBean.getAllPrize()) / startDateBean.getAllPrize() / 3);
         // 复利年化收益率
-        bean.setThreeYearChangePro(100 * FundUtil.calYearChange(3 * 365, startDateBean.getAllPrize(), endDayBean.getAllPrize()));
+        bean.setThreeYearChangePro(100 * calYearChange(3 * 365, startDateBean.getAllPrize(), endDayBean.getAllPrize()));
     }
 
     /**
@@ -76,5 +80,79 @@ public class FundCalUtil {
 
         // 返回最大回撤的百分比（转换为百分比形式）
         return maxDrawDown * 100.0;
+    }
+
+    /**
+     * 计算跟月份相关的数据
+     *
+     * @param bean
+     */
+    public static void calMonthData(FundDataBean bean) {
+        List<FundDataDayBean> dayList = bean.getDayBeanList();
+        List<FundDataMonthBean> monthBeans = NewUtil.arrayList();
+        Map<Integer, Double> monthlyGrowth = NewUtil.hashMap();
+        for (int index = dayList.size() - 1; index >= 0; index--) {
+            FundDataDayBean dayBean = dayList.get(index);
+            LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
+            Double value = dayBean.getAllPrize();
+            int yearMonth = localDate.getYear() * 100 + localDate.getMonthValue();
+
+            if (!monthlyGrowth.containsKey(yearMonth)) {
+                // 如果是新月份，记录月初的值
+                monthlyGrowth.put(yearMonth, value);
+            }
+
+            // 检查是否是月末，计算增长量
+            if (index == 0 || LocalDate.parse(dayList.get(index - 1).getDate(), YYYY_MM_DD_DTF).getMonthValue() != localDate.getMonthValue()) {
+                FundDataMonthBean monthBean = FundDataMonthBean.valueOf(localDate.getYear(), localDate.getMonthValue());
+                monthBean.setChange(100 * (dayBean.getAllPrize() - monthlyGrowth.get(yearMonth)) / monthlyGrowth.get(yearMonth));
+                monthBeans.add(monthBean);
+            }
+        }
+
+        bean.setMonthBeanList(monthBeans);
+
+        double upMonthNum = 0;
+        for (FundDataMonthBean monthBean : monthBeans) {
+            if (monthBean.getChange() >= 0) {
+                upMonthNum++;
+            }
+        }
+        bean.setUpMonthRate(100 * upMonthNum / monthBeans.size());
+
+        List<Double> growthRates = monthBeans.stream().map(FundDataMonthBean::getChange).collect(Collectors.toList());
+        bean.setMonthStandardDeviation(calculateStandardDeviation(growthRates));
+    }
+
+    /**
+     * 计算复利年化收益率（按照一年365天来算）
+     *
+     * @return
+     */
+    public static double calYearChange(long day, double startPrice, double endPrice) {
+        double year = day * 1.0d / 365;
+        return Math.pow(endPrice / startPrice, 1.0d / year) - 1;
+    }
+
+    /**
+     * 计算标准差
+     *
+     * @param growthRates
+     * @return
+     */
+    public static double calculateStandardDeviation(List<Double> growthRates) {
+        double sum = 0.0;
+        for (double rate : growthRates) {
+            sum += rate;
+        }
+        double mean = sum / growthRates.size();
+
+        double sumOfSquares = 0.0;
+        for (double rate : growthRates) {
+            sumOfSquares += Math.pow(rate - mean, 2);
+        }
+        double variance = sumOfSquares / growthRates.size();
+
+        return Math.sqrt(variance);
     }
 }

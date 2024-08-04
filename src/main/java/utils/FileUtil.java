@@ -11,7 +11,7 @@ import java.util.List;
 public class FileUtil {
 
     /**
-     * 逐行读取文件
+     * 逐行读取文件，文件不存在时返回空列表
      *
      * @param path 文件路径
      * @return
@@ -19,6 +19,10 @@ public class FileUtil {
     public static List<String> readFileByLine(String path) {
         List<String> res = NewUtil.arrayList();
         BufferedReader reader = null;
+        File file = new File(path);
+        if (!file.exists()) {
+            return res;
+        }
         try {
             reader = new BufferedReader(new FileReader(path));
             String line;

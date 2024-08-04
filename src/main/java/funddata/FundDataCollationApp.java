@@ -52,7 +52,7 @@ public class FundDataCollationApp {
 
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsExceptList(FundDataBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundDataBean.class), true);
 
         for (String id : allIds) {
             FundDataGetRunnable task = new FundDataGetRunnable(id, false);
@@ -76,10 +76,10 @@ public class FundDataCollationApp {
     }
 
     private static void test() {
-        String testId = "004062";
+        String testId = "008480";
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
         FileUtil.deleteFile(path);
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsExceptList(FundDataBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundDataBean.class), true);
         FundDataGetRunnable task = new FundDataGetRunnable(testId, false);
         Thread thread = new Thread(task);
         thread.start();

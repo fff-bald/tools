@@ -17,7 +17,7 @@ import static funddata.constant.FundDataConstant.LOG_NAME;
 public class FundDataGetRunnable implements Runnable {
     private static final String PATH = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
     private static final List<FundDataBean> RES_LIST = NewUtil.arrayList();
-    private String id;
+    private final String id;
     private boolean needSave = false;
 
     public FundDataGetRunnable(String id, boolean needSave) {

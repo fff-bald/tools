@@ -120,16 +120,4 @@ public class FundUtil {
         // 如果没有找到匹配项，返回一个默认值或抛出异常
         throw new IllegalArgumentException("No 'pages' value found in the input string.");
     }
-
-    // ---------- cal ----------
-
-    /**
-     * 计算复利年化收益率（按照一年365天来算）
-     *
-     * @return
-     */
-    public static double calYearChange(long day, double startPrice, double endPrice) {
-        double year = day * 1.0d / 365;
-        return Math.pow(endPrice / startPrice, 1.0d / year) - 1;
-    }
 }
