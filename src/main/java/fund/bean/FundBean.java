@@ -53,6 +53,9 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "月涨跌幅标准差")
     private double monthStandardDeviation;
 
+    @DescriptionField(value = "每月涨跌幅的最大值对比中值的倍数")
+    private double monthMostChangeToAvg;
+
     @DescriptionField(value = "最大回撤")
     private double mostReduceRate;
 
@@ -269,6 +272,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setUpdateTime(LocalDate updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public double getMonthMostChangeToAvg() {
+        return monthMostChangeToAvg;
+    }
+
+    public void setMonthMostChangeToAvg(double monthMostChangeToAvg) {
+        this.monthMostChangeToAvg = monthMostChangeToAvg;
     }
 
     @Override
