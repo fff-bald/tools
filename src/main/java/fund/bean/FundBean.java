@@ -3,6 +3,7 @@ package fund.bean;
 import fund.utils.FundDataBaseUtil;
 import tag.DescriptionField;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -35,15 +36,6 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "封闭期")
     private String lockTime;
 
-    /**
-     * 基金每日数据，日期新的放在前面
-     */
-    private List<FundDayBean> dayBeanList;
-
-    /**
-     * 基金每月数据，日期新的放在后面
-     */
-    private List<FundMonthBean> monthBeanList;
 
     // ---------- 计算值 ----------
     @DescriptionField(value = "存续时间")
@@ -82,10 +74,32 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "最新一日赎回状态")
     private String sellState;
 
+    // ---------- 中间值 ----------
+
+    /**
+     * 基金每月数据，日期新的放在前面
+     */
+    private List<FundMonthBean> monthBeanList;
+
+    /**
+     * 基金每日数据，日期新的放在前面
+     */
+    private List<FundDayBean> dayBeanList;
+
+    /**
+     * 更新时间
+     */
+    private LocalDate updateTime;
+
     public static FundBean valueOf(String id) {
+        return valueOf(id, LocalDate.now());
+    }
+
+    public static FundBean valueOf(String id, LocalDate updateTime) {
         FundBean res = new FundBean();
         res.id = id;
         res.dayBeanList = FundDataBaseUtil.getData(id);
+        res.updateTime = updateTime;
         return res;
     }
 
@@ -247,6 +261,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setMonthStandardDeviation(double monthStandardDeviation) {
         this.monthStandardDeviation = monthStandardDeviation;
+    }
+
+    public LocalDate getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDate updateTime) {
+        this.updateTime = updateTime;
     }
 
     @Override

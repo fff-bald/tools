@@ -6,7 +6,7 @@ package fund.bean;
  * @author cjl
  * @since 2024/8/4 13:29
  */
-public class FundMonthBean {
+public class FundMonthBean implements Comparable<FundMonthBean> {
 
     private int year;
 
@@ -23,6 +23,8 @@ public class FundMonthBean {
         res.year = year;
         res.month = month;
         res.change = 100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize();
+        res.startDay = startDay;
+        res.endDay = endDay;
         return res;
     }
 
@@ -44,5 +46,11 @@ public class FundMonthBean {
 
     public double getChange() {
         return change;
+    }
+
+    @Override
+    public int compareTo(FundMonthBean o) {
+        // 从大到小
+        return (o.getYear() * 100 + o.getMonth()) - (this.getYear() * 100 + this.getMonth());
     }
 }

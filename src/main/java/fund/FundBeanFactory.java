@@ -4,21 +4,17 @@ import fund.bean.FundBean;
 import fund.bean.FundDayBean;
 import fund.utils.FundCalUtil;
 import fund.utils.FundDataBaseUtil;
+import fund.utils.FundDataUtil;
 import fund.utils.FundUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import utils.HtmlUtil;
-import utils.LogUtil;
-import utils.StringUtil;
-import utils.TimeUtil;
+import utils.*;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static fund.constant.FundConstant.*;
 
@@ -46,28 +42,27 @@ public class FundBeanFactory {
     }
 
     public FundBean createBean(String id) {
-        FundBean fundDataBean = FundBean.valueOf(id);
+        return createBean(id, TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
+    }
+
+    public FundBean createBean(String id, String time) {
+        FundBean fundDataBean = FundBean.valueOf(id, LocalDate.parse(time));
+
         // 1、从网络获取基金信息
         updateFundDataFromWeb(fundDataBean);
-
         String type = fundDataBean.getType();
         if (StringUtil.isBlank(type) || type.contains(INGORE_FUND_TYPE)) {
             return fundDataBean;
         }
 
         // 2、从网络获取每日数据
-        updateFundDayChangeFromWeb(fundDataBean, TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
-
-        // 3、计算格式参数
-        calFundData(fundDataBean);
-        return fundDataBean;
-    }
-
-    public FundBean createBean(String id, String time) {
-        FundBean fundDataBean = FundBean.valueOf(id);
         updateFundDayChangeFromWeb(fundDataBean, time);
-        updateFundDataFromWeb(fundDataBean);
-        calFundData(fundDataBean);
+
+        // 3、按照一定策略，对数据进行清洗
+        FundDataUtil.repairData(fundDataBean);
+
+        // 4、计算格式参数
+        FundCalUtil.calFundData(fundDataBean);
         return fundDataBean;
     }
 
@@ -101,7 +96,7 @@ public class FundBeanFactory {
         } catch (IndexOutOfBoundsException ioE) {
             LogUtil.info(LOG_NAME, "【%s】【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据", bean.getId(), document.text().length());
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.error(LOG_NAME, "【%s】IOException，异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 
@@ -122,7 +117,7 @@ public class FundBeanFactory {
                 for (Element tr : document.select("tbody").select("tr")) {
                     Elements td = tr.select("td");
                     FundDayBean fundDayBean = FundDayBean.valueOf(bean.getId(), td.get(0).text(), td.get(1).text(), td.get(2).text(), td.get(3).text(), td.get(4).text(), td.get(5).text());
-                    if (FundDataBaseUtil.checkExist(fundDayBean)) {
+                    if (FundDataUtil.checkExist(fundDayBean, bean.getDayBeanList())) {
                         break;
                     }
                     bean.getDayBeanList().add(fundDayBean);
@@ -134,124 +129,8 @@ public class FundBeanFactory {
                     limit = FundUtil.getPagesValue(document.html());
                 }
             }
-            Collections.sort(bean.getDayBeanList());
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 根据已有的信息，计算各项指标
-     *
-     * @param bean
-     */
-    private void calFundData(FundBean bean) {
-        // 数据清洗
-        dataClean(bean);
-
-        List<FundDayBean> dayList = bean.getDayBeanList();
-        Collections.sort(dayList);
-
-        FundDayBean endDay = dayList.get(0);
-        FundDayBean startDay = dayList.get(dayList.size() - 1);
-
-        // 设置基金存续时间
-        long totalDay = TimeUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
-        bean.setDurationDay((int) totalDay);
-        int tradingDay = dayList.size();
-
-        // 设置最新一日申购状态和赎回状态
-        bean.setBuyState(endDay.getBuyState());
-        bean.setSellState(endDay.getSellState());
-
-        // 设置复利年化收益率
-        bean.setYearChangePro(100 * FundCalUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
-        // 设置年化收益率
-        bean.setYearChange(100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize() / (totalDay / 365));
-
-        // 设置三年期年化收益率
-        FundCalUtil.setThreeYearChange(bean, dayList, new Date());
-
-        // 计算月份数据
-        FundCalUtil.calMonthData(bean);
-
-        // 设置历史最大回撤
-        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList));
-
-        // 上升比例
-        double upDay = 0;
-        for (FundDayBean dayBean : bean.getDayBeanList()) {
-            if (dayBean.getChange() >= 0) {
-                upDay++;
-            }
-        }
-        bean.setUpDayRate(100 * upDay / tradingDay);
-
-        // 标准差
-        List<Double> growthRates = dayList.stream().map(FundDayBean::getChange).collect(Collectors.toList());
-        bean.setDayStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
-    }
-
-    /**
-     * 按照一定的策略，对数据进行整理
-     *
-     * @param bean
-     */
-    private void dataClean(FundBean bean) {
-        List<FundDayBean> dayBeanList = bean.getDayBeanList();
-
-        if (dayBeanList.isEmpty()) {
-            LogUtil.error(LOG_NAME, "【%s】基金每日数据为空，%s", bean.getId(), bean);
-            return;
-        }
-
-        // 第一天如果也没有数据可以直接设置为1
-        FundDayBean startDay = dayBeanList.get(dayBeanList.size() - 1);
-        if (startDay.getAllPrize() == Double.MIN_VALUE) {
-            startDay.setAllPrize(1);
-        }
-        if (startDay.getPrice() == Double.MIN_VALUE) {
-            startDay.setPrice(1);
-        }
-        if (startDay.getChange() == Double.MIN_VALUE) {
-            startDay.setChange(0);
-        }
-
-        for (int i = dayBeanList.size() - 1; i >= 0; i--) {
-            FundDayBean dayBean = dayBeanList.get(i);
-
-            // 尝试修复累计净值数据
-            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-                boolean isSuccess = false;
-                // 1、尝试用今天的变化值和昨天的累积净值修复数据
-                if (dayBean.getChange() != Double.MIN_VALUE && i + 1 < dayBeanList.size()) {
-                    FundDayBean preDayBean = dayBeanList.get(i + 1);
-                    if (preDayBean.getAllPrize() != Double.MIN_VALUE) {
-                        dayBean.setAllPrize(preDayBean.getAllPrize() * (1 + dayBean.getChange()));
-                        isSuccess = true;
-                    }
-                }
-
-                // 2、尝试用明天的累积净值和变化值修复数据
-                FundDayBean lastDayBean = dayBeanList.get(i - 1);
-                if (lastDayBean.getChange() != Double.MIN_VALUE && lastDayBean.getAllPrize() != Double.MIN_VALUE) {
-                    isSuccess = true;
-                    dayBean.setAllPrize(lastDayBean.getAllPrize() / (1 + lastDayBean.getChange()));
-                }
-            }
-
-            // 尝试修复当天变化值
-            if (dayBean.getChange() == Double.MIN_VALUE && i + 1 < dayBeanList.size()) {
-                FundDayBean preDayBean = dayBeanList.get(i + 1);
-                if (dayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getAllPrize() != Double.MIN_VALUE) {
-                    dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getAllPrize());
-                }
-            }
-
-            // ---------- 输出处理过还不合法的数据 ----------
-            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-                LogUtil.error(LOG_NAME, "【%s】累计净值异常，%s", bean.getId(), dayBean);
-            }
+            LogUtil.error(LOG_NAME, "【%s】IOException，异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }

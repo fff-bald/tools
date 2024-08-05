@@ -33,8 +33,11 @@ public class FundApp {
         // work();
     }
 
+    /**
+     * 全量爬取
+     */
     private static void work() {
-        // 构建一个按照参数创建的线程池
+        // 1、构建一个按照参数创建的线程池
         int corePoolSize = 1; // 核心线程数
         int maximumPoolSize = 3; // 最大线程数
         long keepAliveTime = 10L; // 空闲线程存活时间
@@ -46,19 +49,25 @@ public class FundApp {
                 keepAliveTime,
                 unit,
                 workQueue,
+                // 拒绝策略：用提交任务的线程来执行
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
 
-
-        String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
-        Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
+        // 2、初始化文件路径和内容
+        String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
+        String path = String.format(FILE_ABSOLUTE_PATH, "base-" + todayDate);
+        // 防止重复运行报错
+        FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
 
+        // 3、获取全量基金id，往线程池里提交查询任务
+        Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
         for (String id : allIds) {
-            FundDataGetRunnable task = new FundDataGetRunnable(id, false);
+            FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, id);
             threadPoolExecutor.execute(task);
         }
 
+        // 4、无限等待任务完成，然后关闭线程池释放资源
         threadPoolExecutor.shutdown(); // 不再接受新任务，但会继续执行队列中的任务
         try {
             // 等待所有任务完成，或者直到超时（在这个例子中，基本上是无限期等待）
@@ -77,10 +86,11 @@ public class FundApp {
 
     private static void test() {
         String testId = "008480";
-        String path = String.format(FILE_ABSOLUTE_PATH, "base-" + TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
+        String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
+        String path = String.format(FILE_ABSOLUTE_PATH, "base-" + todayDate);
         FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
-        FundDataGetRunnable task = new FundDataGetRunnable(testId, false);
+        FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, testId);
         Thread thread = new Thread(task);
         thread.start();
     }

@@ -1,5 +1,7 @@
 package fund.utils;
 
+import utils.ExceptionUtil;
+import utils.LogUtil;
 import utils.NewUtil;
 
 import java.io.BufferedReader;
@@ -14,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static fund.constant.FundConstant.ALL_FUND_IDS_URL;
+import static fund.constant.FundConstant.LOG_NAME;
 
 /**
  * 工具类
@@ -59,7 +62,7 @@ public class FundUtil {
             conn.disconnect();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.error(LOG_NAME, "【全量拉取】未知异常，异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
         }
 
         Set<String> res = NewUtil.treeSet();

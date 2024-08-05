@@ -61,7 +61,6 @@ public class FundDataBaseUtil {
         return false;
     }
 
-
     // ---------- private ----------
 
     private static String getFilePath(String id) {

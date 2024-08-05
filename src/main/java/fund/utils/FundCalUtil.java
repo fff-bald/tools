@@ -7,7 +7,7 @@ import utils.NewUtil;
 import utils.TimeUtil;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,14 +23,67 @@ import static utils.TimeUtil.YYYY_MM_DD_DTF;
 public class FundCalUtil {
 
     /**
+     * 根据已有的信息，计算各项指标
+     *
+     * @param bean
+     */
+    public static void calFundData(FundBean bean) {
+        List<FundDayBean> dayList = bean.getDayBeanList();
+
+        if (dayList.isEmpty()) {
+            return;
+        }
+
+        FundDayBean endDay = dayList.get(0);
+        FundDayBean startDay = dayList.get(dayList.size() - 1);
+
+        // 设置基金存续时间
+        long totalDay = TimeUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
+        bean.setDurationDay((int) totalDay);
+        int tradingDay = dayList.size();
+
+        // 设置最新一日申购状态和赎回状态
+        bean.setBuyState(endDay.getBuyState());
+        bean.setSellState(endDay.getSellState());
+
+        // 设置复利年化收益率
+        bean.setYearChangePro(100 * FundCalUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
+        // 设置年化收益率
+        bean.setYearChange(100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize() / (totalDay / 365d));
+
+        // 设置三年期年化收益率
+        FundCalUtil.setThreeYearChange(bean, dayList, bean.getUpdateTime());
+
+        // 计算月份数据
+        FundCalUtil.calMonthData(bean);
+
+        // 设置历史最大回撤
+        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList));
+
+        // 上升日比例
+        double upDay = 0;
+        for (FundDayBean dayBean : bean.getDayBeanList()) {
+            if (dayBean.getChange() >= 0) {
+                upDay++;
+            }
+        }
+        bean.setUpDayRate(100 * upDay / tradingDay);
+
+        // 标准差
+        List<Double> growthRates = dayList.stream().map(FundDayBean::getChange).collect(Collectors.toList());
+        bean.setDayStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
+    }
+
+    // ---------- private ----------
+
+    /**
      * 设置三年的年化收益率，如果不够三年也按三年来算
      *
      * @param dayList
-     * @param time
+     * @param today
      * @return
      */
-    public static void setThreeYearChange(FundBean bean, List<FundDayBean> dayList, Date time) {
-        LocalDate today = TimeUtil.convertDateToLocalDate(time);
+    private static void setThreeYearChange(FundBean bean, List<FundDayBean> dayList, LocalDate today) {
         LocalDate ago = today.minusYears(3);
         FundDayBean startDateBean = null;
         FundDayBean endDayBean = dayList.get(0);
@@ -54,7 +107,7 @@ public class FundCalUtil {
      *
      * @return
      */
-    public static double calMostReduceRate(List<FundDayBean> netValues) {
+    private static double calMostReduceRate(List<FundDayBean> netValues) {
 
         if (netValues == null || netValues.isEmpty() || netValues.size() == 1) {
             return 0.0;
@@ -87,7 +140,7 @@ public class FundCalUtil {
      *
      * @param bean
      */
-    public static void calMonthData(FundBean bean) {
+    private static void calMonthData(FundBean bean) {
         List<FundDayBean> dayList = bean.getDayBeanList();
         List<FundMonthBean> monthBeans = NewUtil.arrayList();
         Map<Integer, FundDayBean> monthlyGrowth = NewUtil.hashMap();
@@ -110,6 +163,7 @@ public class FundCalUtil {
             }
         }
 
+        Collections.sort(monthBeans);
         bean.setMonthBeanList(monthBeans);
 
         double upMonthNum = 0;
@@ -129,7 +183,7 @@ public class FundCalUtil {
      *
      * @return
      */
-    public static double calYearChange(long day, double startPrice, double endPrice) {
+    private static double calYearChange(long day, double startPrice, double endPrice) {
         double year = day * 1.0d / 365;
         return Math.pow(endPrice / startPrice, 1.0d / year) - 1;
     }
@@ -140,7 +194,7 @@ public class FundCalUtil {
      * @param growthRates
      * @return
      */
-    public static double calculateStandardDeviation(List<Double> growthRates) {
+    private static double calculateStandardDeviation(List<Double> growthRates) {
         double sum = 0.0;
         for (double rate : growthRates) {
             sum += rate;
