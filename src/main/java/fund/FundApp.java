@@ -4,6 +4,7 @@ import fund.bean.FundBean;
 import fund.task.FundDataGetRunnable;
 import fund.utils.FundUtil;
 import utils.FileUtil;
+import utils.LogUtil;
 import utils.ReflectUtil;
 import utils.TimeUtil;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static fund.constant.FundConstant.FILE_ABSOLUTE_PATH;
+import static fund.constant.FundConstant.LOG_NAME;
 
 /**
  * 基金数据爬取整理APP
@@ -37,6 +39,9 @@ public class FundApp {
      * 全量爬取
      */
     private static void work() {
+
+        long startTime = TimeUtil.now();
+
         // 1、构建一个按照参数创建的线程池
         int corePoolSize = 1; // 核心线程数
         int maximumPoolSize = 3; // 最大线程数
@@ -67,6 +72,8 @@ public class FundApp {
             threadPoolExecutor.execute(task);
         }
 
+        LogUtil.info(LOG_NAME, "!!!任务提交完成，耗时：%s(ms)", TimeUtil.now() - startTime);
+
         // 4、无限等待任务完成，然后关闭线程池释放资源
         threadPoolExecutor.shutdown(); // 不再接受新任务，但会继续执行队列中的任务
         try {
@@ -85,9 +92,9 @@ public class FundApp {
     }
 
     private static void test() {
-        String testId = "008480";
+        String testId = "010440";
         String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
-        String path = String.format(FILE_ABSOLUTE_PATH, "base-" + todayDate);
+        String path = String.format(FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
         FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, testId);

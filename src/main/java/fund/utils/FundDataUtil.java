@@ -79,7 +79,7 @@ public class FundDataUtil {
 
                 // 2、尝试用明天的累积净值和变化值修复数据
                 FundDayBean lastDayBean = dayBeanList.get(i - 1);
-                if (lastDayBean.getChange() != Double.MIN_VALUE && lastDayBean.getAllPrize() != Double.MIN_VALUE) {
+                if (!isSuccess && lastDayBean.getChange() != Double.MIN_VALUE && lastDayBean.getAllPrize() != Double.MIN_VALUE) {
                     isSuccess = true;
                     dayBean.setAllPrize(lastDayBean.getAllPrize() / (1 + lastDayBean.getChange()));
                 }

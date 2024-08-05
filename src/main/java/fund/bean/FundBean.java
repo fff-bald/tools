@@ -77,6 +77,9 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "最新一日赎回状态")
     private String sellState;
 
+    @DescriptionField(value = "更新时间")
+    private LocalDate updateTime;
+
     // ---------- 中间值 ----------
 
     /**
@@ -89,10 +92,6 @@ public class FundBean implements Comparable<FundBean> {
      */
     private List<FundDayBean> dayBeanList;
 
-    /**
-     * 更新时间
-     */
-    private LocalDate updateTime;
 
     public static FundBean valueOf(String id) {
         return valueOf(id, LocalDate.now());

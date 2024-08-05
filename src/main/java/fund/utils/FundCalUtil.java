@@ -37,27 +37,24 @@ public class FundCalUtil {
         FundDayBean endDay = dayList.get(0);
         FundDayBean startDay = dayList.get(dayList.size() - 1);
 
-        // 设置基金存续时间
+        // 基金存续时间
         long totalDay = TimeUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
         bean.setDurationDay((int) totalDay);
         int tradingDay = dayList.size();
 
-        // 设置最新一日申购状态和赎回状态
+        // 最新一日申购状态和赎回状态
         bean.setBuyState(endDay.getBuyState());
         bean.setSellState(endDay.getSellState());
 
-        // 设置复利年化收益率
+        // 复利年化收益率
         bean.setYearChangePro(100 * FundCalUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
-        // 设置年化收益率
+        // 年化收益率
         bean.setYearChange(100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize() / (totalDay / 365d));
 
-        // 设置三年期年化收益率
+        // 三年期年化收益率
         FundCalUtil.setThreeYearChange(bean, dayList, bean.getUpdateTime());
 
-        // 计算月份数据
-        FundCalUtil.calMonthData(bean);
-
-        // 设置历史最大回撤
+        // 历史最大回撤
         bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList));
 
         // 上升日比例
@@ -69,9 +66,12 @@ public class FundCalUtil {
         }
         bean.setUpDayRate(100 * upDay / tradingDay);
 
-        // 标准差
+        // 日涨跌幅标准差
         List<Double> growthRates = dayList.stream().map(FundDayBean::getChange).collect(Collectors.toList());
         bean.setDayStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
+
+        // 计算月份数据
+        FundCalUtil.calMonthData(bean);
     }
 
     // ---------- private ----------
@@ -85,21 +85,21 @@ public class FundCalUtil {
      */
     private static void setThreeYearChange(FundBean bean, List<FundDayBean> dayList, LocalDate today) {
         LocalDate ago = today.minusYears(3);
-        FundDayBean startDateBean = null;
         FundDayBean endDayBean = dayList.get(0);
+        FundDayBean startDayBean = endDayBean;
         for (FundDayBean dayBean : dayList) {
             LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
             if (ago.isBefore(localDate) || ago.isEqual(localDate)) {
-                startDateBean = dayBean;
+                startDayBean = dayBean;
             } else {
                 break;
             }
         }
 
         // 年化收益率
-        bean.setThreeYearChange(100 * (endDayBean.getAllPrize() - startDateBean.getAllPrize()) / startDateBean.getAllPrize() / 3);
+        bean.setThreeYearChange(100 * (endDayBean.getAllPrize() - startDayBean.getAllPrize()) / startDayBean.getAllPrize() / 3);
         // 复利年化收益率
-        bean.setThreeYearChangePro(100 * calYearChange(3 * 365, startDateBean.getAllPrize(), endDayBean.getAllPrize()));
+        bean.setThreeYearChangePro(100 * calYearChange(3 * 365, startDayBean.getAllPrize(), endDayBean.getAllPrize()));
     }
 
     /**
@@ -113,11 +113,11 @@ public class FundCalUtil {
             return 0.0;
         }
 
-        double peak = netValues.get(0).getAllPrize(); // 初始峰值为列表的第一个值
+        double peak = netValues.get(netValues.size() - 1).getAllPrize(); // 初始峰值为时间最早的值
         double maxDrawDown = 0.0; // 最大回撤初始化为0
 
-        for (FundDayBean dayBean : netValues) {
-            double netValue = dayBean.getAllPrize();
+        for (int i = netValues.size() - 1; i >= 0; i--) {
+            double netValue = netValues.get(i).getAllPrize();
             if (netValue > peak) {
                 // 如果当前净值高于之前的峰值，则更新峰值
                 peak = netValue;
@@ -147,7 +147,6 @@ public class FundCalUtil {
         for (int index = dayList.size() - 1; index >= 0; index--) {
             FundDayBean dayBean = dayList.get(index);
             LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
-            Double value = dayBean.getAllPrize();
             int yearMonth = localDate.getYear() * 100 + localDate.getMonthValue();
 
             if (!monthlyGrowth.containsKey(yearMonth)) {
@@ -164,6 +163,7 @@ public class FundCalUtil {
         }
 
         Collections.sort(monthBeans);
+        // 月份数据
         bean.setMonthBeanList(monthBeans);
 
         double upMonthNum = 0;
@@ -172,10 +172,15 @@ public class FundCalUtil {
                 upMonthNum++;
             }
         }
+        // 上升月比例
         bean.setUpMonthRate(100 * upMonthNum / monthBeans.size());
 
         List<Double> growthRates = monthBeans.stream().map(FundMonthBean::getChange).collect(Collectors.toList());
+        // 月涨跌幅标准差
         bean.setMonthStandardDeviation(calculateStandardDeviation(growthRates));
+
+        // 月涨跌幅最大异常
+        bean.setMonthMostChangeToAvg(calMostAvgRate(monthBeans));
     }
 
     /**
@@ -208,5 +213,16 @@ public class FundCalUtil {
         double variance = sumOfSquares / growthRates.size();
 
         return Math.sqrt(variance);
+    }
+
+    private static double calMostAvgRate(List<FundMonthBean> monthBeans) {
+        double sum = 0;
+        double biggest = Double.MIN_VALUE;
+        for (FundMonthBean monthBean : monthBeans) {
+            sum += monthBean.getChange();
+            biggest = Math.max(biggest, monthBean.getChange());
+        }
+
+        return biggest / (sum / monthBeans.size());
     }
 }
