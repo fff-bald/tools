@@ -6,7 +6,6 @@ import utils.JsonUtil;
 import utils.LogUtil;
 import utils.NewUtil;
 
-import java.util.Collections;
 import java.util.List;
 
 import static fund.constant.FundConstant.LOG_NAME;
@@ -21,7 +20,7 @@ public class FundDataBaseUtil {
 
     private static final String INIT_PATH = ".\\fund_data\\%s.txt";
 
-    public static void add(FundDayBean dataDayBean, boolean isCheck) {
+    public static void addData(FundDayBean dataDayBean, boolean isCheck) {
         if (isCheck && checkExist(dataDayBean)) {
             return;
         }
@@ -48,7 +47,6 @@ public class FundDataBaseUtil {
                 }
             }
         }
-        Collections.sort(res);
         return res;
     }
 

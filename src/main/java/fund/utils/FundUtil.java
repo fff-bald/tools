@@ -62,7 +62,7 @@ public class FundUtil {
             conn.disconnect();
 
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "【全量拉取】未知异常，异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error(LOG_NAME, "!!!未知异常，异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
         }
 
         Set<String> res = NewUtil.treeSet();

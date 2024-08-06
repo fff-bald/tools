@@ -2,6 +2,7 @@ package fund.task;
 
 import fund.FundBeanFactory;
 import fund.bean.FundBean;
+import fund.handler.FundBeanHandlerEnum;
 import utils.*;
 
 import java.util.List;
@@ -39,12 +40,16 @@ public class FundDataGetRunnable implements Runnable {
             long startTime = TimeUtil.now();
             FundBeanFactory factory = FundBeanFactory.getInstance();
             FundBean bean = factory.createBean(this.id, this.date);
-            FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllFieldValuesExceptList(bean), true);
-            if (this.needSave) {
-                RES_LIST.add(bean);
+            if (bean.getState() == FundBeanHandlerEnum.FINISH.getId()) {
+                FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllFieldValuesExceptList(bean), true);
+                if (this.needSave) {
+                    RES_LIST.add(bean);
+                }
+                long endTime = TimeUtil.now();
+                LogUtil.info(LOG_NAME, "【%s】处理完成，耗时：%s(ms)", this.id, endTime - startTime);
+            } else {
+                LogUtil.error(LOG_NAME, "【%s】处理失败", this.id);
             }
-            long endTime = TimeUtil.now();
-            LogUtil.info(LOG_NAME, "【%s】处理完成，耗时：%s(ms)", this.id, endTime - startTime);
         } catch (Exception e) {
             LogUtil.error(LOG_NAME, "【%s】未知异常，异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));
         }

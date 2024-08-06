@@ -92,6 +92,10 @@ public class FundBean implements Comparable<FundBean> {
      */
     private List<FundDayBean> dayBeanList;
 
+    /**
+     * 进展状态
+     */
+    private int state;
 
     public static FundBean valueOf(String id) {
         return valueOf(id, LocalDate.now());
@@ -279,6 +283,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setMonthMostChangeToAvg(double monthMostChangeToAvg) {
         this.monthMostChangeToAvg = monthMostChangeToAvg;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     @Override
