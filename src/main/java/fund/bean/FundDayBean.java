@@ -10,6 +10,8 @@ import utils.StringUtil;
  */
 public class FundDayBean implements Comparable<FundDayBean> {
 
+    // ---------- 数据 ----------
+
     /**
      * id
      */
@@ -45,6 +47,13 @@ public class FundDayBean implements Comparable<FundDayBean> {
      * 赎回状态
      */
     private String sellState;
+
+    // ---------- 中间值 ----------
+
+    /**
+     * 是否已经持久化入库
+     */
+    private boolean isPersistence = false;
 
     public static FundDayBean valueOf(String id, String date, String p, String ap, String c, String buyState, String sellState) {
         FundDayBean res = new FundDayBean();
@@ -112,6 +121,14 @@ public class FundDayBean implements Comparable<FundDayBean> {
 
     public void setSellState(String sellState) {
         this.sellState = sellState;
+    }
+
+    public boolean isPersistence() {
+        return isPersistence;
+    }
+
+    public void setPersistence(boolean persistence) {
+        isPersistence = persistence;
     }
 
     @Override

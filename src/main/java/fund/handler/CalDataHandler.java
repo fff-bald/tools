@@ -12,7 +12,7 @@ public class CalDataHandler extends AbstractFundBeanHandler {
     }
 
     @Override
-    public void doHandler(FundBean bean) {
+    public void doing(FundBean bean) {
         FundCalUtil.calFundData(bean);
     }
 }

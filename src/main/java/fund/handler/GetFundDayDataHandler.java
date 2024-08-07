@@ -5,15 +5,13 @@ import fund.bean.FundDayBean;
 import fund.utils.FundDataBaseUtil;
 import fund.utils.FundDataUtil;
 import fund.utils.FundUtil;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import utils.ExceptionUtil;
-import utils.LogUtil;
-import utils.TimeUtil;
+import utils.*;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 import static fund.constant.FundConstant.*;
 
@@ -26,8 +24,27 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
     }
 
     @Override
-    public void doHandler(FundBean bean) {
+    public void doing(FundBean bean) {
         updateFundDayChangeFromWeb(bean);
+    }
+
+    @Override
+    public void doAfter(FundBean bean) {
+        List<FundDayBean> dayBeanList = bean.getDayBeanList();
+        if (dayBeanList.size() != bean.getTradeDay()) {
+            return;
+        }
+
+        Set<String> onlySet = NewUtil.hashSet();
+        for (FundDayBean dayBean : dayBeanList) {
+            if (onlySet.contains(dayBean.getDate())) {
+                return;
+            }
+            onlySet.add(dayBean.getDate());
+        }
+
+        FundDataBaseUtil.addDataList(dayBeanList, true);
+        super.doAfter(bean);
     }
 
     // ---------- private ----------
@@ -44,7 +61,7 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
                 // 构建url
                 String finalUrl = String.format(FUND_DAY_CHANGE_URL, bean.getId(),
                         START_DATE, bean.getUpdateTime().format(TimeUtil.YYYY_MM_DD_DTF), i);
-                Document document = Jsoup.connect(finalUrl).get();
+                Document document = JsoupUtil.getDocumentThrow(finalUrl);
 
                 // 解析数据
                 for (Element tr : document.select("tbody").select("tr")) {
@@ -54,16 +71,16 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
                         break;
                     }
                     bean.getDayBeanList().add(fundDayBean);
-                    FundDataBaseUtil.addData(fundDayBean, false);
                 }
 
                 // 当读取的是第一页时，有额外数据需要获取
                 if (i == 1) {
-                    limit = FundUtil.getPagesValue(document.html());
+                    limit = FundUtil.getPagesValue(document.html(), "pages:");
+                    bean.setTradeDay(FundUtil.getPagesValue(document.html(), "records:"));
                 }
             }
-        } catch (IOException e) {
-            LogUtil.error(LOG_NAME, "【%s】IOException，异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+        } catch (Exception e) {
+            LogUtil.error(LOG_NAME, "【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }

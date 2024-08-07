@@ -2,7 +2,7 @@ package fund.task;
 
 import fund.FundBeanFactory;
 import fund.bean.FundBean;
-import fund.handler.FundBeanHandlerEnum;
+import fund.utils.FundUtil;
 import utils.*;
 
 import java.util.List;
@@ -40,18 +40,17 @@ public class FundDataGetRunnable implements Runnable {
             long startTime = TimeUtil.now();
             FundBeanFactory factory = FundBeanFactory.getInstance();
             FundBean bean = factory.createBean(this.id, this.date);
-            if (bean.getState() == FundBeanHandlerEnum.FINISH.getId()) {
-                FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllFieldValuesExceptList(bean), true);
+            if (FundUtil.checkFinish(bean)) {
+                FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllDescriptionFieldsValue(bean), true);
                 if (this.needSave) {
                     RES_LIST.add(bean);
                 }
-                long endTime = TimeUtil.now();
-                LogUtil.info(LOG_NAME, "【%s】处理完成，耗时：%s(ms)", this.id, endTime - startTime);
+                LogUtil.info(LOG_NAME, "【%s】任务完成，耗时：%s(ms)", this.id, TimeUtil.now() - startTime);
             } else {
-                LogUtil.error(LOG_NAME, "【%s】处理失败", this.id);
+                LogUtil.error(LOG_NAME, "【%s】任务失败，状态：%s", this.id, bean.getState());
             }
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "【%s】未知异常，异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error(LOG_NAME, "【%s】异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }

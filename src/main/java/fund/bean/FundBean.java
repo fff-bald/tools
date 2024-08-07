@@ -13,6 +13,8 @@ import java.util.List;
  * @since 2024/7/4 22:19
  */
 public class FundBean implements Comparable<FundBean> {
+
+    // ---------- 基础信息 ----------
     @DescriptionField(value = "基金id")
     private String id;
 
@@ -35,7 +37,6 @@ public class FundBean implements Comparable<FundBean> {
 
     @DescriptionField(value = "封闭期")
     private String lockTime;
-
 
     // ---------- 计算值 ----------
     @DescriptionField(value = "存续时间")
@@ -96,6 +97,11 @@ public class FundBean implements Comparable<FundBean> {
      * 进展状态
      */
     private int state;
+
+    /**
+     * 交易日
+     */
+    private int tradeDay;
 
     public static FundBean valueOf(String id) {
         return valueOf(id, LocalDate.now());
@@ -291,6 +297,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public int getTradeDay() {
+        return tradeDay;
+    }
+
+    public void setTradeDay(int tradeDay) {
+        this.tradeDay = tradeDay;
     }
 
     @Override

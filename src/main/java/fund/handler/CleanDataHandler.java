@@ -12,7 +12,7 @@ public class CleanDataHandler extends AbstractFundBeanHandler {
     }
 
     @Override
-    public void doHandler(FundBean bean) {
+    public void doing(FundBean bean) {
         FundDataUtil.repairData(bean);
     }
 }

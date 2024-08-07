@@ -63,7 +63,7 @@ public class FundApp {
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + todayDate);
         // 防止重复运行报错
         FileUtil.deleteFile(path);
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldsDesc(FundBean.class), true);
 
         // 3、获取全量基金id，往线程池里提交查询任务
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
@@ -71,8 +71,6 @@ public class FundApp {
             FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, id);
             threadPoolExecutor.execute(task);
         }
-
-        LogUtil.info(LOG_NAME, "!!!任务提交完成，耗时：%s(ms)", TimeUtil.now() - startTime);
 
         // 4、无限等待任务完成，然后关闭线程池释放资源
         threadPoolExecutor.shutdown(); // 不再接受新任务，但会继续执行队列中的任务
@@ -89,6 +87,8 @@ public class FundApp {
             // 注意：通常不建议在捕获到InterruptedException后直接调用shutdownNow()，因为这可能会留下未完成的任务
             Thread.currentThread().interrupt(); // 重新设置中断状态
         }
+
+        LogUtil.info(LOG_NAME, "!!!所有任务完成，耗时：%s(ms)", TimeUtil.now() - startTime);
     }
 
     private static void test() {
@@ -96,7 +96,7 @@ public class FundApp {
         String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllFieldsDescList(FundBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldsDesc(FundBean.class), true);
         FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, testId);
         Thread thread = new Thread(task);
         thread.start();

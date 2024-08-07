@@ -22,14 +22,16 @@ public class LogUtil {
         log(getFilePath(name, ERROR), content, args);
     }
 
-    private static void log(String path, String content, Object... args) {
-        String log = String.format(content, args);
-        FileUtil.writeStringToFile(path, log, true);
-    }
+    // ---------- private ----------
 
     private static String getFilePath(String name, String type) {
         String date = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String fileName = StringUtil.isBlank(name) ? type : name + type;
         return String.format(INIT_PATH, date, fileName);
+    }
+
+    private static void log(String path, String content, Object... args) {
+        String log = new Date() + " " + Thread.currentThread().getName() + " " + String.format(content, args);
+        FileUtil.writeStringToFile(path, log, true);
     }
 }

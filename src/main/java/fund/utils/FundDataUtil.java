@@ -46,7 +46,7 @@ public class FundDataUtil {
         Collections.sort(dayBeanList);
 
         if (dayBeanList.isEmpty()) {
-            LogUtil.error(LOG_NAME, "【%s】基金每日数据为空，%s", bean.getId(), bean);
+            LogUtil.error(LOG_NAME, "【%s】基金每日数据为空", bean.getId());
             return;
         }
 
@@ -95,7 +95,7 @@ public class FundDataUtil {
 
             // ---------- 输出处理过还不合法的数据 ----------
             if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-                LogUtil.error(LOG_NAME, "【%s】累计净值异常，%s", bean.getId(), dayBean);
+                LogUtil.error(LOG_NAME, "【%s】累计净值异常", bean.getId());
             }
         }
     }

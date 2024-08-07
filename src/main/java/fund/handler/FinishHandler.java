@@ -11,7 +11,6 @@ public class FinishHandler extends AbstractFundBeanHandler {
     }
 
     @Override
-    public void doHandler(FundBean bean) {
-        bean.setState(this.getId());
+    public void doing(FundBean bean) {
     }
 }

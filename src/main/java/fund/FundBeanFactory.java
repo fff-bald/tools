@@ -37,7 +37,7 @@ public class FundBeanFactory {
         for (FundBeanHandlerEnum handlerEnum : FundBeanHandlerEnum.values()) {
             AbstractFundBeanHandler handler = handlerEnum.getHandler();
             handler.doHandler(fundDataBean);
-            if (!handler.isFinish(fundDataBean)) {
+            if (!handler.checkFinish(fundDataBean)) {
                 return fundDataBean;
             }
         }

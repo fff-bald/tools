@@ -1,5 +1,7 @@
 package fund.utils;
 
+import fund.bean.FundBean;
+import fund.handler.FundBeanHandlerEnum;
 import utils.ExceptionUtil;
 import utils.LogUtil;
 import utils.NewUtil;
@@ -25,6 +27,18 @@ import static fund.constant.FundConstant.LOG_NAME;
  * @since 2024/7/4 21:18
  */
 public class FundUtil {
+
+    // ---------- 流程相关 ----------
+
+    /**
+     * 检测数据处理是否全部完成
+     *
+     * @param bean
+     * @return
+     */
+    public static boolean checkFinish(FundBean bean) {
+        return bean.getState() == FundBeanHandlerEnum.FINISH.getId();
+    }
 
 
     // ---------- Wed data ----------
@@ -62,7 +76,7 @@ public class FundUtil {
             conn.disconnect();
 
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "!!!未知异常，异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error(LOG_NAME, "!!!异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
         }
 
         Set<String> res = NewUtil.treeSet();
@@ -101,14 +115,19 @@ public class FundUtil {
     }
 
     /**
-     * 从字符串中读取"pages："后面的数字
+     * 从输入字符串中提取指定标记后的数字值。
+     * <p>
+     * 该方法使用正则表达式从输入字符串中查找指定标记（如"pages:"）后面跟着的数字值。
+     * 如果找到匹配项，则返回该数字值；如果没有找到匹配项，则抛出IllegalArgumentException异常。
      *
-     * @param input
-     * @return
+     * @param input 要检查的输入字符串。
+     * @param mark  要查找的标记字符串（如"pages:"）。
+     * @return 标记后面的数字值。
+     * @throws IllegalArgumentException 如果在输入字符串中没有找到标记后的数字值，则抛出此异常。
      */
-    public static int getPagesValue(String input) {
+    public static int getPagesValue(String input, String mark) {
         // 使用正则表达式匹配"pages:"后面跟着的数字
-        String regex = "pages:(\\d+)";
+        String regex = mark + "(\\d+)";
 
         // Pattern用于编译正则表达式，Matcher用于执行匹配操作
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);

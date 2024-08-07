@@ -1,15 +1,12 @@
 package fund.handler;
 
 import fund.bean.FundBean;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import utils.ExceptionUtil;
-import utils.HtmlUtil;
+import utils.JsoupUtil;
 import utils.LogUtil;
 import utils.StringUtil;
-
-import java.io.IOException;
 
 import static fund.constant.FundConstant.FUND_DATA_GET_URL;
 import static fund.constant.FundConstant.LOG_NAME;
@@ -26,25 +23,20 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
     }
 
     @Override
-    public void doHandler(FundBean bean) {
+    public void doing(FundBean bean) {
         updateFundDataFromWeb(bean);
     }
 
     @Override
-    public boolean isFinish(FundBean bean) {
-        if (!super.isFinish(bean)) {
-            return false;
-        }
-
+    public void doAfter(FundBean bean) {
         String type = bean.getType();
         boolean isIgnore = StringUtil.isBlank(type) || type.contains(IGNORE_FUND_TYPE);
         if (isIgnore) {
-            LogUtil.info(LOG_NAME, "【%s】GetFundBaseDataHandler跳过，原因：isIgnore", bean.getId());
-            bean.setState(FundBeanHandlerEnum.FINISH.getId());
-            return false;
+            LogUtil.info(LOG_NAME, "【%s】【GetFundBaseDataHandler】跳过，原因：isIgnore", bean.getId());
+            return;
         }
 
-        return true;
+        super.doAfter(bean);
     }
 
     // ---------- private ----------
@@ -59,7 +51,7 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
         try {
             // 构建url
             String url = String.format(FUND_DATA_GET_URL, bean.getId());
-            document = Jsoup.connect(url).get();
+            document = JsoupUtil.getDocumentThrow(url);
             bean.setName(document.select("span.funCur-FundName").get(0).text());
 
             Element tbody = document.select("tbody").get(2);
@@ -71,13 +63,13 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
 
             String lockTime = null;
             if (tbody.text().contains("封闭期")) {
-                lockTime = HtmlUtil.findElement(tbody.children(), "封闭期").text();
+                lockTime = JsoupUtil.findElement(tbody.children(), "封闭期").text();
             }
             bean.setLockTime(StringUtil.isBlank(lockTime) ? "无封闭期" : lockTime.substring(lockTime.indexOf("：") + 1));
         } catch (IndexOutOfBoundsException ioE) {
             LogUtil.info(LOG_NAME, "【%s】【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据", bean.getId(), document.text().length());
-        } catch (IOException e) {
-            LogUtil.error(LOG_NAME, "【%s】IOException，异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+        } catch (Exception e) {
+            LogUtil.error(LOG_NAME, "【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }
