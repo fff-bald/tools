@@ -63,14 +63,20 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "复利年化收益率(百分比)")
     private double yearChangePro;
 
-    @DescriptionField(value = "年化收益率(百分比)")
+    @DescriptionField(value = "近7天收益率(百分比)")
+    private double sevenDayChange;
+
+    @DescriptionField(value = "近一月收益率(百分比)")
+    private double monthChange;
+
+    @DescriptionField(value = "近六月收益率(百分比)")
+    private double sixMonthChange;
+
+    @DescriptionField(value = "近一年收益率(百分比)")
     private double yearChange;
 
-    @DescriptionField(value = "三年年化收益率(百分比)")
+    @DescriptionField(value = "近三年收益率(百分比)")
     private double threeYearChange;
-
-    @DescriptionField(value = "复利三年年化收益率(百分比)")
-    private double threeYearChangePro;
 
     @DescriptionField(value = "最新一日申购状态")
     private String buyState;
@@ -243,14 +249,6 @@ public class FundBean implements Comparable<FundBean> {
         this.threeYearChange = threeYearChange;
     }
 
-    public double getThreeYearChangePro() {
-        return threeYearChangePro;
-    }
-
-    public void setThreeYearChangePro(double threeYearChangePro) {
-        this.threeYearChangePro = threeYearChangePro;
-    }
-
     public double getUpMonthRate() {
         return upMonthRate;
     }
@@ -305,6 +303,30 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setTradeDay(int tradeDay) {
         this.tradeDay = tradeDay;
+    }
+
+    public double getSevenDayChange() {
+        return sevenDayChange;
+    }
+
+    public void setSevenDayChange(double sevenDayChange) {
+        this.sevenDayChange = sevenDayChange;
+    }
+
+    public double getMonthChange() {
+        return monthChange;
+    }
+
+    public void setMonthChange(double monthChange) {
+        this.monthChange = monthChange;
+    }
+
+    public double getSixMonthChange() {
+        return sixMonthChange;
+    }
+
+    public void setSixMonthChange(double sixMonthChange) {
+        this.sixMonthChange = sixMonthChange;
     }
 
     @Override

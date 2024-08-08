@@ -63,12 +63,7 @@ public class FundDataBaseUtil {
      * @return
      */
     public static boolean checkExistInDataBase(FundDayBean dataDayBean) {
-        for (FundDayBean dayBean : getData(dataDayBean.getId())) {
-            if (dayBean.getDate().equals(dataDayBean.getDate())) {
-                return true;
-            }
-        }
-        return false;
+        return FundDataUtil.checkExist(dataDayBean, getData(dataDayBean.getId()));
     }
 
     // ---------- private ----------

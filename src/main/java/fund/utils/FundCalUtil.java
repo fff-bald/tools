@@ -48,11 +48,17 @@ public class FundCalUtil {
 
         // 复利年化收益率
         bean.setYearChangePro(100 * FundCalUtil.calYearChange(totalDay, startDay.getAllPrize(), endDay.getAllPrize()));
-        // 年化收益率
-        bean.setYearChange(100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize() / (totalDay / 365d));
 
-        // 三年期年化收益率
-        FundCalUtil.setThreeYearChange(bean, dayList, bean.getUpdateTime());
+        // 近七天收益率
+        bean.setSevenDayChange(calTimeChange(dayList, bean.getUpdateTime(), 7));
+        // 近一个月收益率
+        bean.setMonthChange(calTimeChange(dayList, bean.getUpdateTime(), 30));
+        // 近半年收益率
+        bean.setSixMonthChange(calTimeChange(dayList, bean.getUpdateTime(), 30 * 6));
+        // 近一年收益率
+        bean.setYearChange(calTimeChange(dayList, bean.getUpdateTime(), 365));
+        // 近三年收益率
+        bean.setThreeYearChange(calTimeChange(dayList, bean.getUpdateTime(), 3 * 365));
 
         // 历史最大回撤
         bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList));
@@ -77,29 +83,35 @@ public class FundCalUtil {
     // ---------- private ----------
 
     /**
-     * 设置三年的年化收益率，如果不够三年也按三年来算
+     * 计算一段时间的收益率，算法：（最后一天累计净值 - 首天累计净值）/ 首天累计净值
      *
-     * @param dayList
-     * @param today
-     * @return
+     * @param dayList 基金每日数据列表
+     * @param today   当前日期
+     * @param day     时间段的天数
+     * @return 指定时间段内的收益率(百分比)
      */
-    private static void setThreeYearChange(FundBean bean, List<FundDayBean> dayList, LocalDate today) {
-        LocalDate ago = today.minusYears(3);
-        FundDayBean endDayBean = dayList.get(0);
-        FundDayBean startDayBean = endDayBean;
+    private static double calTimeChange(List<FundDayBean> dayList, LocalDate today, int day) {
+        // 计算指定天数前的日期
+        LocalDate markDate = today.minusDays(day);
+
+        // 初始化变量
+        FundDayBean endDayBean = dayList.get(0); // 假设列表按日期从近到远排序，获取最近一天的数据
+        FundDayBean startDayBean = endDayBean; // 初始化为最近一天的数据
+
+        // 查找指定天数前的基金数据
         for (FundDayBean dayBean : dayList) {
-            LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
-            if (ago.isBefore(localDate) || ago.isEqual(localDate)) {
+            LocalDate dayBeanDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
+            if (markDate.isBefore(dayBeanDate) || markDate.isEqual(dayBeanDate)) {
                 startDayBean = dayBean;
             } else {
                 break;
             }
         }
 
-        // 年化收益率
-        bean.setThreeYearChange(100 * (endDayBean.getAllPrize() - startDayBean.getAllPrize()) / startDayBean.getAllPrize() / 3);
-        // 复利年化收益率
-        bean.setThreeYearChangePro(100 * calYearChange(3 * 365, startDayBean.getAllPrize(), endDayBean.getAllPrize()));
+        // 计算收益率
+        double startPrice = startDayBean.getAllPrize();
+        double endPrice = endDayBean.getAllPrize();
+        return (endPrice - startPrice) / startPrice * 100;
     }
 
     /**
