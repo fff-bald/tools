@@ -2,6 +2,9 @@ package fund.handler;
 
 import fund.bean.FundBean;
 
+/**
+ * 处理器抽象类
+ */
 public abstract class AbstractFundBeanHandler {
 
     private final int id;
@@ -42,6 +45,11 @@ public abstract class AbstractFundBeanHandler {
      * @param bean
      */
     public void doAfter(FundBean bean) {
+
+        if(bean.getFailReason() != null) {
+            return;
+        }
+
         bean.setState(getId());
     }
 

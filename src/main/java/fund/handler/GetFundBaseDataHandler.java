@@ -13,10 +13,8 @@ import static fund.constant.FundConstant.LOG_NAME;
 
 public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
 
-    /**
-     * 不爬货币基金数据
-     */
     private static final String IGNORE_FUND_TYPE = "货币型-普通货币";
+    private static final String STOP_SHOW_ANY_FUND = "暂停部分基金的净值估算展示及相关服务";
 
     GetFundBaseDataHandler(int id) {
         super(id);
@@ -30,9 +28,12 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
     @Override
     public void doAfter(FundBean bean) {
         String type = bean.getType();
-        boolean isIgnore = StringUtil.isBlank(type) || type.contains(IGNORE_FUND_TYPE);
-        if (isIgnore) {
-            LogUtil.info(LOG_NAME, "【%s】【GetFundBaseDataHandler】跳过，原因：isIgnore", bean.getId());
+        if (StringUtil.isBlank(type)) {
+            return;
+        }
+        // 不爬货币基金数据
+        if (type.contains(IGNORE_FUND_TYPE)) {
+            bean.setFailReason("该基金为货币基金");
             return;
         }
 
@@ -52,6 +53,10 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
             // 构建url
             String url = String.format(FUND_DATA_GET_URL, bean.getId());
             document = JsoupUtil.getDocumentThrow(url);
+            if (!checkFundHtml(document, bean)) {
+                return;
+            }
+
             bean.setName(document.select("span.funCur-FundName").get(0).text());
 
             Element tbody = document.select("tbody").get(2);
@@ -67,9 +72,27 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
             }
             bean.setLockTime(StringUtil.isBlank(lockTime) ? "无封闭期" : lockTime.substring(lockTime.indexOf("：") + 1));
         } catch (IndexOutOfBoundsException ioE) {
-            LogUtil.info(LOG_NAME, "【%s】【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据", bean.getId(), document.text().length());
+            bean.setFailReason(String.format("【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据"
+                    , document.text().length()));
         } catch (Exception e) {
             LogUtil.error(LOG_NAME, "【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
+    }
+
+    /**
+     * 检查html网页数据
+     *
+     * @param document
+     * @return
+     */
+    private boolean checkFundHtml(Document document, FundBean bean) {
+
+        String html = document.html();
+        if (html.contains(STOP_SHOW_ANY_FUND)) {
+            bean.setFailReason(STOP_SHOW_ANY_FUND);
+            return false;
+        }
+
+        return true;
     }
 }

@@ -6,6 +6,7 @@ import fund.utils.FundUtil;
 import utils.*;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static fund.constant.FundConstant.LOG_NAME;
 
@@ -15,7 +16,11 @@ import static fund.constant.FundConstant.LOG_NAME;
  */
 public class FundDataGetRunnable implements Runnable {
 
+    // 结果容器
     private static final List<FundBean> RES_LIST = NewUtil.arrayList();
+    // 任务完成数量计数器
+    private static final AtomicInteger FINISH_COUNTER = new AtomicInteger(0);
+
     private final String path;
     private final String id;
     private final String date;
@@ -45,9 +50,12 @@ public class FundDataGetRunnable implements Runnable {
                 if (this.needSave) {
                     RES_LIST.add(bean);
                 }
-                LogUtil.info(LOG_NAME, "【%s】任务完成，耗时：%s(ms)", this.id, TimeUtil.now() - startTime);
+                int finishCount = FINISH_COUNTER.incrementAndGet();
+                LogUtil.info(LOG_NAME, "【%s】任务完成，耗时：%s(ms)，当前任务完成数：%s"
+                        , this.id, TimeUtil.now() - startTime, finishCount);
             } else {
-                LogUtil.error(LOG_NAME, "【%s】任务失败，状态：%s", this.id, bean.getState());
+                LogUtil.info(LOG_NAME, "【%s】任务失败，状态：%s，原因：%s"
+                        , this.id, bean.getState(), bean.getFailReason());
             }
         } catch (Exception e) {
             LogUtil.error(LOG_NAME, "【%s】异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));

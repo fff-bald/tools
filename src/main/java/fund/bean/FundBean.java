@@ -105,6 +105,11 @@ public class FundBean implements Comparable<FundBean> {
     private int state;
 
     /**
+     * 任务失败原因，任务成功此处为null
+     */
+    private String failReason;
+
+    /**
      * 交易日
      */
     private int tradeDay;
@@ -327,6 +332,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setSixMonthChange(double sixMonthChange) {
         this.sixMonthChange = sixMonthChange;
+    }
+
+    public String getFailReason() {
+        return failReason;
+    }
+
+    public void setFailReason(String failReason) {
+        this.failReason = failReason;
     }
 
     @Override

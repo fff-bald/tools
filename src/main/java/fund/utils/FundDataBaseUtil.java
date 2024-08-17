@@ -17,6 +17,16 @@ public class FundDataBaseUtil {
 
     private static final String INIT_PATH = ".\\fund_data\\%s.txt";
 
+    // ---------- public ----------
+
+    public static void addDataList(List<FundDayBean> dayBeans, boolean isCheck) {
+        for (FundDayBean dayBean : dayBeans) {
+            if (!dayBean.isPersistence()) {
+                addData(dayBean, isCheck);
+            }
+        }
+    }
+
     public static void addData(FundDayBean dataDayBean, boolean isCheck) {
         if (isCheck && checkExistInDataBase(dataDayBean)) {
             return;
@@ -28,14 +38,6 @@ public class FundDataBaseUtil {
             FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), true);
         } catch (Exception e) {
             LogUtil.error(LOG_NAME, "【%s】异常信息：%s", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
-        }
-    }
-
-    public static void addDataList(List<FundDayBean> dayBeans, boolean isCheck) {
-        for (FundDayBean dayBean : dayBeans) {
-            if(!dayBean.isPersistence()) {
-                addData(dayBean, isCheck);
-            }
         }
     }
 

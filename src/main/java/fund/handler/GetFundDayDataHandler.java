@@ -32,12 +32,14 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
     public void doAfter(FundBean bean) {
         List<FundDayBean> dayBeanList = bean.getDayBeanList();
         if (dayBeanList.size() != bean.getTradeDay()) {
+            bean.setFailReason("每日数据量和交易日天数不一致");
             return;
         }
 
         Set<String> onlySet = NewUtil.hashSet();
         for (FundDayBean dayBean : dayBeanList) {
             if (onlySet.contains(dayBean.getDate())) {
+                bean.setFailReason(String.format("每日数据中存在重复数据，日期：%s", dayBean.getDate()));
                 return;
             }
             onlySet.add(dayBean.getDate());
