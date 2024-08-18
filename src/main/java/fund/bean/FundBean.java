@@ -78,14 +78,14 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "近三年收益率(百分比)")
     private double threeYearChange;
 
+    @DescriptionField(value = "最新一日时间")
+    private LocalDate updateTime;
+
     @DescriptionField(value = "最新一日申购状态")
     private String buyState;
 
     @DescriptionField(value = "最新一日赎回状态")
     private String sellState;
-
-    @DescriptionField(value = "更新时间")
-    private LocalDate updateTime;
 
     // ---------- 中间值 ----------
 

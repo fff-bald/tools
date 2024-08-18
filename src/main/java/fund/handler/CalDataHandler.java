@@ -5,6 +5,7 @@ import fund.bean.FundDayBean;
 import fund.utils.FundCalUtil;
 import utils.TimeUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,8 @@ public class CalDataHandler extends AbstractFundBeanHandler {
         bean.setDurationDay((int) totalDay);
         int tradingDay = dayList.size();
 
-        // 最新一日申购状态和赎回状态
+        // 最新一日相关信息
+        bean.setUpdateTime(LocalDate.parse(endDay.getDate()));
         bean.setBuyState(endDay.getBuyState());
         bean.setSellState(endDay.getSellState());
 
