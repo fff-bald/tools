@@ -93,7 +93,7 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
                 }
             }
         } catch (Exception e) {
-            LogUtil.error("【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }

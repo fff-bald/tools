@@ -74,7 +74,7 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
             bean.setFailReason(String.format("【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据"
                     , document.text().length()));
         } catch (Exception e) {
-            LogUtil.error("【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 

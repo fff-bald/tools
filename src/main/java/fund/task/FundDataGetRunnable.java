@@ -49,14 +49,14 @@ public class FundDataGetRunnable implements Runnable {
                     RES_LIST.add(bean);
                 }
                 int finishCount = FINISH_COUNTER.incrementAndGet();
-                LogUtil.info("【%s】任务完成，耗时：%s(ms)，当前任务完成数：%s"
+                LogUtil.info("【{}】任务完成，耗时：{}(ms)，当前任务完成数：{}"
                         , this.id, TimeUtil.now() - startTime, finishCount);
             } else {
-                LogUtil.info("【%s】任务失败，状态：%s，原因：%s"
+                LogUtil.warn("【{}】任务失败，状态：{}，原因：{}"
                         , this.id, bean.getState(), bean.getFailReason());
             }
         } catch (Exception e) {
-            LogUtil.error("【%s】异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【{}】异常信息：{}", this.id, ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }

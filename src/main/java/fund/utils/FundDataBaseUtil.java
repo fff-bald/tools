@@ -33,7 +33,7 @@ public class FundDataBaseUtil {
         try {
             FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), true);
         } catch (Exception e) {
-            LogUtil.error("【%s】异常信息：%s", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【{}】异常信息：{}", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 
@@ -47,7 +47,7 @@ public class FundDataBaseUtil {
                     FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
                     res.add(dayBean);
                 } catch (Exception e) {
-                    LogUtil.error("【%s】异常信息：%s", id, ExceptionUtil.getStackTraceAsString(e));
+                    LogUtil.error("【{}】异常信息：{}", id, ExceptionUtil.getStackTraceAsString(e));
                 }
             }
         }

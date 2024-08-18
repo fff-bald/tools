@@ -88,11 +88,11 @@ public class FundApp {
             Thread.currentThread().interrupt(); // 重新设置中断状态
         }
 
-        LogUtil.info("!!!所有任务完成，耗时：%s(ms)", TimeUtil.now() - startTime);
+        LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
     private static void test() {
-        String testId = "960027";
+        String testId = "161725";
         String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);

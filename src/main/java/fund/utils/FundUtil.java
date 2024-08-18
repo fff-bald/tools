@@ -75,7 +75,7 @@ public class FundUtil {
             conn.disconnect();
 
         } catch (Exception e) {
-            LogUtil.error("!!!异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("!!!异常信息：{}", ExceptionUtil.getStackTraceAsString(e));
         }
 
         Set<String> res = NewUtil.treeSet();
@@ -84,7 +84,7 @@ public class FundUtil {
             res.add(stringFromText.get(i));
             count++;
         }
-        System.out.println("基金总数：" + count);
+        LogUtil.info("基金总数：{}", count);
         return res;
     }
 
