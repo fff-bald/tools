@@ -105,4 +105,13 @@ public class FundDataBaseUtil {
         int fileNum = id.hashCode() & (128 - 1);
         return String.format(INIT_PATH, fileNum);
     }
+
+    // ---------- main ----------
+
+    public static void main(String[] args) {
+        clearFundDataInDataBasById("161036");
+        clearFundDataInDataBasById("161035");
+        clearFundDataInDataBasById("161033");
+        clearFundDataInDataBasById("515910");
+    }
 }
