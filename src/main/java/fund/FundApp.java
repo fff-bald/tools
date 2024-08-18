@@ -16,7 +16,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static fund.constant.FundConstant.FILE_ABSOLUTE_PATH;
-import static fund.constant.FundConstant.LOG_NAME;
 
 /**
  * 基金数据爬取整理APP
@@ -89,7 +88,7 @@ public class FundApp {
             Thread.currentThread().interrupt(); // 重新设置中断状态
         }
 
-        LogUtil.info(LOG_NAME, "!!!所有任务完成，耗时：%s(ms)", TimeUtil.now() - startTime);
+        LogUtil.info("!!!所有任务完成，耗时：%s(ms)", TimeUtil.now() - startTime);
     }
 
     private static void test() {

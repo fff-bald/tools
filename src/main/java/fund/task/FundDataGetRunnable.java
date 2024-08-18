@@ -8,8 +8,6 @@ import utils.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static fund.constant.FundConstant.LOG_NAME;
-
 /**
  * @author cjl
  * @since 2024/7/12 21:42
@@ -51,14 +49,14 @@ public class FundDataGetRunnable implements Runnable {
                     RES_LIST.add(bean);
                 }
                 int finishCount = FINISH_COUNTER.incrementAndGet();
-                LogUtil.info(LOG_NAME, "【%s】任务完成，耗时：%s(ms)，当前任务完成数：%s"
+                LogUtil.info("【%s】任务完成，耗时：%s(ms)，当前任务完成数：%s"
                         , this.id, TimeUtil.now() - startTime, finishCount);
             } else {
-                LogUtil.info(LOG_NAME, "【%s】任务失败，状态：%s，原因：%s"
+                LogUtil.info("【%s】任务失败，状态：%s，原因：%s"
                         , this.id, bean.getState(), bean.getFailReason());
             }
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "【%s】异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【%s】异常信息：%s", this.id, ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }

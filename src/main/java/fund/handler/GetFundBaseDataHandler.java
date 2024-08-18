@@ -9,7 +9,6 @@ import utils.LogUtil;
 import utils.StringUtil;
 
 import static fund.constant.FundConstant.FUND_DATA_GET_URL;
-import static fund.constant.FundConstant.LOG_NAME;
 
 public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
 
@@ -75,7 +74,7 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
             bean.setFailReason(String.format("【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据"
                     , document.text().length()));
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【%s】异常信息：%s", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 

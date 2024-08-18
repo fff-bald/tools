@@ -5,8 +5,6 @@ import utils.*;
 
 import java.util.List;
 
-import static fund.constant.FundConstant.LOG_NAME;
-
 /**
  * 数据库工具类
  *
@@ -19,16 +17,14 @@ public class FundDataBaseUtil {
 
     // ---------- public ----------
 
-    public static void addDataList(List<FundDayBean> dayBeans, boolean isCheck) {
+    public static void addDataList(List<FundDayBean> dayBeans) {
         for (FundDayBean dayBean : dayBeans) {
-            if (!dayBean.isPersistence()) {
-                addData(dayBean, isCheck);
-            }
+            addData(dayBean);
         }
     }
 
-    public static void addData(FundDayBean dataDayBean, boolean isCheck) {
-        if (isCheck && checkExistInDataBase(dataDayBean)) {
+    public static void addData(FundDayBean dataDayBean) {
+        if (checkExistInDataBase(dataDayBean)) {
             return;
         }
 
@@ -37,7 +33,7 @@ public class FundDataBaseUtil {
         try {
             FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), true);
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "【%s】异常信息：%s", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("【%s】异常信息：%s", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 
@@ -51,7 +47,7 @@ public class FundDataBaseUtil {
                     FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
                     res.add(dayBean);
                 } catch (Exception e) {
-                    LogUtil.error(LOG_NAME, "【%s】异常信息：%s", id, ExceptionUtil.getStackTraceAsString(e));
+                    LogUtil.error("【%s】异常信息：%s", id, ExceptionUtil.getStackTraceAsString(e));
                 }
             }
         }
@@ -65,7 +61,7 @@ public class FundDataBaseUtil {
      * @return
      */
     public static boolean checkExistInDataBase(FundDayBean dataDayBean) {
-        return FundDataUtil.checkExist(dataDayBean, getData(dataDayBean.getId()));
+        return dataDayBean.isPersistence();
     }
 
     // ---------- private ----------

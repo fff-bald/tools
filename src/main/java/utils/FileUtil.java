@@ -101,6 +101,15 @@ public class FileUtil {
         }
     }
 
+    public static void deleteFile(String path) {
+        File file = new File(path);
+        if (file.delete()) {
+            System.out.println(path + " 文件已被删除");
+        } else {
+            System.out.println(path + " 文件删除失败");
+        }
+    }
+
     /**
      * 检查所有文件目录是否创建，存在没创建的就创建
      *
@@ -121,15 +130,6 @@ public class FileUtil {
                 System.out.println("目录创建失败，请检查权限或磁盘空间");
                 // 在这里可以添加额外的错误处理逻辑
             }
-        }
-    }
-
-    public static void deleteFile(String path) {
-        File file = new File(path);
-        if (file.delete()) {
-            System.out.println(path + " 文件已被删除");
-        } else {
-            System.out.println(path + " 文件删除失败");
         }
     }
 }

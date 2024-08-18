@@ -18,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static fund.constant.FundConstant.ALL_FUND_IDS_URL;
-import static fund.constant.FundConstant.LOG_NAME;
 
 /**
  * 工具类
@@ -76,7 +75,7 @@ public class FundUtil {
             conn.disconnect();
 
         } catch (Exception e) {
-            LogUtil.error(LOG_NAME, "!!!异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("!!!异常信息：%s", ExceptionUtil.getStackTraceAsString(e));
         }
 
         Set<String> res = NewUtil.treeSet();
