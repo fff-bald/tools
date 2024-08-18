@@ -2,6 +2,7 @@ package fund.handler;
 
 import fund.bean.FundBean;
 import fund.bean.FundDayBean;
+import utils.LogUtil;
 
 import java.util.Collections;
 import java.util.List;
@@ -85,10 +86,9 @@ public class CleanDataHandler extends AbstractFundBeanHandler {
                     }
                 }
 
-                // 如果仍然无法修复，记下原因返回
+                // 如果仍然无法修复，记下原因
                 if (!isSuccess) {
-                    bean.setFailReason(String.format("累计净值无法修复，日期：%s", dayBean.getDate()));
-                    return;
+                    LogUtil.warn("【{}】累计净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
                 }
             }
 
@@ -98,9 +98,8 @@ public class CleanDataHandler extends AbstractFundBeanHandler {
                 if (dayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getAllPrize() != Double.MIN_VALUE) {
                     dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getAllPrize());
                 } else {
-                    // 如果无法修复，记下原因返回
-                    bean.setFailReason(String.format("单日变化率无法修复，日期：%s", dayBean.getDate()));
-                    return;
+                    // 如果无法修复，记下原因
+                    LogUtil.warn("【{}】单日变化率无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
                 }
             }
         }
