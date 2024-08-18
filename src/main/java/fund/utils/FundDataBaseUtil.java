@@ -4,6 +4,7 @@ import fund.bean.FundDayBean;
 import utils.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 数据库工具类
@@ -17,13 +18,21 @@ public class FundDataBaseUtil {
 
     // ---------- public ----------
 
-    public static void addDataList(List<FundDayBean> dayBeans) {
+    /**
+     * @param dayBeans
+     * @param isAppend 是否为追加，不是即为覆盖
+     */
+    public static void addDataList(List<FundDayBean> dayBeans, boolean isAppend) {
         for (FundDayBean dayBean : dayBeans) {
-            addData(dayBean);
+            addData(dayBean, isAppend);
         }
     }
 
-    public static void addData(FundDayBean dataDayBean) {
+    /**
+     * @param dataDayBean
+     * @param isAppend    是否为追加，不是即为覆盖
+     */
+    public static void addData(FundDayBean dataDayBean, boolean isAppend) {
         if (checkExistInDataBase(dataDayBean)) {
             return;
         }
@@ -31,7 +40,7 @@ public class FundDataBaseUtil {
         String id = dataDayBean.getId();
         dataDayBean.setPersistence(true);
         try {
-            FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), true);
+            FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), isAppend);
         } catch (Exception e) {
             LogUtil.error("【{}】异常信息：{}", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
@@ -62,6 +71,32 @@ public class FundDataBaseUtil {
      */
     public static boolean checkExistInDataBase(FundDayBean dataDayBean) {
         return dataDayBean.isPersistence();
+    }
+
+    /**
+     * 通过基金id将数据库里相关信息删除
+     *
+     * @param id
+     */
+    public static void clearFundDataInDataBasById(String id) {
+        Set<String> set = NewUtil.hashSet();
+        List<FundDayBean> data = getData(id);
+        List<FundDayBean> res = NewUtil.arrayList(data.size());
+        for (FundDayBean bean : data) {
+
+            if (bean.getId().equals(id)) {
+                continue;
+            }
+
+            String key = bean.getId() + bean.getDate();
+            if (set.contains(key)) {
+                continue;
+            }
+
+            set.add(key);
+            res.add(bean);
+        }
+        addDataList(res, false);
     }
 
     // ---------- private ----------

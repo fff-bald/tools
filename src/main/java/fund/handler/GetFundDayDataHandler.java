@@ -34,6 +34,7 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
         List<FundDayBean> dayBeanList = bean.getDayBeanList();
         if (dayBeanList.size() != bean.getTradeDay()) {
             bean.setFailReason("每日数据量和交易日天数不一致");
+            LogUtil.error("【{}】每日数据量和交易日天数不一致", bean.getId());
             return;
         }
 
@@ -51,7 +52,7 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
             onlySet.add(dayBean.getDate());
         }
 
-        FundDataBaseUtil.addDataList(dayBeanList);
+        FundDataBaseUtil.addDataList(dayBeanList, true);
         super.doAfter(bean);
     }
 

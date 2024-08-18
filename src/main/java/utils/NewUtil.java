@@ -12,6 +12,10 @@ public class NewUtil {
         return new ArrayList<>(4);
     }
 
+    public static <T> List<T> arrayList(int size) {
+        return new ArrayList<>(size);
+    }
+
     public static <K, V> Map<K, V> hashMap() {
         return new HashMap<>(4);
     }
