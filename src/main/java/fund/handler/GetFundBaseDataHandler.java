@@ -13,7 +13,6 @@ import static fund.constant.FundConstant.FUND_DATA_GET_URL;
 public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
 
     private static final String IGNORE_FUND_TYPE = "货币型-普通货币";
-    private static final String STOP_SHOW_ANY_FUND = "暂停部分基金的净值估算展示及相关服务";
 
     GetFundBaseDataHandler(int id) {
         super(id);
@@ -87,10 +86,6 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
     private boolean checkFundHtml(Document document, FundBean bean) {
 
         String html = document.html();
-        if (html.contains(STOP_SHOW_ANY_FUND)) {
-            bean.setFailReason(STOP_SHOW_ANY_FUND);
-            return false;
-        }
 
         return true;
     }
