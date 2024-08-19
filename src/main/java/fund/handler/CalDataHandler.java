@@ -2,12 +2,18 @@ package fund.handler;
 
 import fund.bean.FundBean;
 import fund.bean.FundDayBean;
+import fund.bean.FundMonthBean;
 import fund.utils.FundCalUtil;
+import utils.NewUtil;
 import utils.TimeUtil;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static utils.TimeUtil.YYYY_MM_DD_DTF;
 
 /**
  * 参数计算处理器
@@ -80,6 +86,54 @@ public class CalDataHandler extends AbstractFundBeanHandler {
         bean.setDayStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
 
         // 计算月份数据
-        FundCalUtil.calMonthData(bean);
+        calMonthData(bean);
+    }
+
+    /**
+     * 计算跟月份相关的数据
+     *
+     * @param bean
+     */
+    public static void calMonthData(FundBean bean) {
+        List<FundDayBean> dayList = bean.getDayBeanList();
+        List<FundMonthBean> monthBeans = NewUtil.arrayList();
+        Map<Integer, FundDayBean> monthlyGrowth = NewUtil.hashMap();
+        for (int index = dayList.size() - 1; index >= 0; index--) {
+            FundDayBean dayBean = dayList.get(index);
+            LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
+            int yearMonth = localDate.getYear() * 100 + localDate.getMonthValue();
+
+            if (!monthlyGrowth.containsKey(yearMonth)) {
+                // 如果是新月份，记录月初的值
+                monthlyGrowth.put(yearMonth, dayBean);
+            }
+
+            // 检查是否是月末，计算增长量
+            if (index == 0 || LocalDate.parse(dayList.get(index - 1).getDate(), YYYY_MM_DD_DTF).getMonthValue() != localDate.getMonthValue()) {
+                FundMonthBean monthBean = FundMonthBean.valueOf(localDate.getYear(),
+                        localDate.getMonthValue(), monthlyGrowth.get(yearMonth), dayBean);
+                monthBeans.add(monthBean);
+            }
+        }
+
+        Collections.sort(monthBeans);
+        // 月份数据
+        bean.setMonthBeanList(monthBeans);
+
+        double upMonthNum = 0;
+        for (FundMonthBean monthBean : monthBeans) {
+            if (monthBean.getChange() >= 0) {
+                upMonthNum++;
+            }
+        }
+        // 上升月比例
+        bean.setUpMonthRate(100 * upMonthNum / monthBeans.size());
+
+        List<Double> growthRates = monthBeans.stream().map(FundMonthBean::getChange).collect(Collectors.toList());
+        // 月涨跌幅标准差
+        bean.setMonthStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
+
+        // 月涨跌幅最大异常
+        bean.setMonthMostChangeToAvg(FundCalUtil.calMostAvgRate(monthBeans));
     }
 }
