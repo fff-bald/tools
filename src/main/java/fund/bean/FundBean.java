@@ -2,6 +2,7 @@ package fund.bean;
 
 import fund.utils.FundDataBaseUtil;
 import tag.DescriptionField;
+import utils.TimeUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -121,7 +122,7 @@ public class FundBean implements Comparable<FundBean> {
     public static FundBean valueOf(String id, LocalDate updateTime) {
         FundBean res = new FundBean();
         res.id = id;
-        res.dayBeanList = FundDataBaseUtil.getData(id);
+        res.dayBeanList = FundDataBaseUtil.getDataBeforeDate(id, updateTime.format(TimeUtil.YYYY_MM_DD_DTF));
         res.updateTime = updateTime;
         return res;
     }

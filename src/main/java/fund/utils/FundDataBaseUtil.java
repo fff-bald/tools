@@ -22,42 +22,74 @@ public class FundDataBaseUtil {
      * @param dayBeans
      * @param isAppend 是否为追加，不是即为覆盖
      */
-    public static void addDataList(List<FundDayBean> dayBeans, boolean isAppend) {
+    public static void addDataList(List<FundDayBean> dayBeans, boolean isAppend, boolean needPersistence) {
+        Set<String> table = NewUtil.hashSet();
         for (FundDayBean dayBean : dayBeans) {
-            addData(dayBean, isAppend);
+
+            String filePath = getFilePath(dayBean.getId());
+            if (!isAppend && !table.contains(filePath)) {
+                FileUtil.writeStringToFile(getFilePath(dayBean.getId()), "", false);
+                table.add(filePath);
+            }
+
+            addData(dayBean, needPersistence);
         }
     }
 
     /**
      * @param dataDayBean
-     * @param isAppend    是否为追加，不是即为覆盖
      */
-    public static void addData(FundDayBean dataDayBean, boolean isAppend) {
-        if (checkExistInDataBase(dataDayBean)) {
+    public static void addData(FundDayBean dataDayBean, boolean needPersistence) {
+        if (needPersistence && checkExistInDataBase(dataDayBean)) {
             return;
         }
 
         String id = dataDayBean.getId();
         dataDayBean.setPersistence(true);
         try {
-            FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), isAppend);
+            FileUtil.writeStringToFile(getFilePath(id), JsonUtil.toJson(dataDayBean), true);
         } catch (Exception e) {
             LogUtil.error("【{}】异常信息：{}", dataDayBean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }
     }
 
     public static List<FundDayBean> getData(String id) {
+        return getDataBeforeDate(id, "9999-12-30");
+    }
+
+    public static List<FundDayBean> getDataBeforeDate(String id, String date) {
         String filePath = getFilePath(id);
         List<String> strings = FileUtil.readFileByLine(filePath);
         List<FundDayBean> res = NewUtil.arrayList();
         for (String str : strings) {
-            if (str.contains(id)) {
+            if (!StringUtil.isBlank(str) && str.contains(id)) {
                 try {
                     FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
+                    if (dayBean.getDate().compareTo(date) > 0) {
+                        continue;
+                    }
                     res.add(dayBean);
                 } catch (Exception e) {
                     LogUtil.error("【{}】异常信息：{}", id, ExceptionUtil.getStackTraceAsString(e));
                 }
+            }
+        }
+        return res;
+    }
+
+    public static List<FundDayBean> getAllFileData(String id) {
+        String filePath = getFilePath(id);
+        List<String> strings = FileUtil.readFileByLine(filePath);
+        List<FundDayBean> res = NewUtil.arrayList();
+        for (String str : strings) {
+            try {
+                if (StringUtil.isBlank(str)) {
+                    continue;
+                }
+                FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
+                res.add(dayBean);
+            } catch (Exception e) {
+                LogUtil.error("【{}】异常信息：{}", id, ExceptionUtil.getStackTraceAsString(e));
             }
         }
         return res;
@@ -80,8 +112,8 @@ public class FundDataBaseUtil {
      */
     public static void clearFundDataInDataBasById(String id) {
         Set<String> set = NewUtil.hashSet();
-        List<FundDayBean> data = getData(id);
-        List<FundDayBean> res = NewUtil.arrayList(data.size());
+        List<FundDayBean> data = getAllFileData(id);
+        List<String> res = NewUtil.arrayList();
         for (FundDayBean bean : data) {
 
             if (bean.getId().equals(id)) {
@@ -94,9 +126,13 @@ public class FundDataBaseUtil {
             }
 
             set.add(key);
-            res.add(bean);
+            try {
+                res.add(JsonUtil.toJson(bean));
+            } catch (Exception e) {
+                LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+            }
         }
-        addDataList(res, false);
+        FileUtil.writeFileByLine(getFilePath(id), res, false);
     }
 
     // ---------- private ----------
@@ -109,9 +145,15 @@ public class FundDataBaseUtil {
     // ---------- main ----------
 
     public static void main(String[] args) {
-        clearFundDataInDataBasById("161036");
-        clearFundDataInDataBasById("161035");
-        clearFundDataInDataBasById("161033");
-        clearFundDataInDataBasById("515910");
+//        clearFundDataInDataBasById("001418");
+//        clearFundDataInDataBasById("014844");
+//        clearFundDataInDataBasById("014843");
+//        clearFundDataInDataBasById("159569");
+//        clearFundDataInDataBasById("161036");
+//        clearFundDataInDataBasById("161035");
+//        clearFundDataInDataBasById("161033");
+//        clearFundDataInDataBasById("515910");
+//        clearFundDataInDataBasById("010098");
+        getDataBeforeDate("001819", "2024-07-31");
     }
 }
