@@ -28,7 +28,7 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "管理人")
     private String manager;
 
-    @DescriptionField(value = "规模")
+    @DescriptionField(value = "规模(亿元)")
     private String money;
 
     @DescriptionField(value = "封闭期")

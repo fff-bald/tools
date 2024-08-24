@@ -66,7 +66,7 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
             bean.setType(tbody.select("a").get(0).text());
 
             String money = tbody.select("td").get(1).text();
-            bean.setMoney(money.substring(money.indexOf("：") + 1, money.indexOf("（")));
+            bean.setMoney(money.substring(money.indexOf("：") + 1, money.indexOf("（") - 2));
             bean.setManager(tbody.select("a").get(2).text());
 
             String lockTime = null;
