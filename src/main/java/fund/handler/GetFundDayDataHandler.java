@@ -42,6 +42,8 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
         for (FundDayBean dayBean : dayBeanList) {
             if (onlySet.contains(dayBean.getDate())) {
                 bean.setFailReason(String.format("每日数据中存在重复数据，日期：%s", dayBean.getDate()));
+                LogUtil.error("【{}】每日数据中存在重复数据，日期：{}", bean.getId()
+                        , dayBean.getDate());
                 return;
             }
             onlySet.add(dayBean.getDate());
