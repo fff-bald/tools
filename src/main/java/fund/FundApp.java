@@ -30,14 +30,14 @@ public class FundApp {
      * @param args
      */
     public static void main(String[] args) {
-        // test();
-        work();
+        // test("515770");
+        work("2024-08-23");
     }
 
     /**
      * 全量爬取
      */
-    private static void work() {
+    private static void work(String todayDate) {
 
         long startTime = TimeUtil.now();
 
@@ -58,8 +58,7 @@ public class FundApp {
         );
 
         // 2、初始化文件路径和内容
-        // String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
-        String todayDate = "2024-08-23";
+        // todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(FILE_ABSOLUTE_PATH, "base-" + todayDate);
         // 防止重复运行报错
         FileUtil.deleteFile(path);
@@ -91,8 +90,7 @@ public class FundApp {
         LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
-    private static void test() {
-        String testId = "006150";
+    private static void test(String testId) {
         String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
