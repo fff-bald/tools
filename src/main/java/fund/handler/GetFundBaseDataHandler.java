@@ -8,11 +8,15 @@ import utils.JsoupUtil;
 import utils.LogUtil;
 import utils.StringUtil;
 
-import static fund.constant.FundConstant.FUND_DATA_GET_URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static fund.constant.FundConstant.*;
 
 public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
 
     private static final String IGNORE_FUND_TYPE = "货币型-普通货币";
+    private static final Pattern PERSON_PATTERN = Pattern.compile("个人投资者持有(\\d+\\.\\d+)亿份，占总份额的(\\d+\\.\\d+%)");
 
     GetFundBaseDataHandler(int id) {
         super(id);
@@ -21,6 +25,7 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
     @Override
     public void doing(FundBean bean) {
         updateFundDataFromWeb(bean);
+        updateFundTakeDataFromWeb(bean);
     }
 
     @Override
@@ -72,6 +77,35 @@ public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
         } catch (IndexOutOfBoundsException ioE) {
             bean.setFailReason(String.format("【updateFundDataFromWeb】响应内容长度：%s，可能原因：该ID基金不存在数据"
                     , document.text().length()));
+        } catch (Exception e) {
+            LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
+        }
+    }
+
+    /**
+     * 根据基金id，获取基金持有人占比相關信息
+     *
+     * @param bean
+     */
+    private void updateFundTakeDataFromWeb(FundBean bean) {
+        Document document = null;
+        try {
+            // 构建url
+            String url = String.format(OCCUPY_PROPORTION_URL, bean.getId());
+            document = JsoupUtil.getDocumentThrow(url);
+
+            String text = document.text();
+            Matcher matcher = PERSON_PATTERN.matcher(text);
+
+            if (matcher.find()) {
+                // 提取匹配的数字
+                // String holdingShares = matcher.group(1); // 总份额
+                String holdingPercentage = matcher.group(2); // 持有比例
+                bean.setPersonRate(holdingPercentage);
+            } else {
+                bean.setPersonRate("未匹配成功");
+            }
+
         } catch (Exception e) {
             LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
         }

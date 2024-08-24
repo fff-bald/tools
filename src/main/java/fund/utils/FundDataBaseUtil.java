@@ -139,15 +139,8 @@ public class FundDataBaseUtil {
     // ---------- main ----------
 
     public static void main(String[] args) {
-//        clearFundDataInDataBasById("001418");
-//        clearFundDataInDataBasById("014844");
-//        clearFundDataInDataBasById("014843");
-//        clearFundDataInDataBasById("159569");
-//        clearFundDataInDataBasById("161036");
-//        clearFundDataInDataBasById("161035");
-//        clearFundDataInDataBasById("161033");
-//        clearFundDataInDataBasById("515910");
-//        clearFundDataInDataBasById("010098");
-        getDataBeforeDate("001819", "2024-07-31");
+        clearFundDataInDataBasById("161035");
+        clearFundDataInDataBasById("161036");
+        clearFundDataInDataBasById("161033");
     }
 }

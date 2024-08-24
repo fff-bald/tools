@@ -19,22 +19,17 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "基金id")
     private String id;
 
-
     @DescriptionField(value = "名字")
     private String name;
-
 
     @DescriptionField(value = "类型")
     private String type;
 
-
-    @DescriptionField(value = "规模")
-    private String money;
-
-
     @DescriptionField(value = "管理人")
     private String manager;
 
+    @DescriptionField(value = "规模")
+    private String money;
 
     @DescriptionField(value = "封闭期")
     private String lockTime;
@@ -49,20 +44,14 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "上涨月份比例")
     private double upMonthRate;
 
-    @DescriptionField(value = "日涨跌幅标准差")
-    private double dayStandardDeviation;
-
-    @DescriptionField(value = "月涨跌幅标准差")
-    private double monthStandardDeviation;
-
-    @DescriptionField(value = "每月涨跌幅的最大值对比中值的倍数")
-    private double monthMostChangeToAvg;
+    @DescriptionField(value = "复利年化收益率(百分比)")
+    private double yearChangePro;
 
     @DescriptionField(value = "最大回撤")
     private double mostReduceRate;
 
-    @DescriptionField(value = "复利年化收益率(百分比)")
-    private double yearChangePro;
+    @DescriptionField(value = "每月涨跌幅的最大值对比中值的倍数")
+    private double monthMostChangeToAvg;
 
     @DescriptionField(value = "近7天收益率(百分比)")
     private double sevenDayChange;
@@ -78,6 +67,15 @@ public class FundBean implements Comparable<FundBean> {
 
     @DescriptionField(value = "近三年收益率(百分比)")
     private double threeYearChange;
+
+    @DescriptionField(value = "日涨跌幅标准差")
+    private double dayStandardDeviation;
+
+    @DescriptionField(value = "月涨跌幅标准差")
+    private double monthStandardDeviation;
+
+    @DescriptionField(value = "最新個人投資者份額占比")
+    private String personRate;
 
     @DescriptionField(value = "最新一日时间")
     private LocalDate updateTime;
@@ -341,6 +339,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setFailReason(String failReason) {
         this.failReason = failReason;
+    }
+
+    public String getPersonRate() {
+        return personRate;
+    }
+
+    public void setPersonRate(String personRate) {
+        this.personRate = personRate;
     }
 
     @Override
