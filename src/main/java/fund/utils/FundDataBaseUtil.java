@@ -19,28 +19,23 @@ public class FundDataBaseUtil {
     // ---------- public ----------
 
     /**
+     * 常规途径：将数据追加写入本地数据库，会过滤掉本地已标记数据
+     *
      * @param dayBeans
-     * @param isAppend 是否为追加，不是即为覆盖
      */
-    public static void addDataList(List<FundDayBean> dayBeans, boolean isAppend, boolean needPersistence) {
-        Set<String> table = NewUtil.hashSet();
+    public static void addDataList(List<FundDayBean> dayBeans) {
         for (FundDayBean dayBean : dayBeans) {
-
-            String filePath = getFilePath(dayBean.getId());
-            if (!isAppend && !table.contains(filePath)) {
-                FileUtil.writeStringToFile(getFilePath(dayBean.getId()), "", false);
-                table.add(filePath);
-            }
-
-            addData(dayBean, needPersistence);
+            addData(dayBean);
         }
     }
 
     /**
+     * 常规途径：将数据追加写入本地数据库，会过滤掉本地已标记数据
+     *
      * @param dataDayBean
      */
-    public static void addData(FundDayBean dataDayBean, boolean needPersistence) {
-        if (needPersistence && checkExistInDataBase(dataDayBean)) {
+    public static void addData(FundDayBean dataDayBean) {
+        if (checkExistInDataBase(dataDayBean)) {
             return;
         }
 
@@ -53,44 +48,42 @@ public class FundDataBaseUtil {
         }
     }
 
-    public static List<FundDayBean> getData(String id) {
-        return getDataBeforeDate(id, "9999-12-30");
-    }
-
-    public static List<FundDayBean> getDataBeforeDate(String id, String date) {
-        String filePath = getFilePath(id);
-        List<String> strings = FileUtil.readFileByLine(filePath);
-        List<FundDayBean> res = NewUtil.arrayList();
-        for (String str : strings) {
-            if (!StringUtil.isBlank(str) && str.contains(id)) {
-                try {
-                    FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
-                    if (dayBean.getDate().compareTo(date) > 0) {
-                        continue;
-                    }
-                    res.add(dayBean);
-                } catch (Exception e) {
-                    LogUtil.error("【{}】异常信息：{}", id, ExceptionUtil.getStackTraceAsString(e));
-                }
-            }
-        }
-        return res;
+    public static List<FundDayBean> getDataBeforeDate(String id, String beforeDate) {
+        return getData(id, false, beforeDate);
     }
 
     public static List<FundDayBean> getAllFileData(String id) {
+        return getData(id, true, "9999-12-30");
+    }
+
+    /**
+     *
+     * @param id
+     * @param isAll 是否为该文件里的所有数据
+     * @param beforeDate
+     * @return
+     */
+    public static List<FundDayBean> getData(String id, boolean isAll, String beforeDate) {
         String filePath = getFilePath(id);
         List<String> strings = FileUtil.readFileByLine(filePath);
         List<FundDayBean> res = NewUtil.arrayList();
         for (String str : strings) {
+            if (StringUtil.isBlank(str)) {
+                continue;
+            }
+            if (!isAll && !str.contains(id)) {
+                continue;
+            }
+            FundDayBean dayBean = null;
             try {
-                if (StringUtil.isBlank(str)) {
-                    continue;
-                }
-                FundDayBean dayBean = JsonUtil.toObject(str, FundDayBean.class);
-                res.add(dayBean);
+                dayBean = JsonUtil.toObject(str, FundDayBean.class);
             } catch (Exception e) {
                 LogUtil.error("【{}】异常信息：{}", id, ExceptionUtil.getStackTraceAsString(e));
             }
+            if (dayBean.getDate().compareTo(beforeDate) > 0) {
+                continue;
+            }
+            res.add(dayBean);
         }
         return res;
     }
@@ -120,6 +113,7 @@ public class FundDataBaseUtil {
                 continue;
             }
 
+            // 顺便对文件里的其他数据做个去重
             String key = bean.getId() + bean.getDate();
             if (set.contains(key)) {
                 continue;

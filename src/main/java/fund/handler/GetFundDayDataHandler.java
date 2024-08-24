@@ -52,7 +52,7 @@ public class GetFundDayDataHandler extends AbstractFundBeanHandler {
             onlySet.add(dayBean.getDate());
         }
 
-        FundDataBaseUtil.addDataList(dayBeanList, true, true);
+        FundDataBaseUtil.addDataList(dayBeanList);
         super.doAfter(bean);
     }
 
