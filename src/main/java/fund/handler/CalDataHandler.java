@@ -62,6 +62,8 @@ public class CalDataHandler extends AbstractFundBeanHandler {
         bean.setSevenDayChange(FundCalUtil.calTimeChange(dayList, bean.getUpdateTime(), 7));
         // 近一个月收益率
         bean.setMonthChange(FundCalUtil.calTimeChange(dayList, bean.getUpdateTime(), 30));
+        // 近三个月收益率
+        bean.setThreeMonthChange(FundCalUtil.calTimeChange(dayList, bean.getUpdateTime(), 30 * 3));
         // 近半年收益率
         bean.setSixMonthChange(FundCalUtil.calTimeChange(dayList, bean.getUpdateTime(), 30 * 6));
         // 近一年收益率

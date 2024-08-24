@@ -59,6 +59,9 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "近一月收益率(百分比)")
     private double monthChange;
 
+    @DescriptionField(value = "近三月收益率(百分比)")
+    private double threeMonthChange;
+
     @DescriptionField(value = "近六月收益率(百分比)")
     private double sixMonthChange;
 
@@ -323,6 +326,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setMonthChange(double monthChange) {
         this.monthChange = monthChange;
+    }
+
+    public double getThreeMonthChange() {
+        return threeMonthChange;
+    }
+
+    public void setThreeMonthChange(double threeMonthChange) {
+        this.threeMonthChange = threeMonthChange;
     }
 
     public double getSixMonthChange() {
