@@ -9,12 +9,11 @@ import utils.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static fund.constant.FundConstant.*;
+import static fund.constant.FundConstant.CSV_FILE_ABSOLUTE_PATH;
+import static fund.constant.FundConstant.EXCEL_FILE_ABSOLUTE_PATH;
 
 /**
  * 基金数据爬取整理APP
@@ -42,20 +41,7 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
         // 1、构建一个按照参数创建的线程池
-        int corePoolSize = 3; // 核心线程数
-        int maximumPoolSize = 24; // 最大线程数
-        long keepAliveTime = 10L; // 空闲线程存活时间
-        TimeUnit unit = TimeUnit.SECONDS; // 时间单位
-        BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>(100); // 任务队列
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                corePoolSize,
-                maximumPoolSize,
-                keepAliveTime,
-                unit,
-                workQueue,
-                // 拒绝策略：用提交任务的线程来执行
-                new ThreadPoolExecutor.CallerRunsPolicy()
-        );
+        ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
 
         // 2、获取全量基金id，往线程池里提交查询任务
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
@@ -101,20 +87,7 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
         // 1、构建一个按照参数创建的线程池
-        int corePoolSize = 3; // 核心线程数
-        int maximumPoolSize = 24; // 最大线程数
-        long keepAliveTime = 10L; // 空闲线程存活时间
-        TimeUnit unit = TimeUnit.SECONDS; // 时间单位
-        BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>(100); // 任务队列
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                corePoolSize,
-                maximumPoolSize,
-                keepAliveTime,
-                unit,
-                workQueue,
-                // 拒绝策略：用提交任务的线程来执行
-                new ThreadPoolExecutor.CallerRunsPolicy()
-        );
+        ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
 
         // 2、初始化文件路径和内容
         // todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
