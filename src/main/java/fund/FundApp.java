@@ -31,6 +31,7 @@ public class FundApp {
     public static void main(String[] args) {
 //         test("008229");
         workExcel("2024-08-23");
+//        workCSV("2024-08-23");
     }
 
     /**
@@ -82,7 +83,9 @@ public class FundApp {
         // 4、根据数据生成Excel
         List<FundDataExcelModel> res = NewUtil.arrayList(FundDataGetRunnable.getResList().size());
         for (FundBean bean : FundDataGetRunnable.getResList()) {
-            res.add(FundDataExcelModel.valueOf(bean));
+            FundDataExcelModel model = FundDataExcelModel.valueOf(bean);
+            ReflectUtil.formatObject(model);
+            res.add(model);
         }
         String path = String.format(EXCEL_FILE_ABSOLUTE_PATH, "base-" + todayDate);
         ExcelUtil.writeDataToExcel(path, res, FundDataExcelModel.class);

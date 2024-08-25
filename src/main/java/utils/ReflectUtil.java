@@ -1,9 +1,10 @@
 package utils;
 
-import fund.constant.FundConstant;
 import tag.DescriptionField;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,5 +150,43 @@ public class ReflectUtil {
 
         // 使用逗号连接起来
         return String.join(",", fieldValues);
+    }
+
+    /**
+     * 格式化类的数据
+     *
+     * @param object
+     */
+    public static void formatObject(Object object) {
+        Class<?> clazz = object.getClass();
+
+        while (clazz != null) {
+            Field[] fields = clazz.getDeclaredFields();
+
+            for (Field field : fields) {
+                try {
+                    // 检查字段是否为Double类型，Double类型保留到小数点后两位
+                    if (field.getType().equals(Double.class) || field.getType().equals(double.class)) {
+                        // 获取字段的原始值
+                        double originalValue = field.getDouble(object);
+
+                        // 修改值，保留两位小数
+                        BigDecimal bd = new BigDecimal(Double.toString(originalValue));
+                        bd = bd.setScale(2, RoundingMode.HALF_UP);
+
+                        // 将修改后的值设置回字段
+                        field.set(object, bd.doubleValue());
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // 如果需要，可以遍历父类字段（这取决于你的具体需求）
+            // clazz = clazz.getSuperclass();
+            // 注意：上面的循环已经修改，现在直接在循环外处理，因为我们通常不需要递归到Object类
+            // 当前只关心当前类的字段
+            break;
+        }
     }
 }
