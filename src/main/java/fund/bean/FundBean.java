@@ -35,8 +35,8 @@ public class FundBean implements Comparable<FundBean> {
     private String lockTime;
 
     // ---------- 计算值 ----------
-    @DescriptionField(value = "存续时间")
-    private int durationDay;
+    @DescriptionField(value = "时间(年)")
+    private double durationDay;
 
     @DescriptionField(value = "上涨日数比例")
     private double upDayRate;
@@ -216,11 +216,11 @@ public class FundBean implements Comparable<FundBean> {
         this.dayStandardDeviation = dayStandardDeviation;
     }
 
-    public int getDurationDay() {
+    public double getDurationDay() {
         return durationDay;
     }
 
-    public void setDurationDay(int durationDay) {
+    public void setDurationDay(double durationDay) {
         this.durationDay = durationDay;
     }
 

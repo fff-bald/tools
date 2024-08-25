@@ -77,6 +77,7 @@ public class ReflectUtil {
      * <p>
      * 该方法遍历指定对象的所有字段，检查每个字段是否带有DescriptionField注解。
      * 如果字段带有DescriptionField注解且不是List类型，则获取该字段的值并添加到一个列表中。
+     * 当值为Double类型时，只保留到小数点的后两位
      * 最后，将列表中的所有值用逗号连接成一个字符串并返回。
      *
      * @param obj 要检查的对象。
@@ -95,8 +96,11 @@ public class ReflectUtil {
                     field.setAccessible(true); // 确保可以访问私有字段
                     try {
                         Object value = field.get(obj);
-                        if (value != null) {
-                            fieldValues.add(value.toString());
+                        if (value instanceof Double) {
+                            fieldValues.add(String.format("%.2f", value));
+                        } else {
+                            // 其他类型直接转换为字符串
+                            fieldValues.add(String.valueOf(value));
                         }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
