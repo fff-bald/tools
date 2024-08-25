@@ -44,7 +44,7 @@ public class FundDataGetRunnable implements Runnable {
             FundBeanFactory factory = FundBeanFactory.getInstance();
             FundBean bean = factory.createBean(this.id, this.date);
             if (FundUtil.checkFinish(bean)) {
-                FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllDescriptionFieldsValue(bean), true);
+                FileUtil.writeStringToFile(this.path, ReflectUtil.getAllDescriptionFieldsValue(bean), true);
                 if (this.needSave) {
                     RES_LIST.add(bean);
                 }

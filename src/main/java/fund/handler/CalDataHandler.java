@@ -47,7 +47,7 @@ public class CalDataHandler extends AbstractFundBeanHandler {
 
         // 基金存续时间
         long totalDay = TimeUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
-        bean.setDurationDay(totalDay);
+        bean.setDurationDay(totalDay * 1d / 365);
         int tradingDay = dayList.size();
 
         // 最新一日相关信息

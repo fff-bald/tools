@@ -8,19 +8,30 @@ package fund.constant;
  */
 public interface FundConstant {
 
+    // --------- DATE ----------
+
     String START_DATE = "1970-01-01";
 
+    // ---------- URL ----------
+
     // 全量基金ID数据存在一个js文件里
-    String ALL_FUND_IDS_URL = "https://for.example.com";
+    String ALL_FUND_IDS_URL = "";
 
     // 基金资料获取链接模板
-    String FUND_DATA_GET_URL = "https://for.example.com";
+    String FUND_DATA_GET_URL = "";
 
     // 每日数据获取链接模板
-    String FUND_DAY_CHANGE_URL = "https://for.example.com";
+    String FUND_DAY_CHANGE_URL = "";
 
-    // 持有人結構获取链接模板
-    String OCCUPY_PROPORTION_URL = "https://for.example.com";
+    // 持有人占比获取链接模板
+    String OCCUPY_PROPORTION_URL = "";
 
-    String FILE_ABSOLUTE_PATH = "C:\\FundData\\%s.csv";
+    // --------- FILE ----------
+
+    String FILE_ABSOLUTE_PATH = "";
+
+    // ---------- EXCEL ----------
+
+    // Excel指向基金网页的超链接
+    String EXCEL_FUND_LINK = "";
 }
