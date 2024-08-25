@@ -16,6 +16,10 @@ public class NewUtil {
         return new ArrayList<>(size);
     }
 
+    public static <T> List<T> arraySycnList() {
+        return Collections.synchronizedList(new ArrayList<>(4));
+    }
+
     public static <K, V> Map<K, V> hashMap() {
         return new HashMap<>(4);
     }

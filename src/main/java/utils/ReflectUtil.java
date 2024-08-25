@@ -78,7 +78,6 @@ public class ReflectUtil {
      * <p>
      * 该方法遍历指定对象的所有字段，检查每个字段是否带有DescriptionField注解。
      * 如果字段带有DescriptionField注解且不是List类型，则获取该字段的值并添加到一个列表中。
-     * 当字段DescriptionField注解的值为“基金id”时，转成Excel超链接格式。
      * 当值为Double类型时，只保留到小数点的后两位。
      * 最后，将列表中的所有值用逗号连接成一个字符串并返回。
      *
@@ -102,9 +101,7 @@ public class ReflectUtil {
                     try {
                         Object value = field.get(obj);
                         String excelValue = null;
-                        if ("基金id".equals(printValue.value())) {
-                            excelValue = String.format(FundConstant.EXCEL_FUND_LINK, String.valueOf(value), String.valueOf(value));
-                        } else if (value instanceof Double) {
+                        if (value instanceof Double) {
                             excelValue = String.format("%.2f", value);
                         } else {
                             // 其他类型直接转换为字符串

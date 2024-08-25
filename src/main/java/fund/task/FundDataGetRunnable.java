@@ -15,19 +15,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FundDataGetRunnable implements Runnable {
 
     // 结果容器
-    private static final List<FundBean> RES_LIST = NewUtil.arrayList();
+    private static final List<FundBean> RES_LIST = NewUtil.arraySycnList();
     // 任务完成数量计数器
     private static final AtomicInteger FINISH_COUNTER = new AtomicInteger(0);
 
-    private final String path;
     private final String id;
     private final String date;
-    private boolean needSave = false;
+    private boolean needReserve = false;
+    private String path;
 
-    public FundDataGetRunnable(String date, String path, String id, boolean needSave) {
+    public FundDataGetRunnable(String date, String id) {
         this.id = id;
-        this.needSave = needSave;
-        this.path = path;
+        this.needReserve = true;
         this.date = date;
     }
 
@@ -44,9 +43,11 @@ public class FundDataGetRunnable implements Runnable {
             FundBeanFactory factory = FundBeanFactory.getInstance();
             FundBean bean = factory.createBean(this.id, this.date);
             if (FundUtil.checkFinish(bean)) {
-                FileUtil.writeStringToFile(this.path, ReflectUtil.getAllDescriptionFieldsValue(bean), true);
-                if (this.needSave) {
+                if (this.needReserve) {
                     RES_LIST.add(bean);
+                } else {
+                    // 不保留的话直接追加写入
+                    FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllDescriptionFieldsValue(bean), true);
                 }
                 int finishCount = FINISH_COUNTER.incrementAndGet();
                 LogUtil.info("【{}】任务完成，耗时：{}(ms)，当前任务完成数：{}"
@@ -58,5 +59,9 @@ public class FundDataGetRunnable implements Runnable {
         } catch (Exception e) {
             LogUtil.error("【{}】异常信息：{}", this.id, ExceptionUtil.getStackTraceAsString(e));
         }
+    }
+
+    public static List<FundBean> getResList() {
+        return RES_LIST;
     }
 }

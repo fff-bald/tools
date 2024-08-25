@@ -10,7 +10,7 @@ public interface FundConstant {
 
     // --------- DATE ----------
 
-    String START_DATE = "1970-01-01";
+    String START_DATE = "";
 
     // ---------- URL ----------
 
@@ -28,7 +28,9 @@ public interface FundConstant {
 
     // --------- FILE ----------
 
-    String FILE_ABSOLUTE_PATH = "";
+    String CSV_FILE_ABSOLUTE_PATH = "";
+
+    String EXCEL_FILE_ABSOLUTE_PATH = "";
 
     // ---------- EXCEL ----------
 
