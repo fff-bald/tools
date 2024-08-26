@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,11 +18,12 @@ public class FileUtil {
      * @return
      */
     public static List<String> readFileByLine(String path) {
-        List<String> res = NewUtil.arrayList();
         File file = new File(path);
         if (!file.exists()) {
-            return res;
+            return Collections.emptyList();
         }
+
+        List<String> res = NewUtil.arrayList();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(path));
@@ -78,7 +80,7 @@ public class FileUtil {
      * @param lines
      * @param isAppend 是否为追加写入
      */
-    public static void writeFileByLine(String path, List<String> lines, boolean isAppend) {
+    public static void writeStringLineToFile(String path, List<String> lines, boolean isAppend) {
         checkAndBuildDirectory(path);
 
         BufferedWriter writer = null;
@@ -109,6 +111,8 @@ public class FileUtil {
             System.out.println(path + " 文件删除失败");
         }
     }
+
+    // ---------- private ----------
 
     /**
      * 检查所有文件目录是否创建，存在没创建的就创建

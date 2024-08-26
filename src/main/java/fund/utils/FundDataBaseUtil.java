@@ -126,7 +126,7 @@ public class FundDataBaseUtil {
                 LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
             }
         }
-        FileUtil.writeFileByLine(getFilePath(id), res, false);
+        FileUtil.writeStringLineToFile(getFilePath(id), res, false);
     }
 
     // ---------- private ----------

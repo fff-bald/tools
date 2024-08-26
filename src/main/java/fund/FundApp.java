@@ -93,7 +93,7 @@ public class FundApp {
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "base-" + todayDate);
         // 防止重复运行报错
         FileUtil.deleteFile(path);
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldsDesc(FundBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldAnnotationValue(FundBean.class, ","), true);
 
         // 3、获取全量基金id，往线程池里提交查询任务
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
@@ -125,7 +125,7 @@ public class FundApp {
         String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
-        FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldsDesc(FundBean.class), true);
+        FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldAnnotationValue(FundBean.class, ","), true);
         FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, testId);
         Thread thread = new Thread(task);
         thread.start();

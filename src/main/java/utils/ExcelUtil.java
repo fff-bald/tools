@@ -5,7 +5,17 @@ import com.alibaba.excel.EasyExcel;
 import java.util.List;
 
 public class ExcelUtil {
-    // 泛型方法，T代表任意类型的数据模型
+    /**
+     * 将数据列表写入到指定的Excel文件中。
+     *
+     * <p>该方法使用EasyExcel库将数据列表写入到指定路径的Excel文件中。数据列表中的每个对象
+     * 都应与指定的数据模型类匹配。</p>
+     *
+     * @param filePath       要写入的Excel文件路径
+     * @param dataList       要写入的数据列表
+     * @param dataModelClass 数据模型类，用于指定写入时的数据类型
+     * @param <T>            数据模型的类型
+     */
     public static <T> void writeDataToExcel(String filePath, List<T> dataList, Class<T> dataModelClass) {
         // 检查数据列表是否为空
         if (dataList == null || dataList.isEmpty()) {

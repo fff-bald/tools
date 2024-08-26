@@ -17,125 +17,91 @@ import java.util.List;
  */
 public class ReflectUtil {
     /**
-     * 获取类的所有字段名称，用英文逗号隔开
+     * 获取指定类中所有字段的名称，并根据指定的注解进行过滤。
      *
-     * @param clazz
-     * @return
+     * <p>该方法通过反射获取指定类的所有字段名称，并根据传入的注解类型进行过滤。
+     * 如果字段上存在指定的注解，则将该字段名称添加到结果列表中。最终返回以指定分隔符
+     * 拼接的字段名称字符串。</p>
+     *
+     * @param clazz           要处理的类
+     * @param annotationClass 要过滤的注解类型，如果为 null 则不过滤
+     * @param split           字段名称之间的分隔符
+     * @return 以指定分隔符拼接的字段名称字符串
      */
-    public static String getAllFieldsExceptList(Class<?> clazz) {
+    public static String getAllFieldName(Class<?> clazz, Class<? extends Annotation> annotationClass, String split) {
         List<String> fieldNames = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields) {
+            if (annotationClass != null && !field.isAnnotationPresent(annotationClass)) {
+                continue;
+            }
             fieldNames.add(field.getName());
         }
 
-        // 使用逗号将字段名连接起来
-        return String.join(",", fieldNames);
+        // 拼接结果
+        return String.join(split, fieldNames);
     }
 
     /**
-     * 获取类的所有字段内容，用英文逗号隔开
+     * 获取指定对象中所有字段的值，并根据指定的注解进行过滤。
      *
-     * @param obj
-     * @return
+     * <p>该方法通过反射获取指定对象的所有字段值，并根据传入的注解类型进行过滤。
+     * 如果字段上存在指定的注解，则将该字段的值添加到结果列表中。最终返回以指定分隔符
+     * 拼接的字段值字符串。</p>
+     *
+     * @param obj             要处理的对象
+     * @param annotationClass 要过滤的注解类型，如果为 null 则不过滤
+     * @param split           字段值之间的分隔符
+     * @return 以指定分隔符拼接的字段值字符串
      */
-    public static String getAllFieldValuesExceptList(Object obj) {
+    public static String getAllFieldValue(Object obj, Class<? extends Annotation> annotationClass, String split) {
         List<String> fieldValues = new ArrayList<>();
         Class<?> clazz = obj.getClass();
+        Field[] fields = clazz.getDeclaredFields();
 
-        while (clazz != null) {
-            Field[] fields = clazz.getDeclaredFields();
-
-            for (Field field : fields) {
-                field.setAccessible(true); // 确保可以访问私有字段
-                try {
-                    Object value = field.get(obj);
-                    if (value != null) {
-                        fieldValues.add(value.toString());
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+        for (Field field : fields) {
+            if (annotationClass != null && !field.isAnnotationPresent(annotationClass)) {
+                continue;
             }
-
-            // 如果需要，可以遍历父类字段（这取决于你的具体需求）
-            // clazz = clazz.getSuperclass();
-            // 注意：上面的循环已经修改，现在直接在循环外处理，因为我们通常不需要递归到Object类
-            // 当前只关心当前类的字段
-            break;
+            field.setAccessible(true); // 确保可以访问私有字段
+            try {
+                Object value = field.get(obj);
+                if (value != null) {
+                    fieldValues.add(value.toString());
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
-        // 使用逗号将字段值连接起来
-        return String.join(",", fieldValues);
+        // 拼接结果
+        return String.join(split, fieldValues);
     }
 
     /**
-     * 获取指定对象中所有带有DescriptionField注解的字段的值。
-     * <p>
-     * 该方法遍历指定对象的所有字段，检查每个字段是否带有DescriptionField注解。
-     * 如果字段带有DescriptionField注解，则获取该字段的值并添加到一个列表中。
-     * 最后，将列表中的所有值用逗号连接成一个字符串并返回。
+     * 获取类中所有带有 @DescriptionField 注解的字段的注解值，并以指定分隔符拼接成字符串。
      *
-     * @param obj 要检查的对象。
-     * @return 包含所有带有DescriptionField注解的字段的值的字符串，值之间用逗号分隔。
-     */
-    public static String getAllDescriptionFieldsValue(Object obj) {
-        List<String> fieldValues = new ArrayList<>();
-        Class<?> clazz = obj.getClass();
-
-        while (clazz != null) {
-            Field[] fields = clazz.getDeclaredFields();
-
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(DescriptionField.class)) {
-                    field.setAccessible(true); // 确保可以访问私有字段
-                    try {
-                        Object value = field.get(obj);
-                        if (value != null) {
-                            fieldValues.add(String.valueOf(value));
-                        }
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            // 如果需要，可以遍历父类字段（这取决于你的具体需求）
-            // clazz = clazz.getSuperclass();
-            // 注意：上面的循环已经修改，现在直接在循环外处理，因为我们通常不需要递归到Object类
-            // 当前只关心当前类的字段
-            break;
-        }
-
-        // 使用逗号将字段值连接起来
-        return String.join(",", fieldValues);
-    }
-
-    /**
-     * 获取指定类中所有带有DescriptionField注解的字段的描述值。
-     * <p>
-     * 该方法遍历指定类的所有字段，检查每个字段是否带有DescriptionField注解。
-     * 如果字段带有DescriptionField注解，则将注解的值添加到一个列表中。
-     * 最后，将列表中的所有值用逗号连接成一个字符串并返回。
+     * <p>该方法通过反射获取指定类的所有字段，并检查每个字段是否带有 @DescriptionField 注解。
+     * 如果字段带有该注解，则获取注解的值，并将所有注解值以指定的分隔符拼接成一个字符串。</p>
      *
-     * @param clazz 要检查的类。
-     * @return 包含所有带有DescriptionField注解的字段的描述值的字符串，值之间用逗号分隔。
+     * @param clazz 要处理的类
+     * @param split 字段注解值之间的分隔符
+     * @return 以指定分隔符拼接的字段注解值字符串
      */
-    public static String getAllDescriptionFieldsDesc(Class<?> clazz) {
+    public static String getAllDescriptionFieldAnnotationValue(Class<?> clazz, String split) {
         List<String> fieldValues = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields) {
-            // 检查字段类型是否不是List
             if (field.isAnnotationPresent(DescriptionField.class)) {
                 DescriptionField printValue = field.getAnnotation(DescriptionField.class);
                 fieldValues.add(printValue.value());
             }
         }
 
-        // 使用逗号连接起来
-        return String.join(",", fieldValues);
+        // 拼接结果字符串
+        return String.join(split, fieldValues);
     }
 
     /**

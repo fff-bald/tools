@@ -3,6 +3,7 @@ package fund.task;
 import fund.FundBeanFactory;
 import fund.bean.FundBean;
 import fund.utils.FundUtil;
+import tag.DescriptionField;
 import utils.*;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public class FundDataGetRunnable implements Runnable {
                     RES_LIST.add(bean);
                 } else {
                     // 不保留的话直接追加写入
-                    FileUtil.writeStringToFile(this.path, "'" + ReflectUtil.getAllDescriptionFieldsValue(bean), true);
+                    FileUtil.writeStringToFile(this.path, "'" +
+                            ReflectUtil.getAllFieldValue(bean, DescriptionField.class, ","), true);
                 }
                 int finishCount = FINISH_COUNTER.incrementAndGet();
                 LogUtil.info("【{}】任务完成，耗时：{}(ms)，当前任务完成数：{}"
