@@ -70,7 +70,6 @@ public class FundApp {
         List<FundDataExcelModel> res = NewUtil.arrayList(FundDataGetRunnable.getResList().size());
         for (FundBean bean : FundDataGetRunnable.getResList()) {
             FundDataExcelModel model = FundDataExcelModel.valueOf(bean);
-            ReflectUtil.formatObject(model);
             res.add(model);
         }
         String path = String.format(EXCEL_FILE_ABSOLUTE_PATH, "base-" + todayDate);

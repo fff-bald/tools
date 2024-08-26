@@ -9,6 +9,10 @@ public enum FundBeanHandlerEnum {
 
     CAL_DATA(4000, new CalDataHandler(4000)),
 
+    FORMAT_DATA(5000, new FormatDataHandler(5000)),
+
+    COMPRESS_DATA(6000, new CompressDataHandler(6000)),
+
     FINISH(Integer.MAX_VALUE, new FinishHandler(Integer.MAX_VALUE)),
     ;
 
