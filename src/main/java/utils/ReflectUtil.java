@@ -105,68 +105,51 @@ public class ReflectUtil {
     }
 
     /**
-     * 格式化对象中所有的double和Double类型字段的值，保留指定的小数位数。
+     * 遍历指定对象的所有字段，如果字段类型为double或Double，则将该字段的值格式化为指定精度的小数。
+     * 如果字段值为null、无穷大或NaN，则将其设置为Double的最小值。
      *
-     * <p>此方法会遍历指定对象的所有字段，如果字段类型为double或Double，
-     * 则将其值格式化为保留指定小数位数的值。对于无限大（Infinity）、NaN（Not-a-Number）
-     * 或null的值，方法将跳过这些字段。</p>
-     *
-     * @param object 要格式化的对象。该对象的所有double和Double类型字段将被格式化。
-     * @param count  保留的小数位数。
-     * @throws IllegalArgumentException 如果传入的对象为null。
+     * @param obj       需要被处理的对象
+     * @param precision 需要保留的小数位数
      */
-    public static void formatDoubleField(Object object, int count) {
-        if (object == null) {
+    public static void formatDoubleField(Object obj, int precision) {
+        if (obj == null) {
             throw new IllegalArgumentException("传入的对象不能为null");
         }
 
-        Class<?> clazz = object.getClass();
+        Class<?> clazz = obj.getClass();
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields) {
             try {
-                // 允许访问私有字段
-                field.setAccessible(true);
+                // 检查字段类型是否为double或Double
+                if (field.getType().equals(double.class) || field.getType().equals(Double.class)) {
+                    // 允许访问私有字段
+                    field.setAccessible(true);
 
-                // 获取字段的当前值
-                Object fieldValue = field.get(object);
+                    // 获取字段的值
+                    Double value = null;
+                    if (field.getType().equals(double.class)) {
+                        value = field.getDouble(obj);
+                    } else {
+                        value = (Double) field.get(obj);
+                    }
 
-                // 检查字段是否为null或不是double/Double类型，则跳过
-                if (fieldValue == null || !(field.getType().equals(double.class) || field.getType().equals(Double.class))) {
-                    continue;
+                    // 检查是否为空或特殊值
+                    if (value == null || Double.isInfinite(value) || Double.isNaN(value)) {
+                        // 设置为Double的最小值
+                        field.set(obj, Double.MIN_VALUE);
+                    } else {
+                        // 格式化值，保留特定位小数
+                        BigDecimal bd = BigDecimal.valueOf(value); // 使用valueOf确保精度
+                        bd = bd.setScale(precision, RoundingMode.HALF_UP);
+                        // 设置回对象
+                        field.set(obj, bd.doubleValue());
+                    }
                 }
-
-                // 根据字段类型正确处理double或Double值
-                double originalValue;
-                if (field.getType().equals(double.class)) {
-                    // 如果是基本类型double，直接获取其值（但这里实际上是通过field.get得到的Double再自动拆箱，因为field.get返回Object）
-                    // 但由于field.get(object)已经处理了拆箱，我们直接转换是安全的
-                    originalValue = (Double) fieldValue; // 注意：这里实际上不会抛出ClassCastException，因为field.get已经处理了
-                } else {
-                    // 如果是包装类型Double，直接获取其值
-                    originalValue = ((Double) fieldValue).doubleValue();
-                }
-
-                // 跳过无限大或NaN的值
-                if (Double.isInfinite(originalValue) || Double.isNaN(originalValue)) {
-                    continue;
-                }
-
-                // 格式化值，保留特定位小数
-                BigDecimal bd = BigDecimal.valueOf(originalValue); // 使用valueOf确保精度
-                bd = bd.setScale(count, RoundingMode.HALF_UP);
-
-                // 将格式化后的值设置回字段
-                // 注意：如果字段是double类型，这里会自动装箱为Double；如果字段是Double类型，则直接赋值
-                field.set(object, bd.doubleValue());
-
             } catch (IllegalAccessException e) {
-                // 通常这个异常是由于反射访问权限问题，但我们已经设置了setAccessible(true)
-                // 因此，这里更可能是其他未知问题，但通常不会抛出
-                LogUtil.error("【utils】无法访问或设置字段：{}", ExceptionUtil.getStackTraceAsString(e));
-            } catch (IllegalArgumentException e) {
-                // 这个异常可能由错误的字段类型或值引起
-                LogUtil.error("【utils】字段值类型不匹配或非法：{}", ExceptionUtil.getStackTraceAsString(e));
+                // 理论上不应该发生，因为已经设置了field.setAccessible(true)
+                LogUtil.error("【utils】无法访问或设置类{}字段{}：{}", obj.getClass()
+                        , field.getName(), ExceptionUtil.getStackTraceAsString(e));
             }
         }
     }
