@@ -105,45 +105,69 @@ public class ReflectUtil {
     }
 
     /**
-     * 格式化对象中所有的Double类型字段的值，保留指定的小数位数。
+     * 格式化对象中所有的double和Double类型字段的值，保留指定的小数位数。
      *
-     * <p>该方法会遍历指定对象的所有字段，如果字段类型为Double或double，
-     * 则将其值格式化为保留指定小数位数的值。</p>
+     * <p>此方法会遍历指定对象的所有字段，如果字段类型为double或Double，
+     * 则将其值格式化为保留指定小数位数的值。对于无限大（Infinity）、NaN（Not-a-Number）
+     * 或null的值，方法将跳过这些字段。</p>
      *
-     * @param object 要格式化的对象。该对象的所有Double类型字段将被格式化。
+     * @param object 要格式化的对象。该对象的所有double和Double类型字段将被格式化。
      * @param count  保留的小数位数。
      * @throws IllegalArgumentException 如果传入的对象为null。
      */
     public static void formatDoubleField(Object object, int count) {
+        if (object == null) {
+            throw new IllegalArgumentException("传入的对象不能为null");
+        }
+
         Class<?> clazz = object.getClass();
+        Field[] fields = clazz.getDeclaredFields();
 
-        while (clazz != null) {
-            Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            try {
+                // 允许访问私有字段
+                field.setAccessible(true);
 
-            for (Field field : fields) {
-                try {
-                    // 检查字段是否为Double类型，Double类型保留到小数点后两位
-                    if (field.getType().equals(Double.class) || field.getType().equals(double.class)) {
-                        // 获取字段的原始值
-                        double originalValue = field.getDouble(object);
+                // 获取字段的当前值
+                Object fieldValue = field.get(object);
 
-                        // 修改值，保留两位小数
-                        BigDecimal bd = new BigDecimal(Double.toString(originalValue));
-                        bd = bd.setScale(count, RoundingMode.HALF_UP);
-
-                        // 将修改后的值设置回字段
-                        field.set(object, bd.doubleValue());
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                // 检查字段是否为null或不是double/Double类型，则跳过
+                if (fieldValue == null || !(field.getType().equals(double.class) || field.getType().equals(Double.class))) {
+                    continue;
                 }
-            }
 
-            // 如果需要，可以遍历父类字段（这取决于你的具体需求）
-            // clazz = clazz.getSuperclass();
-            // 注意：上面的循环已经修改，现在直接在循环外处理，因为我们通常不需要递归到Object类
-            // 当前只关心当前类的字段
-            break;
+                // 根据字段类型正确处理double或Double值
+                double originalValue;
+                if (field.getType().equals(double.class)) {
+                    // 如果是基本类型double，直接获取其值（但这里实际上是通过field.get得到的Double再自动拆箱，因为field.get返回Object）
+                    // 但由于field.get(object)已经处理了拆箱，我们直接转换是安全的
+                    originalValue = (Double) fieldValue; // 注意：这里实际上不会抛出ClassCastException，因为field.get已经处理了
+                } else {
+                    // 如果是包装类型Double，直接获取其值
+                    originalValue = ((Double) fieldValue).doubleValue();
+                }
+
+                // 跳过无限大或NaN的值
+                if (Double.isInfinite(originalValue) || Double.isNaN(originalValue)) {
+                    continue;
+                }
+
+                // 格式化值，保留特定位小数
+                BigDecimal bd = BigDecimal.valueOf(originalValue); // 使用valueOf确保精度
+                bd = bd.setScale(count, RoundingMode.HALF_UP);
+
+                // 将格式化后的值设置回字段
+                // 注意：如果字段是double类型，这里会自动装箱为Double；如果字段是Double类型，则直接赋值
+                field.set(object, bd.doubleValue());
+
+            } catch (IllegalAccessException e) {
+                // 通常这个异常是由于反射访问权限问题，但我们已经设置了setAccessible(true)
+                // 因此，这里更可能是其他未知问题，但通常不会抛出
+                LogUtil.error("【utils】无法访问或设置字段：{}", ExceptionUtil.getStackTraceAsString(e));
+            } catch (IllegalArgumentException e) {
+                // 这个异常可能由错误的字段类型或值引起
+                LogUtil.error("【utils】字段值类型不匹配或非法：{}", ExceptionUtil.getStackTraceAsString(e));
+            }
         }
     }
 
