@@ -75,7 +75,7 @@ public class FundDataExcelModel {
     private String personRate;
 
     @ExcelProperty(value = "最新一日时间")
-    private LocalDate updateTime;
+    private String updateTime;
 
     @ExcelProperty(value = "最新一日申购状态")
     private String buyState;
@@ -107,7 +107,7 @@ public class FundDataExcelModel {
         res.dayStandardDeviation = bean.getDayStandardDeviation();
         res.monthStandardDeviation = bean.getMonthStandardDeviation();
         res.personRate = bean.getPersonRate();
-        res.updateTime = bean.getUpdateTime();
+        res.updateTime = bean.getUpdateTime().toString();
         res.buyState = bean.getBuyState();
         res.sellState = bean.getSellState();
         return res;
@@ -281,11 +281,11 @@ public class FundDataExcelModel {
         this.personRate = personRate;
     }
 
-    public LocalDate getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(LocalDate updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
 
