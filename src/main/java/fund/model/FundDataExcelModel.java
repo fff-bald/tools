@@ -3,8 +3,6 @@ package fund.model;
 import com.alibaba.excel.annotation.ExcelProperty;
 import fund.bean.FundBean;
 
-import java.time.LocalDate;
-
 import static fund.constant.FundConstant.EXCEL_FUND_LINK;
 
 public class FundDataExcelModel {
@@ -23,7 +21,7 @@ public class FundDataExcelModel {
     private String manager;
 
     @ExcelProperty(value = "规模(亿元)")
-    private String money;
+    private double money;
 
     @ExcelProperty(value = "封闭期")
     private String lockTime;
@@ -90,7 +88,7 @@ public class FundDataExcelModel {
         res.name = bean.getName();
         res.type = bean.getType();
         res.manager = bean.getManager();
-        res.money = bean.getMoney();
+        res.money = "--".equals(bean.getMoney()) ? 0 : Double.parseDouble(bean.getMoney());
         res.lockTime = bean.getLockTime();
         res.durationDay = bean.getDurationDay();
         res.upDayRate = bean.getUpDayRate();
@@ -145,11 +143,11 @@ public class FundDataExcelModel {
         this.manager = manager;
     }
 
-    public String getMoney() {
+    public double getMoney() {
         return money;
     }
 
-    public void setMoney(String money) {
+    public void setMoney(double money) {
         this.money = money;
     }
 
