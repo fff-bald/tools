@@ -139,8 +139,6 @@ public class FundDataBaseUtil {
     // ---------- main ----------
 
     public static void main(String[] args) {
-        clearFundDataInDataBasById("161035");
-        clearFundDataInDataBasById("161036");
-        clearFundDataInDataBasById("161033");
+        clearFundDataInDataBasById("018212");
     }
 }

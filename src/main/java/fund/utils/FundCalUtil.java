@@ -136,6 +136,7 @@ public class FundCalUtil {
 
     /**
      * 统计债券基金月度情况
+     *
      * @param fundBeans
      * @return
      */
@@ -154,7 +155,7 @@ public class FundCalUtil {
         // 添加标题行
         result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
         result.add(new CommonExcelModel()); // 空行或分隔行
-        result.add(CommonExcelModel.valueOf(MONTH_CHANGE_LABEL, "", TOTAL_NUM_LABEL));
+        result.add(CommonExcelModel.valueOf(MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
 
         LocalDate currentDate = LocalDate.now();
         int currentYear = currentDate.getYear();
@@ -202,10 +203,9 @@ public class FundCalUtil {
         result.add(new CommonExcelModel()); // 空行或分隔行
         result.add(CommonExcelModel.valueOf(TOTAL_LABEL, INCREASE_LABEL, DECREASE_LABEL));
         result.add(CommonExcelModel.valueOf(String.valueOf(totalFunds), String.valueOf(increaseCount), String.valueOf(decreaseCount)));
-
         // 添加百分比
         result.add(CommonExcelModel.valueOf("100%", String.format("%.2f", (increaseCount * 1.0 / totalFunds) * 100) + "%",
-                String.format("%.2f", (decreaseCount * 1.0 / totalFunds) * 100)) + "%");
+                String.format("%.2f", (decreaseCount * 1.0 / totalFunds) * 100) + "%"));
 
         return result;
     }

@@ -2,6 +2,8 @@ package fund.utils;
 
 import fund.bean.FundBean;
 import fund.handler.FundBeanHandlerEnum;
+import fund.model.FundDataExcelModel;
+import utils.ExcelUtil;
 import utils.ExceptionUtil;
 import utils.LogUtil;
 import utils.NewUtil;
@@ -13,11 +15,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static fund.constant.FundConstant.ALL_FUND_IDS_URL;
+import static fund.constant.FundConstant.*;
 
 /**
  * 工具类
@@ -140,5 +143,22 @@ public class FundUtil {
 
         // 如果没有找到匹配项，返回一个默认值或抛出异常
         throw new IllegalArgumentException("No 'pages' value found in the input string.");
+    }
+
+    // ---------- Excel --------
+
+    public static void createExcel(String filePath, List<FundBean> beanList) {
+        Map<String, List<Object>> res = NewUtil.treeMap();
+
+        List<Object> allData = NewUtil.arrayList(beanList.size());
+        for (FundBean bean : beanList) {
+            FundDataExcelModel model = FundDataExcelModel.valueOf(bean);
+            allData.add(model);
+        }
+        res.put(ALL_DATA, allData);
+
+        res.put(BOND_FUND_MONTH_ANALYZE, FundCalUtil.calculateMonthlyAnalysis(beanList));
+
+        ExcelUtil.writeDataToExcel(filePath, res);
     }
 }

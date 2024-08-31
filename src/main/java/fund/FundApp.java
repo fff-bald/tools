@@ -1,15 +1,11 @@
 package fund;
 
 import fund.bean.FundBean;
-import fund.model.FundDataExcelModel;
 import fund.task.FundDataGetRunnable;
-import fund.utils.FundCalUtil;
 import fund.utils.FundUtil;
 import utils.*;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -29,8 +25,8 @@ public class FundApp {
      * @param args
      */
     public static void main(String[] args) {
-//         test("008229");
-        workExcel("2024-08-30");
+//        testCSV("008229");
+        workExcel("2024-08-26");
 //        workCSV("2024-08-30");
     }
 
@@ -68,18 +64,8 @@ public class FundApp {
         }
 
         // 4、根据数据生成Excel
-        List<FundBean> beanList = FundDataGetRunnable.getResList();
-        List<Object> allData = NewUtil.arrayList(beanList.size());
-        for (FundBean bean : beanList) {
-            FundDataExcelModel model = FundDataExcelModel.valueOf(bean);
-            allData.add(model);
-        }
         String path = String.format(EXCEL_FILE_ABSOLUTE_PATH, "base-" + todayDate);
-
-        Map<String, List<Object>> res = NewUtil.treeMap();
-        res.put(ALL_DATA, allData);
-        res.put(BOND_FUND_MONTH_ANALYZE, FundCalUtil.calculateMonthlyAnalysis(beanList));
-        ExcelUtil.writeDataToExcel(path, res);
+        FundUtil.createExcel(path, FundDataGetRunnable.getResList());
 
         LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
@@ -127,7 +113,7 @@ public class FundApp {
         LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
-    private static void test(String testId) {
+    private static void testCSV(String testId) {
         String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
