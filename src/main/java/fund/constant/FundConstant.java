@@ -36,4 +36,10 @@ public interface FundConstant {
 
     // Excel指向基金网页的超链接
     String EXCEL_FUND_LINK = "";
+
+    // ---------- SHEET ----------
+
+    String BOND_FUND_MONTH_ANALYZE = "1、债基月度分析";
+
+    String ALL_DATA = "2、全量数据";
 }

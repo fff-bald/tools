@@ -1,10 +1,14 @@
 package fund.utils;
 
+import fund.bean.FundBean;
 import fund.bean.FundDayBean;
 import fund.bean.FundMonthBean;
+import model.CommonExcelModel;
+import utils.NewUtil;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static utils.TimeUtil.YYYY_MM_DD_DTF;
 
@@ -128,6 +132,82 @@ public class FundCalUtil {
         }
 
         return biggest / (sum / monthBeans.size());
+    }
+
+    /**
+     * 统计债券基金月度情况
+     * @param fundBeans
+     * @return
+     */
+    public static List<Object> calculateMonthlyAnalysis(List<FundBean> fundBeans) {
+        // 定义字符串常量
+        final String FUND_TYPE_LIMIT = "基金类别=长债&中短债";
+        final String MAX_CHANGE_LIMIT = "月涨跌幅异常：<10";
+        final String MONTH_CHANGE_LABEL = "近1月涨跌幅范围";
+        final String TOTAL_NUM_LABEL = "汇总数量";
+        final String TOTAL_LABEL = "总量";
+        final String INCREASE_LABEL = "上涨数";
+        final String DECREASE_LABEL = "下跌数";
+
+        List<Object> result = NewUtil.arrayList(fundBeans.size());
+
+        // 添加标题行
+        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
+        result.add(new CommonExcelModel()); // 空行或分隔行
+        result.add(CommonExcelModel.valueOf(MONTH_CHANGE_LABEL, "", TOTAL_NUM_LABEL));
+
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = currentDate.getYear();
+        int currentMonth = currentDate.getMonthValue();
+
+        int totalFunds = 0;
+        int decreaseCount = 0;
+
+        Map<Integer, Integer> changeCountMap = NewUtil.treeMap();
+
+        for (FundBean fundBean : fundBeans) {
+            LocalDate updateTime = fundBean.getUpdateTime();
+            // 当月必须有数据
+            if (updateTime.getMonthValue() != currentMonth || updateTime.getYear() != currentYear) {
+                continue;
+            }
+
+            if (!fundBean.getType().contains("长债") && !fundBean.getType().contains("中短债")) {
+                continue;
+            }
+
+            // 月涨跌幅异常限制
+            if (fundBean.getMonthMostChangeToAvg() > 10) {
+                continue;
+            }
+
+            int change = (int) (fundBean.getMonthChange() * 10);
+            changeCountMap.merge(change, 1, Integer::sum);
+
+            totalFunds++;
+            if (change < 0) {
+                decreaseCount++;
+            }
+        }
+
+        // 添加涨跌幅范围统计
+        for (Map.Entry<Integer, Integer> entry : changeCountMap.entrySet()) {
+            double rate = entry.getKey() * 1.0 / 10;
+            result.add(CommonExcelModel.valueOf(rate + "%", String.valueOf(entry.getValue()), ""));
+        }
+
+        int increaseCount = totalFunds - decreaseCount;
+
+        // 添加总量、上涨数、下跌数
+        result.add(new CommonExcelModel()); // 空行或分隔行
+        result.add(CommonExcelModel.valueOf(TOTAL_LABEL, INCREASE_LABEL, DECREASE_LABEL));
+        result.add(CommonExcelModel.valueOf(String.valueOf(totalFunds), String.valueOf(increaseCount), String.valueOf(decreaseCount)));
+
+        // 添加百分比
+        result.add(CommonExcelModel.valueOf("100%", String.format("%.2f", (increaseCount * 1.0 / totalFunds) * 100) + "%",
+                String.format("%.2f", (decreaseCount * 1.0 / totalFunds) * 100)) + "%");
+
+        return result;
     }
 
     // ---------- private ----------

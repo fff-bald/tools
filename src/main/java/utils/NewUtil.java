@@ -31,4 +31,8 @@ public class NewUtil {
     public static <K extends Comparable<K>> Set<K> treeSet() {
         return new TreeSet<>();
     }
+
+    public static <K extends Comparable<K>, V> Map<K, V> treeMap() {
+        return new TreeMap<>();
+    }
 }
