@@ -17,9 +17,9 @@ import static fund.constant.FundConstant.FUND_DAY_CHANGE_URL;
 import static fund.constant.FundConstant.START_DATE;
 
 /**
- * 获取每日数据
+ * 获取基金每日数据
  */
-public class GetFundDayDataHandler extends AbstractFundBeanHandler {
+public class GetFundDayDataHandler extends AbstractFundHandler {
     GetFundDayDataHandler(int id) {
         super(id);
     }

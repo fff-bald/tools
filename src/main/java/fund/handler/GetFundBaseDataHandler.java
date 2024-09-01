@@ -13,7 +13,10 @@ import java.util.regex.Pattern;
 
 import static fund.constant.FundConstant.*;
 
-public class GetFundBaseDataHandler extends AbstractFundBeanHandler {
+/**
+ * 爬取基金基础信息
+ */
+public class GetFundBaseDataHandler extends AbstractFundHandler {
 
     private static final String IGNORE_FUND_TYPE = "货币型-普通货币";
     private static final Pattern PERSON_PATTERN = Pattern.compile("个人投资者持有(\\d+\\.\\d+)亿份，占总份额的(\\d+\\.\\d+%)");

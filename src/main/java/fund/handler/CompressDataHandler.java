@@ -7,9 +7,9 @@ import utils.LogUtil;
 import utils.ReflectUtil;
 
 /**
- * 按照一定逻辑对数据进行压缩
+ * 按照一定逻辑对Bean数据进行压缩
  */
-public class CompressDataHandler extends AbstractFundBeanHandler {
+public class CompressDataHandler extends AbstractFundHandler {
     CompressDataHandler(int id) {
         super(id);
     }

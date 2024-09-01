@@ -5,11 +5,11 @@ import fund.bean.FundBean;
 /**
  * 处理器抽象类
  */
-public abstract class AbstractFundBeanHandler {
+public abstract class AbstractFundHandler {
 
     private final int id;
 
-    AbstractFundBeanHandler(int id) {
+    AbstractFundHandler(int id) {
         this.id = id;
     }
 
@@ -33,7 +33,7 @@ public abstract class AbstractFundBeanHandler {
     }
 
     /**
-     * 处理中操作
+     * 处理操作
      *
      * @param bean
      */

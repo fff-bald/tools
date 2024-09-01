@@ -1,7 +1,7 @@
 package fund.utils;
 
 import fund.bean.FundBean;
-import fund.handler.FundBeanHandlerEnum;
+import fund.handler.FundHandlerEnum;
 import fund.model.FundDataExcelModel;
 import utils.ExcelUtil;
 import utils.ExceptionUtil;
@@ -39,7 +39,7 @@ public class FundUtil {
      * @return
      */
     public static boolean checkFinish(FundBean bean) {
-        return bean.getState() == FundBeanHandlerEnum.FINISH.getId();
+        return bean.getState() == FundHandlerEnum.FINISH.getId();
     }
 
 

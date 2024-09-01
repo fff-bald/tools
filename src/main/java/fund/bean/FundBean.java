@@ -116,6 +116,11 @@ public class FundBean implements Comparable<FundBean> {
      */
     private int tradeDay;
 
+    /**
+     * 月均变化比例
+     */
+    private double monthAvgChange;
+
     public static FundBean valueOf(String id) {
         return valueOf(id, LocalDate.now());
     }
@@ -358,6 +363,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setPersonRate(String personRate) {
         this.personRate = personRate;
+    }
+
+    public double getMonthAvgChange() {
+        return monthAvgChange;
+    }
+
+    public void setMonthAvgChange(double monthAvgChange) {
+        this.monthAvgChange = monthAvgChange;
     }
 
     @Override

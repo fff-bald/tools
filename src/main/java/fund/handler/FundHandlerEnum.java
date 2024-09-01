@@ -1,6 +1,6 @@
 package fund.handler;
 
-public enum FundBeanHandlerEnum {
+public enum FundHandlerEnum {
     BASE_DATA(1000, new GetFundBaseDataHandler(1000)),
 
     DAY_DATA(2000, new GetFundDayDataHandler(2000)),
@@ -9,7 +9,7 @@ public enum FundBeanHandlerEnum {
 
     CAL_DATA(4000, new CalDataHandler(4000)),
 
-    ANALYZE_DATA(5000, new AnalyzeDataHandler(5000)),
+    ANALYZE_DATA(5000, new AnalyzeHandler(5000)),
 
     FORMAT_DATA(6000, new FormatDataHandler(6000)),
 
@@ -19,9 +19,9 @@ public enum FundBeanHandlerEnum {
     ;
 
     private final int id;
-    private final AbstractFundBeanHandler handler;
+    private final AbstractFundHandler handler;
 
-    FundBeanHandlerEnum(int id, AbstractFundBeanHandler handler) {
+    FundHandlerEnum(int id, AbstractFundHandler handler) {
         this.id = id;
         this.handler = handler;
     }
@@ -30,7 +30,7 @@ public enum FundBeanHandlerEnum {
         return id;
     }
 
-    public AbstractFundBeanHandler getHandler() {
+    public AbstractFundHandler getHandler() {
         return handler;
     }
 }

@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 import static utils.TimeUtil.YYYY_MM_DD_DTF;
 
 /**
- * 参数计算处理器
+ * Bean参数计算处理器
  */
-public class CalDataHandler extends AbstractFundBeanHandler {
+public class CalDataHandler extends AbstractFundHandler {
     CalDataHandler(int id) {
         super(id);
     }
@@ -123,13 +123,17 @@ public class CalDataHandler extends AbstractFundBeanHandler {
         bean.setMonthBeanList(monthBeans);
 
         double upMonthNum = 0;
+        double monthChangeSum = 0;
         for (FundMonthBean monthBean : monthBeans) {
             if (monthBean.getChange() >= 0) {
                 upMonthNum++;
             }
+            monthChangeSum += monthBean.getChange();
         }
         // 上升月比例
         bean.setUpMonthRate(100 * upMonthNum / monthBeans.size());
+        // 月变化比例平均值
+        bean.setMonthAvgChange(monthChangeSum / monthBeans.size());
 
         List<Double> growthRates = monthBeans.stream().map(FundMonthBean::getChange).collect(Collectors.toList());
         // 月涨跌幅标准差

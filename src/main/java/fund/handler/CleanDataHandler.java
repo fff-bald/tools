@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 按照一定策略，对数据进行清洗
+ * 按照一定策略，对Bean数据进行清洗
  */
-public class CleanDataHandler extends AbstractFundBeanHandler {
+public class CleanDataHandler extends AbstractFundHandler {
     CleanDataHandler(int id) {
         super(id);
     }

@@ -10,7 +10,8 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static fund.constant.FundConstant.*;
+import static fund.constant.FundConstant.CSV_FILE_ABSOLUTE_PATH;
+import static fund.constant.FundConstant.EXCEL_FILE_ABSOLUTE_PATH;
 
 /**
  * 基金数据爬取整理APP
@@ -25,17 +26,19 @@ public class FundApp {
      * @param args
      */
     public static void main(String[] args) {
+        long startTime = TimeUtil.now();
+
 //        testCSV("008229");
         workExcel("2024-08-30");
 //        workCSV("2024-08-30");
+
+        LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
     /**
      * 全量爬取
      */
     private static void workExcel(String todayDate) {
-
-        long startTime = TimeUtil.now();
 
         // 1、构建一个按照参数创建的线程池
         ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
@@ -66,16 +69,12 @@ public class FundApp {
         // 4、根据数据生成Excel
         String path = String.format(EXCEL_FILE_ABSOLUTE_PATH, "base-" + todayDate);
         FundUtil.createExcel(path, FundDataGetRunnable.getResList());
-
-        LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
     /**
      * 全量爬取，生成csv文件
      */
     private static void workCSV(String todayDate) {
-
-        long startTime = TimeUtil.now();
 
         // 1、构建一个按照参数创建的线程池
         ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
@@ -109,8 +108,6 @@ public class FundApp {
             // 注意：通常不建议在捕获到InterruptedException后直接调用shutdownNow()，因为这可能会留下未完成的任务
             Thread.currentThread().interrupt(); // 重新设置中断状态
         }
-
-        LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
     private static void testCSV(String testId) {
