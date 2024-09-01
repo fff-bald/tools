@@ -31,6 +31,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
 
     @Override
     public void doing(FundBean bean) {
+        // TODO 调整统计分析代码
 //        synchronized (this) {
 //            statisticsLastMonthChangeCount(bean, 3);
 //            statisticsNewMonthChangeCount(bean);
