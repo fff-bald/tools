@@ -26,7 +26,7 @@ public class FundApp {
      */
     public static void main(String[] args) {
 //        testCSV("008229");
-        workExcel("2024-08-26");
+        workExcel("2024-08-30");
 //        workCSV("2024-08-30");
     }
 

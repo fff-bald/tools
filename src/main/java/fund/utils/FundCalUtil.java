@@ -152,17 +152,18 @@ public class FundCalUtil {
 
         List<Object> result = NewUtil.arrayList(fundBeans.size());
 
-        // 添加标题行
-        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
-        result.add(new CommonExcelModel()); // 空行或分隔行
-        result.add(CommonExcelModel.valueOf(MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
-
         LocalDate currentDate = LocalDate.now();
         int currentYear = currentDate.getYear();
         int currentMonth = currentDate.getMonthValue();
 
         int totalFunds = 0;
         int decreaseCount = 0;
+
+        // 添加标题行
+        result.add(CommonExcelModel.valueOf("", currentDate.toString(), ""));
+        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
+        result.add(new CommonExcelModel()); // 空行或分隔行
+        result.add(CommonExcelModel.valueOf(MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
 
         Map<Integer, Integer> changeCountMap = NewUtil.treeMap();
 
