@@ -47,8 +47,8 @@ public class AnalyzeHandler extends AbstractFundHandler {
         Map<Integer, Pair<Integer, Integer>> monthChangeCountMap = getContext().getMonthChangeCountMap();
 
         count = Math.min(count, bean.getMonthBeanList().size());
-        for (int i = 0; i < count; i++) {
-            FundMonthBean monthBean = bean.getMonthBeanList().get(count);
+        for (int index = 0; index < count; index++) {
+            FundMonthBean monthBean = bean.getMonthBeanList().get(index);
 
             if (monthBean.getChange() / bean.getMonthAvgChange() > 10) {
                 continue;

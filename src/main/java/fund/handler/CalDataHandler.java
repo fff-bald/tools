@@ -106,8 +106,14 @@ public class CalDataHandler extends AbstractFundHandler {
             int yearMonth = localDate.getYear() * 100 + localDate.getMonthValue();
 
             if (!monthlyGrowth.containsKey(yearMonth)) {
-                // 如果是新月份，记录月初的值
-                monthlyGrowth.put(yearMonth, dayBean);
+                // 如果是新月份
+                if (index < dayList.size() - 1) {
+                    // 记录上个月最后一天的值
+                    monthlyGrowth.put(yearMonth, dayList.get(index + 1));
+                } else {
+                    // 记录月初的值
+                    monthlyGrowth.put(yearMonth, dayBean);
+                }
             }
 
             // 检查是否是月末，计算增长量
