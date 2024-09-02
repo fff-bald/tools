@@ -1,9 +1,12 @@
 package fund.utils;
 
+import fund.FundBeanFactory;
+import fund.FundHandlerContext;
 import fund.bean.FundBean;
 import fund.bean.FundDayBean;
 import fund.bean.FundMonthBean;
 import model.CommonExcelModel;
+import model.Pair;
 import utils.NewUtil;
 
 import java.time.LocalDate;
@@ -144,69 +147,44 @@ public class FundCalUtil {
         // 定义字符串常量
         final String FUND_TYPE_LIMIT = "基金类别=长债&中短债";
         final String MAX_CHANGE_LIMIT = "月涨跌幅异常：<10";
-        final String MONTH_CHANGE_LABEL = "近1月涨跌幅范围";
+        final String MONTH_CHANGE_LABEL = "月涨跌幅范围";
         final String TOTAL_NUM_LABEL = "汇总数量";
         final String TOTAL_LABEL = "总量";
         final String INCREASE_LABEL = "上涨数";
         final String DECREASE_LABEL = "下跌数";
+        final String INCREASE_RATE_LABEL = "上涨比例";
 
-        List<Object> result = NewUtil.arrayList(fundBeans.size());
-
+        FundHandlerContext context = FundBeanFactory.getInstance().getInstanceContext();
+        List<Object> result = NewUtil.arrayList();
         LocalDate currentDate = LocalDate.now();
-        int currentYear = currentDate.getYear();
         int currentMonth = currentDate.getMonthValue();
 
-        int totalFunds = 0;
-        int decreaseCount = 0;
-
         // 添加标题行
-        result.add(CommonExcelModel.valueOf("", currentDate.toString(), ""));
         result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
         result.add(new CommonExcelModel()); // 空行或分隔行
-        result.add(CommonExcelModel.valueOf(MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
 
-        Map<Integer, Integer> changeCountMap = NewUtil.treeMap();
-
-        for (FundBean fundBean : fundBeans) {
-            LocalDate updateTime = fundBean.getUpdateTime();
-            // 当月必须有数据
-            if (updateTime.getMonthValue() != currentMonth || updateTime.getYear() != currentYear) {
-                continue;
-            }
-
-            if (!fundBean.getType().contains("长债") && !fundBean.getType().contains("中短债")) {
-                continue;
-            }
-
-            // 月涨跌幅异常限制
-            if (fundBean.getMonthMostChangeToAvg() > 10) {
-                continue;
-            }
-
-            int change = (int) (fundBean.getMonthChange() * 10);
-            changeCountMap.merge(change, 1, Integer::sum);
-
-            totalFunds++;
-            if (change < 0) {
-                decreaseCount++;
-            }
+        // 1、当月涨跌分布
+        result.add(CommonExcelModel.valueOf(currentMonth + MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
+        for (Map.Entry<Double, Integer> entry : context.getNewMonthChangeCountMap().entrySet()) {
+            result.add(CommonExcelModel.valueOf(String.valueOf(entry.getKey())
+                    , String.valueOf(entry.getValue()), ""));
         }
 
-        // 添加涨跌幅范围统计
-        for (Map.Entry<Integer, Integer> entry : changeCountMap.entrySet()) {
-            double rate = entry.getKey() * 1.0 / 10;
-            result.add(CommonExcelModel.valueOf(rate + "%", String.valueOf(entry.getValue()), ""));
-        }
-
-        int increaseCount = totalFunds - decreaseCount;
-
-        // 添加总量、上涨数、下跌数
+        // 2、近几月的涨跌比例
         result.add(new CommonExcelModel()); // 空行或分隔行
-        result.add(CommonExcelModel.valueOf(TOTAL_LABEL, INCREASE_LABEL, DECREASE_LABEL));
-        result.add(CommonExcelModel.valueOf(String.valueOf(totalFunds), String.valueOf(increaseCount), String.valueOf(decreaseCount)));
-        // 添加百分比
-        result.add(CommonExcelModel.valueOf("100%", String.format("%.2f", (increaseCount * 1.0 / totalFunds) * 100) + "%",
-                String.format("%.2f", (decreaseCount * 1.0 / totalFunds) * 100) + "%"));
+        result.add(CommonExcelModel.valueOf("", INCREASE_RATE_LABEL, TOTAL_LABEL, INCREASE_LABEL, DECREASE_LABEL));
+        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : context.getMonthChangeCountMap().entrySet()) {
+            int totalCount = entry.getValue().getFirst();
+            int decreaseCount = entry.getValue().getSecond();
+            int increaseCount = totalCount - decreaseCount;
+
+            result.add(CommonExcelModel.valueOf(
+                    String.valueOf(entry.getKey()),
+                    String.format("%.2f", (increaseCount * 1.0 / totalCount) * 100) + "%",
+                    String.valueOf(totalCount),
+                    String.valueOf(increaseCount),
+                    String.valueOf(decreaseCount)));
+        }
 
         return result;
     }

@@ -48,6 +48,13 @@ public class CommonExcelModel {
         return res;
     }
 
+    public static CommonExcelModel valueOf(String str1, String str2, String str3, String str4, String str5) {
+        CommonExcelModel res = valueOf(str1, str2, str3);
+        res.str4 = str4;
+        res.str5 = str5;
+        return res;
+    }
+
     // ---------- get & set ----------
 
     public String getStr1() {
