@@ -1,5 +1,7 @@
 package fund.handler;
 
+import fund.FundBeanFactory;
+import fund.FundHandlerContext;
 import fund.bean.FundBean;
 
 /**
@@ -15,6 +17,10 @@ public abstract class AbstractFundHandler {
 
     public final boolean checkFinish(FundBean bean) {
         return this.id == bean.getState();
+    }
+
+    public final FundHandlerContext getContext() {
+        return FundBeanFactory.getInstance().getInstanceContext();
     }
 
     public final void doHandler(FundBean bean) {
@@ -46,7 +52,7 @@ public abstract class AbstractFundHandler {
      */
     public void doAfter(FundBean bean) {
 
-        if(bean.getFailReason() != null) {
+        if (bean.getFailReason() != null) {
             return;
         }
 

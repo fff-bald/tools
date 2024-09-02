@@ -3,10 +3,8 @@ package fund;
 import fund.bean.FundBean;
 import fund.handler.AbstractFundHandler;
 import fund.handler.FundHandlerEnum;
-import utils.TimeUtil;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * @author cjl
@@ -19,16 +17,30 @@ public class FundBeanFactory {
      */
     private static final FundBeanFactory instance = new FundBeanFactory();
 
+    /**
+     * 上下文信息
+     */
+    private FundHandlerContext context;
 
     private FundBeanFactory() {
+        FundHandlerContext.Builder builder = new FundHandlerContext.Builder();
+        context = builder.build();
     }
 
     public static FundBeanFactory getInstance() {
         return instance;
     }
 
+    public FundHandlerContext getInstanceContext() {
+        return instance.context;
+    }
+
+    public void updateInstanceContext(FundHandlerContext context) {
+        instance.context = context;
+    }
+
     public FundBean createBean(String id) {
-        return createBean(id, TimeUtil.YYYY_MM_DD_SDF.format(new Date()));
+        return createBean(id, context.getDate());
     }
 
     public FundBean createBean(String id, String time) {

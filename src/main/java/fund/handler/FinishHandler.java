@@ -1,5 +1,6 @@
 package fund.handler;
 
+import fund.FundHandlerContext;
 import fund.bean.FundBean;
 
 /**
@@ -12,5 +13,11 @@ public class FinishHandler extends AbstractFundHandler {
 
     @Override
     public void doing(FundBean bean) {
+        FundHandlerContext context = getContext();
+        context.getFinishCounter().incrementAndGet();
+
+        if (context.isNeedReserve()) {
+            context.getBeanList().add(bean);
+        }
     }
 }

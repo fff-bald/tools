@@ -43,10 +43,18 @@ public class FundApp {
         // 1、构建一个按照参数创建的线程池
         ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
 
-        // 2、获取全量基金id，往线程池里提交查询任务
+        // 2、获取全量基金id，构建上下文信息，往线程池里提交查询任务
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
+        FundHandlerContext.Builder builder = new FundHandlerContext.Builder();
+        FundHandlerContext context = builder
+                .setAllIdCount(allIds.size())
+                .setDate(todayDate)
+                .setPath(String.format(EXCEL_FILE_ABSOLUTE_PATH, "base-" + todayDate))
+                .setWriteExcel(true)
+                .build();
+        FundBeanFactory.getInstance().updateInstanceContext(context);
         for (String id : allIds) {
-            FundDataGetRunnable task = new FundDataGetRunnable(todayDate, id);
+            FundDataGetRunnable task = new FundDataGetRunnable(id);
             threadPoolExecutor.execute(task);
         }
 
@@ -67,8 +75,7 @@ public class FundApp {
         }
 
         // 4、根据数据生成Excel
-        String path = String.format(EXCEL_FILE_ABSOLUTE_PATH, "base-" + todayDate);
-        FundUtil.createExcel(path, FundDataGetRunnable.getResList());
+        FundUtil.createExcel(context);
     }
 
     /**
@@ -86,10 +93,18 @@ public class FundApp {
         FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldAnnotationValue(FundBean.class, ","), true);
 
-        // 3、获取全量基金id，往线程池里提交查询任务
+        // 3、获取全量基金id，构建上下文信息，往线程池里提交查询任务
         Set<String> allIds = FundUtil.getAllFundIdsFromWeb();
+        FundHandlerContext.Builder builder = new FundHandlerContext.Builder();
+        FundHandlerContext context = builder
+                .setAllIdCount(allIds.size())
+                .setDate(todayDate)
+                .setPath(String.format(CSV_FILE_ABSOLUTE_PATH, "base-" + todayDate))
+                .setWriteCsv(true)
+                .build();
+        FundBeanFactory.getInstance().updateInstanceContext(context);
         for (String id : allIds) {
-            FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, id);
+            FundDataGetRunnable task = new FundDataGetRunnable(id);
             threadPoolExecutor.execute(task);
         }
 
@@ -115,7 +130,17 @@ public class FundApp {
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldAnnotationValue(FundBean.class, ","), true);
-        FundDataGetRunnable task = new FundDataGetRunnable(todayDate, path, testId);
+
+        FundHandlerContext.Builder builder = new FundHandlerContext.Builder();
+        FundHandlerContext context = builder
+                .setAllIdCount(1)
+                .setDate(todayDate)
+                .setPath(path)
+                .setWriteCsv(true)
+                .build();
+        FundBeanFactory.getInstance().updateInstanceContext(context);
+
+        FundDataGetRunnable task = new FundDataGetRunnable(testId);
         Thread thread = new Thread(task);
         thread.start();
     }

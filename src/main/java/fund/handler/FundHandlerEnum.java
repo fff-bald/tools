@@ -9,11 +9,13 @@ public enum FundHandlerEnum {
 
     CAL_DATA(4000, new CalDataHandler(4000)),
 
-    ANALYZE_DATA(5000, new AnalyzeHandler(5000)),
+    ANALYZE(5000, new AnalyzeHandler(5000)),
 
     FORMAT_DATA(6000, new FormatDataHandler(6000)),
 
-    COMPRESS_DATA(7000, new CompressDataHandler(7000)),
+    WRITE(7000, new WriteHandler(7000)),
+
+    COMPRESS_DATA(8000, new CompressDataHandler(8000)),
 
     FINISH(Integer.MAX_VALUE, new FinishHandler(Integer.MAX_VALUE)),
     ;

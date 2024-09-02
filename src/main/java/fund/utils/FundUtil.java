@@ -1,5 +1,6 @@
 package fund.utils;
 
+import fund.FundHandlerContext;
 import fund.bean.FundBean;
 import fund.handler.FundHandlerEnum;
 import fund.model.FundDataExcelModel;
@@ -147,7 +148,10 @@ public class FundUtil {
 
     // ---------- Excel --------
 
-    public static void createExcel(String filePath, List<FundBean> beanList) {
+    public static void createExcel(FundHandlerContext context) {
+        List<FundBean> beanList = context.getBeanList();
+        String filePath = context.getPath();
+
         Map<String, List<Object>> res = NewUtil.treeMap();
 
         List<Object> allData = NewUtil.arrayList(beanList.size());
