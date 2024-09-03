@@ -24,7 +24,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
 
         if (context.isWriteExcel()) {
             synchronized (this) {
-                statisticsLastMonthChangeCount(bean, 3);
+                statisticsLastMonthChangeCount(bean, 5);
                 statisticsNewMonthChangeCount(bean);
             }
         }
@@ -46,9 +46,16 @@ public class AnalyzeHandler extends AbstractFundHandler {
 
         Map<Integer, Pair<Integer, Integer>> monthChangeCountMap = getContext().getMonthChangeCountMap();
 
+        // 只记录特定几个月的数据
+        LocalDate mark = LocalDate.now().minusMonths(count);
         count = Math.min(count, bean.getMonthBeanList().size());
         for (int index = 0; index < count; index++) {
             FundMonthBean monthBean = bean.getMonthBeanList().get(index);
+
+            // 太远的数据就不算了
+            if (mark.getMonthValue() > monthBean.getMonth() && mark.getYear() >= monthBean.getYear()) {
+                break;
+            }
 
             if (monthBean.getChange() / bean.getMonthAvgChange() > 10) {
                 continue;
