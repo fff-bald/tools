@@ -12,7 +12,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FundHandlerContext {
 
-    private final AtomicInteger finishCount = new AtomicInteger(0);
+    private final AtomicInteger finishCounter = new AtomicInteger(0);
+    private final List<String> deleteIds = NewUtil.arraySycnList();
+
     /**
      * 每月统计 长债&中短债 基金数量
      * （年份*100+月份，（基金总数，月度收益为负的基金总数））
@@ -45,7 +47,7 @@ public class FundHandlerContext {
     }
 
     public AtomicInteger getFinishCounter() {
-        return finishCount;
+        return finishCounter;
     }
 
     public List<FundBean> getBeanList() {
@@ -84,10 +86,14 @@ public class FundHandlerContext {
         return newMonthChangeCountMap;
     }
 
+    public List<String> getDeleteIds() {
+        return deleteIds;
+    }
+
     @Override
     public String toString() {
         return "FundHandlerContext{" +
-                "finishCount=" + finishCount +
+                "finishCounter=" + finishCounter +
                 ", monthChangeCountMap=" + monthChangeCountMap +
                 ", newMonthChangeCountMap=" + newMonthChangeCountMap +
                 ", writeCsv=" + writeCsv +

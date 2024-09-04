@@ -1,5 +1,6 @@
 package fund.handler;
 
+import fund.FundHandlerContext;
 import fund.bean.FundBean;
 import fund.bean.FundDayBean;
 import fund.utils.FundDataBaseUtil;
@@ -50,6 +51,8 @@ public class GetFundDayDataHandler extends AbstractFundHandler {
         }
 
         if (dayBeanList.size() != bean.getTradeDay()) {
+            FundHandlerContext context = getContext();
+            context.getDeleteIds().add(bean.getId());
             bean.setFailReason("每日数据量和交易日天数不一致");
             LogUtil.error("【{}】每日数据是否大于交易日天数：{}", bean.getId()
                     , dayBeanList.size() > bean.getTradeDay());

@@ -2,10 +2,12 @@ package fund;
 
 import fund.bean.FundBean;
 import fund.task.FundDataGetRunnable;
+import fund.utils.FundDataBaseUtil;
 import fund.utils.FundUtil;
 import utils.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,9 @@ public class FundApp {
 //        testCSV("008229");
         workExcel("2024-09-04");
 //        workCSV("2024-08-30");
+
+        List<String> deleteIds = FundBeanFactory.getInstance().getInstanceContext().getDeleteIds();
+        FundDataBaseUtil.clearFundDataInDataBase(deleteIds);
 
         LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }

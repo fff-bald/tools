@@ -4,6 +4,7 @@ import fund.bean.FundDayBean;
 import utils.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,9 +58,8 @@ public class FundDataBaseUtil {
     }
 
     /**
-     *
      * @param id
-     * @param isAll 是否为该文件里的所有数据
+     * @param isAll      是否为该文件里的所有数据
      * @param beforeDate
      * @return
      */
@@ -99,17 +99,23 @@ public class FundDataBaseUtil {
     }
 
     /**
-     * 通过基金id将数据库里相关信息删除
+     * 通过基金ids将数据库里相关信息删除
      *
-     * @param id
+     * @param ids 所有列表内的id需要来自同一个文件夹
      */
-    public static void clearFundDataInDataBasById(String id) {
+    public static void clearFundDataInDataBaseByIds(List<String> ids) {
+
+        if (ids == null || ids.size() == 0) {
+            return;
+        }
+
         Set<String> set = NewUtil.hashSet();
-        List<FundDayBean> data = getAllFileData(id);
+        List<FundDayBean> data = getAllFileData(ids.get(0));
         List<String> res = NewUtil.arrayList();
         for (FundDayBean bean : data) {
 
-            if (bean.getId().equals(id)) {
+            String beanId = bean.getId();
+            if (CollectionUtil.find(ids, beanId) != -1) {
                 continue;
             }
 
@@ -126,7 +132,28 @@ public class FundDataBaseUtil {
                 LogUtil.error("【{}】异常信息：{}", bean.getId(), ExceptionUtil.getStackTraceAsString(e));
             }
         }
-        FileUtil.writeStringLineToFile(getFilePath(id), res, false);
+        FileUtil.writeStringLineToFile(getFilePath(ids.get(0)), res, false);
+        LogUtil.info(">>>数据库清除任务完成，清除ID为{}，清除记录{}条", ids, data.size() - res.size());
+    }
+
+    /**
+     * 整理基金ID，并将其数据库里相关信息删除
+     *
+     * @param ids
+     */
+    public static void clearFundDataInDataBase(List<String> ids) {
+        Map<String, List<String>> preHandlerMap = NewUtil.hashMap();
+
+        for (String id : ids) {
+            String filePath = getFilePath(id);
+            List<String> idList = CollectionUtil.computeIfAbsentAndReturnNewValue(preHandlerMap,
+                    filePath, key -> NewUtil.arrayList());
+            idList.add(id);
+        }
+
+        for (Map.Entry<String, List<String>> entry : preHandlerMap.entrySet()) {
+            clearFundDataInDataBaseByIds(entry.getValue());
+        }
     }
 
     // ---------- private ----------
@@ -139,6 +166,5 @@ public class FundDataBaseUtil {
     // ---------- main ----------
 
     public static void main(String[] args) {
-        clearFundDataInDataBasById("018212");
     }
 }

@@ -53,7 +53,8 @@ public class AnalyzeHandler extends AbstractFundHandler {
             FundMonthBean monthBean = bean.getMonthBeanList().get(index);
 
             // 太远的数据就不算了
-            if (mark.getMonthValue() > monthBean.getMonth() && mark.getYear() >= monthBean.getYear()) {
+            if (mark.getYear() > monthBean.getYear()
+                    || (mark.getYear() == monthBean.getYear() && mark.getMonthValue() > monthBean.getMonth())) {
                 break;
             }
 
