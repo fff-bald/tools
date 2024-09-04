@@ -29,7 +29,7 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
 //        testCSV("008229");
-        workExcel("2024-08-30");
+        workExcel("2024-09-04");
 //        workCSV("2024-08-30");
 
         LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
