@@ -166,8 +166,7 @@ public class FundCalUtil {
         // 1、当月涨跌分布
         result.add(CommonExcelModel.valueOf(currentMonth + MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
         for (Map.Entry<Double, Integer> entry : context.getNewMonthChangeCountMap().entrySet()) {
-            result.add(CommonExcelModel.valueOf(String.valueOf(entry.getKey())
-                    , String.valueOf(entry.getValue()), ""));
+            result.add(CommonExcelModel.valueOf(entry.getKey() + "%", String.valueOf(entry.getValue()), ""));
         }
 
         // 2、近几月的涨跌比例

@@ -91,8 +91,8 @@ public class AnalyzeHandler extends AbstractFundHandler {
         FundHandlerContext context = getContext();
         Map<Double, Integer> newMonthChangeCountMap = context.getNewMonthChangeCountMap();
 
-        int changeValue = (int) (monthBean.getChange() * 10);
-        double changeKey = changeValue * 1d / 10;
+        // 0.0%，四舍五入
+        double changeKey = Math.round(monthBean.getChange() * 10.0) / 10.0;
         Integer updateValue = newMonthChangeCountMap.getOrDefault(changeKey, 0);
         newMonthChangeCountMap.put(changeKey, updateValue + 1);
     }
