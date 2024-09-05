@@ -9,7 +9,10 @@ import fund.utils.FundUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import utils.*;
+import utils.ExceptionUtil;
+import utils.JsoupUtil;
+import utils.LogUtil;
+import utils.NewUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -73,7 +76,7 @@ public class GetFundDayDataHandler extends AbstractFundHandler {
     private void updateFundDayChangeFromWeb(FundBean bean) {
         try {
             int limit = Integer.MAX_VALUE;
-            String endDate = bean.getUpdateTime().format(TimeUtil.YYYY_MM_DD_DTF);
+            String endDate = getContext().getDate();
             for (int i = 1; i <= limit; i++) {
                 // 构建url
                 String finalUrl = String.format(FUND_DAY_CHANGE_URL, bean.getId(),
