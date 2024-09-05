@@ -44,10 +44,11 @@ public class AnalyzeHandler extends AbstractFundHandler {
             return;
         }
 
-        Map<Integer, Pair<Integer, Integer>> monthChangeCountMap = getContext().getMonthChangeCountMap();
+        FundHandlerContext context = getContext();
+        Map<Integer, Pair<Integer, Integer>> monthChangeCountMap = context.getMonthChangeCountMap();
 
         // 只记录特定几个月的数据
-        LocalDate mark = LocalDate.now().minusMonths(count);
+        LocalDate mark = LocalDate.parse(context.getDate()).minusMonths(count);
         count = Math.min(count, bean.getMonthBeanList().size());
         for (int index = 0; index < count; index++) {
             FundMonthBean monthBean = bean.getMonthBeanList().get(index);
@@ -86,7 +87,8 @@ public class AnalyzeHandler extends AbstractFundHandler {
             return;
         }
 
-        LocalDate today = LocalDate.now();
+        FundHandlerContext context = getContext();
+        LocalDate today = LocalDate.parse(context.getDate());
         FundMonthBean monthBean = bean.getMonthBeanList().get(0);
         if (today.getYear() != monthBean.getYear() || today.getMonthValue() != monthBean.getMonth()) {
             return;
@@ -96,7 +98,6 @@ public class AnalyzeHandler extends AbstractFundHandler {
             return;
         }
 
-        FundHandlerContext context = getContext();
         Map<Double, Integer> newMonthChangeCountMap = context.getNewMonthChangeCountMap();
 
         // 0.0%，四舍五入

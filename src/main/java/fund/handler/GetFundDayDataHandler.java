@@ -73,10 +73,11 @@ public class GetFundDayDataHandler extends AbstractFundHandler {
     private void updateFundDayChangeFromWeb(FundBean bean) {
         try {
             int limit = Integer.MAX_VALUE;
+            String endDate = bean.getUpdateTime().format(TimeUtil.YYYY_MM_DD_DTF);
             for (int i = 1; i <= limit; i++) {
                 // 构建url
                 String finalUrl = String.format(FUND_DAY_CHANGE_URL, bean.getId(),
-                        START_DATE, bean.getUpdateTime().format(TimeUtil.YYYY_MM_DD_DTF), i);
+                        START_DATE, endDate, i);
                 Document document = JsoupUtil.getDocumentThrow(finalUrl);
 
                 // 当读取的是第一页时，有额外数据需要获取
