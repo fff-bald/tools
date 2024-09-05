@@ -156,15 +156,15 @@ public class FundCalUtil {
 
         FundHandlerContext context = FundBeanFactory.getInstance().getInstanceContext();
         List<Object> result = NewUtil.arrayList();
-        LocalDate currentDate = LocalDate.now();
-        int currentMonth = currentDate.getMonthValue();
+        LocalDate contextDate = LocalDate.parse(context.getDate());
+        int contextMonth = contextDate.getMonthValue();
 
         // 添加标题行
         result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
         result.add(new CommonExcelModel()); // 空行或分隔行
 
         // 1、当月涨跌分布
-        result.add(CommonExcelModel.valueOf(currentMonth + MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
+        result.add(CommonExcelModel.valueOf(contextMonth + MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
         for (Map.Entry<Double, Integer> entry : context.getNewMonthChangeCountMap().entrySet()) {
             result.add(CommonExcelModel.valueOf(entry.getKey() + "%", String.valueOf(entry.getValue()), ""));
         }

@@ -49,7 +49,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
         Map<Integer, Pair<Integer, Integer>> monthChangeCountMap = context.getMonthChangeCountMap();
 
         // 只记录特定几个月的数据
-        LocalDate mark = LocalDate.parse(context.getDate()).minusMonths(count);
+        LocalDate mark = LocalDate.parse(context.getDate()).minusMonths(count - 1);
         count = Math.min(count, bean.getMonthBeanList().size());
         for (int index = 0; index < count; index++) {
             FundMonthBean monthBean = bean.getMonthBeanList().get(index);
