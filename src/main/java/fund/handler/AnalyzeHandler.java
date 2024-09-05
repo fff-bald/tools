@@ -23,10 +23,8 @@ public class AnalyzeHandler extends AbstractFundHandler {
         FundHandlerContext context = getContext();
 
         if (context.isWriteExcel()) {
-            synchronized (this) {
-                statisticsLastMonthChangeCount(bean, 5);
-                statisticsNewMonthChangeCount(bean);
-            }
+            statisticsLastMonthChangeCount(bean, 5);
+            statisticsNewMonthChangeCount(bean);
         }
     }
 
@@ -64,10 +62,13 @@ public class AnalyzeHandler extends AbstractFundHandler {
             }
 
             int dateKey = monthBean.getYear() * 100 + monthBean.getMonth();
-            Pair<Integer, Integer> counter = CollectionUtil.computeIfAbsentAndReturnNewValue(monthChangeCountMap, dateKey, key -> new Pair<>(0, 0));
-            counter.setFirst(counter.getFirst() + 1);
-            if (monthBean.getChange() < 0) {
-                counter.setSecond(counter.getSecond() + 1);
+            // 锁细化，只所修改到共享数据的地方
+            synchronized (this) {
+                Pair<Integer, Integer> counter = CollectionUtil.computeIfAbsentAndReturnNewValue(monthChangeCountMap, dateKey, key -> new Pair<>(0, 0));
+                counter.setFirst(counter.getFirst() + 1);
+                if (monthBean.getChange() < 0) {
+                    counter.setSecond(counter.getSecond() + 1);
+                }
             }
         }
     }
@@ -102,7 +103,10 @@ public class AnalyzeHandler extends AbstractFundHandler {
 
         // 0.0%，四舍五入
         double changeKey = Math.round(monthBean.getChange() * 10.0) / 10.0;
-        Integer updateValue = newMonthChangeCountMap.getOrDefault(changeKey, 0);
-        newMonthChangeCountMap.put(changeKey, updateValue + 1);
+        // 锁细化，只所修改到共享数据的地方
+        synchronized (this) {
+            Integer updateValue = newMonthChangeCountMap.getOrDefault(changeKey, 0);
+            newMonthChangeCountMap.put(changeKey, updateValue + 1);
+        }
     }
 }
