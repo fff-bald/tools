@@ -14,6 +14,9 @@ import java.util.Map;
  */
 public class AnalyzeHandler extends AbstractFundHandler {
 
+    private final Object statisticsLastMonthChangeCountLock = new Object();
+    private final Object statisticsNewMonthChangeCountLock = new Object();
+
     AnalyzeHandler(int id) {
         super(id);
     }
@@ -63,7 +66,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
 
             int dateKey = monthBean.getYear() * 100 + monthBean.getMonth();
             // 锁细化，只所修改到共享数据的地方
-            synchronized (this) {
+            synchronized (statisticsLastMonthChangeCountLock) {
                 Pair<Integer, Integer> counter = CollectionUtil.computeIfAbsentAndReturnNewValue(monthChangeCountMap, dateKey, key -> new Pair<>(0, 0));
                 counter.setFirst(counter.getFirst() + 1);
                 if (monthBean.getChange() < 0) {
@@ -104,7 +107,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
         // 0.0%，四舍五入
         double changeKey = Math.round(monthBean.getChange() * 10.0) / 10.0;
         // 锁细化，只所修改到共享数据的地方
-        synchronized (this) {
+        synchronized (statisticsNewMonthChangeCountLock) {
             Integer updateValue = newMonthChangeCountMap.getOrDefault(changeKey, 0);
             newMonthChangeCountMap.put(changeKey, updateValue + 1);
         }
