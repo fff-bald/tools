@@ -1,17 +1,16 @@
 package demo;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import utils.FileUtil;
+import utils.JsoupUtil;
 
 public class NovelGetJsoupApp {
 
     private static final String PARAGRAPH_SELECTOR = "div.txtnav p";
     private static final String FILE_PATH = "C:\\Mine\\Downloads\\novel.txt";
-    private static final String INITIAL_URL = "https://69shu.me/txt/76815/"; // 小说链接
-    private static final int START_ID = 38790751;
+    private static final String INITIAL_URL = "https://69shu.me/txt/51543/33662978"; // 小说链接
 
     /**
      * 从给定的网页内容中提取小说文本内容
@@ -39,12 +38,13 @@ public class NovelGetJsoupApp {
     public static void main(String[] args) {
         try {
             String url = INITIAL_URL;
-            for (int i = START_ID; ; i++) {
-                Document document = Jsoup.connect(url + i).get();
+            for (; ; ) {
+                Document document = JsoupUtil.getDocumentThrow(url);
                 String text = extractNovelText(document);
                 FileUtil.writeStringToFile(FILE_PATH, text + "\n\n---\n\n", true); // 添加章节分隔符
                 System.out.println(text);
                 System.out.println(document.title());
+                url = JsoupUtil.findElementUrlByText(document, "下一章");
                 Thread.sleep(1000); // 避免频繁请求，添加延迟
             }
         } catch (Exception e) {

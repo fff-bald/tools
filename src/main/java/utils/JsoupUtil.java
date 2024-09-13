@@ -32,6 +32,32 @@ public class JsoupUtil {
     }
 
     /**
+     * 查找第一个文本为指定字符串的元素，并返回该元素指向的网址。
+     *
+     * @param document   传入的Jsoup Document对象
+     * @param searchText 要查找的文本
+     * @return 该元素指向的网址，如果未找到则抛出异常
+     */
+    public static String findElementUrlByText(Document document, String searchText) {
+        // 查找包含指定文本的所有元素
+        Elements elements = document.getElementsContainingOwnText(searchText);
+
+        // 遍历找到的元素，查找第一个文本完全匹配的元素
+        for (Element element : elements) {
+            if (element.ownText().equals(searchText)) {
+                // 获取该元素的链接
+                String url = element.attr("href");
+                if (!url.isEmpty()) {
+                    return url;
+                }
+            }
+        }
+
+        // 如果未找到匹配的元素或该元素没有链接，抛出异常
+        throw new IllegalArgumentException("未找到匹配的元素或该元素没有链接");
+    }
+
+    /**
      * 该方法尝试通过指定的URL获取一个Document对象，并具有重试机制。
      * 如果连接由于IOException失败，它将重试最多100次，每次重试之间有10秒的延迟。
      * 如果所有尝试都失败，它将抛出IllegalArgumentException。
