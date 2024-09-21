@@ -42,4 +42,6 @@ public interface FundConstant {
     String BOND_FUND_MONTH_ANALYZE = "1、债基月度分析";
 
     String ALL_DATA = "2、全量数据";
+
+    String LONG_TIME_FUNDS = "3、长线稳健基金";
 }

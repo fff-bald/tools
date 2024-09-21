@@ -1,12 +1,11 @@
 package process.fund.utils;
 
-import process.fund.FundBeanFactory;
-import process.fund.FundHandlerContext;
-import process.fund.bean.FundBean;
-import process.fund.bean.FundDayBean;
-import process.fund.bean.FundMonthBean;
 import model.CommonExcelModel;
 import model.Pair;
+import process.fund.FundHandlerContext;
+import process.fund.bean.FundDayBean;
+import process.fund.bean.FundMonthBean;
+import process.fund.model.FundDataExcelModel;
 import utils.NewUtil;
 
 import java.time.LocalDate;
@@ -140,10 +139,10 @@ public class FundCalUtil {
     /**
      * 统计债券基金月度情况
      *
-     * @param fundBeans
+     * @param context
      * @return
      */
-    public static List<Object> calculateMonthlyAnalysis(List<FundBean> fundBeans) {
+    public static List<Object> calculateMonthlyAnalysis(FundHandlerContext context) {
         // 定义字符串常量
         final String FUND_TYPE_LIMIT = "基金类别=长债&中短债";
         final String MAX_CHANGE_LIMIT = "月涨跌幅异常：<10";
@@ -154,7 +153,6 @@ public class FundCalUtil {
         final String DECREASE_LABEL = "下跌数";
         final String INCREASE_RATE_LABEL = "上涨比例";
 
-        FundHandlerContext context = FundBeanFactory.getInstance().getInstanceContext();
         List<Object> result = NewUtil.arrayList();
         LocalDate contextDate = LocalDate.parse(context.getDate());
         int contextMonth = contextDate.getMonthValue();
@@ -185,6 +183,54 @@ public class FundCalUtil {
                     String.valueOf(decreaseCount)));
         }
 
+        return result;
+    }
+
+    /**
+     * 统计长线稳健基金数据
+     *
+     * @param allData
+     * @return
+     */
+    public static List<Object> countLongGoodFunds(List<Object> allData) {
+        List<Object> result = NewUtil.arrayList();
+        for (Object data : allData) {
+            if (!(data instanceof FundDataExcelModel)) {
+                continue;
+            }
+            FundDataExcelModel dataExcelModel = (FundDataExcelModel) data;
+
+            // 规模大于1亿元
+            if (dataExcelModel.getMoney() < 1) {
+                continue;
+            }
+
+            // 成立年数大于3
+            if (dataExcelModel.getDurationDay() < 3) {
+                continue;
+            }
+            // 上涨月份比例大于90% && 上涨日数比例大于85%
+            if (dataExcelModel.getUpMonthRate() < 90 || dataExcelModel.getUpDayRate() < 85) {
+                continue;
+            }
+            // 月涨跌幅最大异常要在0和15之间
+            if (dataExcelModel.getMonthMostChangeToAvg() < 0 || dataExcelModel.getMonthMostChangeToAvg() > 15) {
+                continue;
+            }
+            // 最大回撤小于1.2%
+            if (dataExcelModel.getMostReduceRate() > 1.2) {
+                continue;
+            }
+            // 复利年化收益率大于3.5%
+            if (dataExcelModel.getYearChangePro() < 3.5) {
+                continue;
+            }
+            // 个人投资者占比份额为0
+            if ("0.00%".equals(dataExcelModel.getPersonRate()) || "未匹配成功".equals(dataExcelModel.getPersonRate())) {
+                continue;
+            }
+            result.add(data);
+        }
         return result;
     }
 

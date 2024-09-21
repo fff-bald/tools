@@ -161,7 +161,9 @@ public class FundUtil {
         }
         res.put(ALL_DATA, allData);
 
-        res.put(BOND_FUND_MONTH_ANALYZE, FundCalUtil.calculateMonthlyAnalysis(beanList));
+        res.put(BOND_FUND_MONTH_ANALYZE, FundCalUtil.calculateMonthlyAnalysis(context));
+
+        res.put(LONG_TIME_FUNDS, FundCalUtil.countLongGoodFunds(allData));
 
         ExcelUtil.writeDataToExcel(filePath, res);
     }
