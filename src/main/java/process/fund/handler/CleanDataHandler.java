@@ -158,6 +158,11 @@ public class CleanDataHandler extends AbstractFundHandler {
                     hasError = true;
                 }
             }
+
+            // 最后一次遍历的时候把累计净值有问题的也标记一下
+            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+                hasError = true;
+            }
         }
 
         // 给无法修复的数据加上默认值
