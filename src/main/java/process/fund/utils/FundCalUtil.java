@@ -25,31 +25,35 @@ public class FundCalUtil {
     // ---------- public ----------
 
     /**
-     * 计算一段时间的收益率，算法：res += 每日变化值
+     * 计算一段时间的收益率，算法：（最后一天累计净值 - 首天累计净值）/ 首天单位净值
      *
      * @param dayList 基金每日数据列表
      * @param today   当前日期
      * @param day     时间段的天数
-     * @return res 指定时间段内的收益率(百分比)
+     * @return 指定时间段内的收益率(百分比)
      */
     public static double calTimeChange(List<FundDayBean> dayList, LocalDate today, int day) {
         // 计算指定天数前的日期
         LocalDate markDate = today.minusDays(day);
 
         // 初始化变量
-        double res = 0;
+        FundDayBean endDayBean = dayList.get(0); // 假设列表按日期从近到远排序，获取最近一天的数据
+        FundDayBean startDayBean = endDayBean; // 初始化为最近一天的数据
 
         // 查找指定天数前的基金数据
         for (FundDayBean dayBean : dayList) {
             LocalDate dayBeanDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
-            if (markDate.isBefore(dayBeanDate)) {
-                res += dayBean.getChange();
+            if (markDate.isBefore(dayBeanDate) || markDate.isEqual(dayBeanDate)) {
+                startDayBean = dayBean;
             } else {
                 break;
             }
         }
 
-        return res * 100;
+        // 计算收益率
+        double startPrice = startDayBean.getAllPrize();
+        double endPrice = endDayBean.getAllPrize();
+        return (endPrice - startPrice) / startDayBean.getPrice() * 100;
     }
 
     /**
