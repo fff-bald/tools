@@ -1,8 +1,6 @@
 package utils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -12,6 +10,39 @@ import java.util.function.Function;
  * @since 2024/9/1 22:52
  */
 public class CollectionUtil {
+
+    // ---------- create ----------
+
+    public static <T> List<T> arrayList() {
+        return new ArrayList<>(4);
+    }
+
+    public static <T> List<T> arrayList(int size) {
+        return new ArrayList<>(size);
+    }
+
+    public static <T> List<T> arraySycnList() {
+        return Collections.synchronizedList(new ArrayList<>(4));
+    }
+
+    public static <K, V> Map<K, V> hashMap() {
+        return new HashMap<>(4);
+    }
+
+    public static <K> Set<K> hashSet() {
+        return new HashSet<>(4);
+    }
+
+    public static <K extends Comparable<K>> Set<K> treeSet() {
+        return new TreeSet<>();
+    }
+
+    public static <K extends Comparable<K>, V> Map<K, V> treeMap() {
+        return new TreeMap<>();
+    }
+
+    // ---------- control ----------
+
     /**
      * 如果给定的键在映射中不存在，则使用给定的函数计算其值，并将其和键一起放入映射中，然后返回计算得到的新值。
      * 如果键已经存在于映射中，则直接返回与键关联的值。

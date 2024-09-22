@@ -1,11 +1,10 @@
 package process.fund;
 
-import process.fund.bean.FundBean;
 import model.Pair;
-import utils.NewUtil;
-import utils.TimeUtil;
+import process.fund.bean.FundBean;
+import utils.CollectionUtil;
+import utils.DateUtil;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FundHandlerContext {
 
     private final AtomicInteger finishCounter = new AtomicInteger(0);
-    private final List<String> deleteIds = NewUtil.arraySycnList();
+    private final List<String> deleteIds = CollectionUtil.arraySycnList();
 
     /**
      * 每月统计 长债&中短债 基金数量
@@ -112,7 +111,7 @@ public class FundHandlerContext {
         private boolean writeCsv;
         private boolean writeExcel;
         private boolean needReserve;
-        private String date = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
+        private String date = DateUtil.YYYY_MM_DD_SDF.format(DateUtil.getDate());
         private String path;
         private Map<Integer, Pair<Integer, Integer>> monthChangeCountMap;
         private Map<Double, Integer> newMonthChangeCountMap;
@@ -137,9 +136,9 @@ public class FundHandlerContext {
 
         public Builder setNeedReserve(boolean needReserve) {
             this.needReserve = needReserve;
-            this.beanList = NewUtil.arraySycnList();
-            this.monthChangeCountMap = NewUtil.treeMap();
-            this.newMonthChangeCountMap = NewUtil.treeMap();
+            this.beanList = CollectionUtil.arraySycnList();
+            this.monthChangeCountMap = CollectionUtil.treeMap();
+            this.newMonthChangeCountMap = CollectionUtil.treeMap();
             return this;
         }
 

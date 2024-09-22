@@ -6,13 +6,13 @@ import process.fund.FundHandlerContext;
 import process.fund.bean.FundDayBean;
 import process.fund.bean.FundMonthBean;
 import process.fund.model.FundDataExcelModel;
-import utils.NewUtil;
+import utils.CollectionUtil;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import static utils.TimeUtil.YYYY_MM_DD_DTF;
+import static utils.DateUtil.YYYY_MM_DD_DTF;
 
 /**
  * 数据计算工具类
@@ -25,35 +25,31 @@ public class FundCalUtil {
     // ---------- public ----------
 
     /**
-     * 计算一段时间的收益率，算法：（最后一天累计净值 - 首天累计净值）/ 首天累计净值
+     * 计算一段时间的收益率，算法：res += 每日变化值
      *
      * @param dayList 基金每日数据列表
      * @param today   当前日期
      * @param day     时间段的天数
-     * @return 指定时间段内的收益率(百分比)
+     * @return res 指定时间段内的收益率(百分比)
      */
     public static double calTimeChange(List<FundDayBean> dayList, LocalDate today, int day) {
         // 计算指定天数前的日期
         LocalDate markDate = today.minusDays(day);
 
         // 初始化变量
-        FundDayBean endDayBean = dayList.get(0); // 假设列表按日期从近到远排序，获取最近一天的数据
-        FundDayBean startDayBean = endDayBean; // 初始化为最近一天的数据
+        double res = 0;
 
         // 查找指定天数前的基金数据
         for (FundDayBean dayBean : dayList) {
             LocalDate dayBeanDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
-            if (markDate.isBefore(dayBeanDate) || markDate.isEqual(dayBeanDate)) {
-                startDayBean = dayBean;
+            if (markDate.isBefore(dayBeanDate)) {
+                res += dayBean.getChange();
             } else {
                 break;
             }
         }
 
-        // 计算收益率
-        double startPrice = startDayBean.getAllPrize();
-        double endPrice = endDayBean.getAllPrize();
-        return (endPrice - startPrice) / startPrice * 100;
+        return res * 100;
     }
 
     /**
@@ -153,7 +149,7 @@ public class FundCalUtil {
         final String DECREASE_LABEL = "下跌数";
         final String INCREASE_RATE_LABEL = "上涨比例";
 
-        List<Object> result = NewUtil.arrayList();
+        List<Object> result = CollectionUtil.arrayList();
         LocalDate contextDate = LocalDate.parse(context.getDate());
         int contextMonth = contextDate.getMonthValue();
 
@@ -193,7 +189,7 @@ public class FundCalUtil {
      * @return
      */
     public static List<Object> countLongGoodFunds(List<Object> allData) {
-        List<Object> result = NewUtil.arrayList();
+        List<Object> result = CollectionUtil.arrayList();
         for (Object data : allData) {
             if (!(data instanceof FundDataExcelModel)) {
                 continue;

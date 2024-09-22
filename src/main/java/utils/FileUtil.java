@@ -23,7 +23,7 @@ public class FileUtil {
             return Collections.emptyList();
         }
 
-        List<String> res = NewUtil.arrayList();
+        List<String> res = CollectionUtil.arrayList();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(path));

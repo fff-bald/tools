@@ -66,7 +66,7 @@ public class FundDataBaseUtil {
     public static List<FundDayBean> getData(String id, boolean isAll, String beforeDate) {
         String filePath = getFilePath(id);
         List<String> strings = FileUtil.readFileByLine(filePath);
-        List<FundDayBean> res = NewUtil.arrayList();
+        List<FundDayBean> res = CollectionUtil.arrayList();
         for (String str : strings) {
             if (StringUtil.isBlank(str)) {
                 continue;
@@ -109,9 +109,9 @@ public class FundDataBaseUtil {
             return;
         }
 
-        Set<String> set = NewUtil.hashSet();
+        Set<String> set = CollectionUtil.hashSet();
         List<FundDayBean> data = getAllFileData(ids.get(0));
-        List<String> res = NewUtil.arrayList();
+        List<String> res = CollectionUtil.arrayList();
         for (FundDayBean bean : data) {
 
             String beanId = bean.getId();
@@ -142,12 +142,12 @@ public class FundDataBaseUtil {
      * @param ids
      */
     public static void clearFundDataInDataBase(List<String> ids) {
-        Map<String, List<String>> preHandlerMap = NewUtil.hashMap();
+        Map<String, List<String>> preHandlerMap = CollectionUtil.hashMap();
 
         for (String id : ids) {
             String filePath = getFilePath(id);
             List<String> idList = CollectionUtil.computeIfAbsentAndReturnNewValue(preHandlerMap,
-                    filePath, key -> NewUtil.arrayList());
+                    filePath, key -> CollectionUtil.arrayList());
             idList.add(id);
         }
 

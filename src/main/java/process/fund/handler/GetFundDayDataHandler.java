@@ -9,10 +9,10 @@ import process.fund.utils.FundUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.CollectionUtil;
 import utils.ExceptionUtil;
 import utils.JsoupUtil;
 import utils.LogUtil;
-import utils.NewUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class GetFundDayDataHandler extends AbstractFundHandler {
             return;
         }
 
-        Set<String> onlySet = NewUtil.hashSet();
+        Set<String> onlySet = CollectionUtil.hashSet();
         for (FundDayBean dayBean : dayBeanList) {
             if (onlySet.contains(dayBean.getDate())) {
                 bean.setFailReason(String.format("每日数据中存在重复数据，日期：%s", dayBean.getDate()));

@@ -4,8 +4,8 @@ import process.fund.bean.FundBean;
 import process.fund.bean.FundDayBean;
 import process.fund.bean.FundMonthBean;
 import process.fund.utils.FundCalUtil;
-import utils.NewUtil;
-import utils.TimeUtil;
+import utils.CollectionUtil;
+import utils.DateUtil;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static utils.TimeUtil.YYYY_MM_DD_DTF;
+import static utils.DateUtil.YYYY_MM_DD_DTF;
 
 /**
  * Bean参数计算处理器
@@ -46,7 +46,7 @@ public class CalDataHandler extends AbstractFundHandler {
         FundDayBean startDay = dayList.get(dayList.size() - 1);
 
         // 基金存续时间
-        long totalDay = TimeUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
+        long totalDay = DateUtil.calYearBetween(startDay.getDate(), endDay.getDate()) + 1;
         bean.setDurationDay(totalDay * 1d / 365);
         int tradingDay = dayList.size();
 
@@ -98,8 +98,8 @@ public class CalDataHandler extends AbstractFundHandler {
      */
     public static void calMonthData(FundBean bean) {
         List<FundDayBean> dayList = bean.getDayBeanList();
-        List<FundMonthBean> monthBeans = NewUtil.arrayList();
-        Map<Integer, FundDayBean> monthlyGrowth = NewUtil.hashMap();
+        List<FundMonthBean> monthBeans = CollectionUtil.arrayList();
+        Map<Integer, FundDayBean> monthlyGrowth = CollectionUtil.hashMap();
         for (int index = dayList.size() - 1; index >= 0; index--) {
             FundDayBean dayBean = dayList.get(index);
             LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);

@@ -70,24 +70,24 @@ public class CleanDataHandler extends AbstractFundHandler {
         for (int i = 0; i < dayBeanList.size() - 1; i++) {
             FundDayBean dayBean = dayBeanList.get(i);
 
-            // 尝试修复累计净值数据
-            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+            // 尝试修复单位净值数据
+            if (dayBean.getPrice() == Double.MIN_VALUE) {
                 boolean isSuccess = false;
 
-                // 第一次尝试：今天累计净值 = 昨天累计值 * (今天变化值 + 1)
+                // 第一次尝试：今天单位净值 = 昨天单位值 * (今天变化值 + 1)
                 if (dayBean.getChange() != Double.MIN_VALUE) {
                     FundDayBean preDayBean = dayBeanList.get(i + 1);
-                    if (preDayBean.getAllPrize() != Double.MIN_VALUE) {
-                        dayBean.setAllPrize(preDayBean.getAllPrize() * (1 + dayBean.getChange()));
+                    if (preDayBean.getPrice() != Double.MIN_VALUE) {
+                        dayBean.setPrice(preDayBean.getPrice() * (1 + dayBean.getChange()));
                         isSuccess = true;
                     }
                 }
 
-                // 第二次尝试：今天累计净值 = 明天累计值 / (明天变化值 + 1)
+                // 第二次尝试：今天单位净值 = 明天单位值 / (明天变化值 + 1)
                 if (!isSuccess && i - 1 >= 0) {
                     FundDayBean nextDayBean = dayBeanList.get(i - 1);
-                    if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getAllPrize() != Double.MIN_VALUE) {
-                        dayBean.setAllPrize(nextDayBean.getAllPrize() / (1 + nextDayBean.getChange()));
+                    if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getPrice() != Double.MIN_VALUE) {
+                        dayBean.setPrice(nextDayBean.getPrice() / (1 + nextDayBean.getChange()));
                         isSuccess = true;
                     }
                 }
@@ -101,8 +101,8 @@ public class CleanDataHandler extends AbstractFundHandler {
             // 尝试修复当天变化值
             if (dayBean.getChange() == Double.MIN_VALUE) {
                 FundDayBean preDayBean = dayBeanList.get(i + 1);
-                if (dayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getAllPrize() != Double.MIN_VALUE) {
-                    dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getAllPrize());
+                if (dayBean.getPrice() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
+                    dayBean.setChange((dayBean.getPrice() - preDayBean.getPrice()) / preDayBean.getPrice());
                 } else {
                     // 如果无法修复
                     hasError = true;
@@ -120,24 +120,24 @@ public class CleanDataHandler extends AbstractFundHandler {
         for (int i = dayBeanList.size() - 1; i >= 0; i--) {
             FundDayBean dayBean = dayBeanList.get(i);
 
-            // 尝试修复累计净值数据
-            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+            // 尝试修复单位净值数据
+            if (dayBean.getPrice() == Double.MIN_VALUE) {
                 boolean isSuccess = false;
 
-                // 第一次尝试：今天累计净值 = 昨天累计值 * (今天变化值 + 1)
+                // 第一次尝试：今天单位净值 = 昨天单位值 * (今天变化值 + 1)
                 if (dayBean.getChange() != Double.MIN_VALUE && i + 1 < dayBeanList.size()) {
                     FundDayBean preDayBean = dayBeanList.get(i + 1);
-                    if (preDayBean.getAllPrize() != Double.MIN_VALUE) {
-                        dayBean.setAllPrize(preDayBean.getAllPrize() * (1 + dayBean.getChange()));
+                    if (preDayBean.getPrice() != Double.MIN_VALUE) {
+                        dayBean.setPrice(preDayBean.getPrice() * (1 + dayBean.getChange()));
                         isSuccess = true;
                     }
                 }
 
-                // 第二次尝试：今天累计净值 = 明天累计值 / (明天变化值 + 1)
+                // 第二次尝试：今天单位净值 = 明天单位值 / (明天变化值 + 1)
                 if (!isSuccess && i - 1 >= 0) {
                     FundDayBean nextDayBean = dayBeanList.get(i - 1);
-                    if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getAllPrize() != Double.MIN_VALUE) {
-                        dayBean.setAllPrize(nextDayBean.getAllPrize() / (1 + nextDayBean.getChange()));
+                    if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getPrice() != Double.MIN_VALUE) {
+                        dayBean.setPrice(nextDayBean.getPrice() / (1 + nextDayBean.getChange()));
                         isSuccess = true;
                     }
                 }
@@ -151,8 +151,8 @@ public class CleanDataHandler extends AbstractFundHandler {
             // 尝试修复当天变化值
             if (dayBean.getChange() == Double.MIN_VALUE && i + 1 < dayBeanList.size()) {
                 FundDayBean preDayBean = dayBeanList.get(i + 1);
-                if (dayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getAllPrize() != Double.MIN_VALUE) {
-                    dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getAllPrize());
+                if (dayBean.getPrice() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
+                    dayBean.setChange((dayBean.getPrice() - preDayBean.getPrice()) / preDayBean.getPrice());
                 } else {
                     // 如果无法修复
                     hasError = true;
@@ -164,18 +164,24 @@ public class CleanDataHandler extends AbstractFundHandler {
         if (hasError) {
             for (int i = dayBeanList.size() - 2; i >= 0; i--) {
                 FundDayBean dayBean = dayBeanList.get(i);
+                FundDayBean preDayBean = dayBeanList.get(i + 1);
 
-                if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-                    FundDayBean preDayBean = dayBeanList.get(i + 1);
-                    dayBean.setAllPrize(preDayBean.getAllPrize());
-                    LogUtil.warn("【{}】累计净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
+                if (dayBean.getPrice() == Double.MIN_VALUE) {
+                    dayBean.setPrice(preDayBean.getPrice());
+                    LogUtil.warn("【{}】单位净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
                 }
 
                 if (dayBean.getChange() == Double.MIN_VALUE) {
                     dayBean.setChange(0);
                     LogUtil.warn("【{}】单日变化率无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
                 }
+
+                if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+                    dayBean.setAllPrize(preDayBean.getAllPrize());
+                    LogUtil.warn("【{}】累计净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
+                }
             }
+            LogUtil.warn("【{}】基金每日数据存在无法修复的情况", bean.getId());
         }
     }
 }

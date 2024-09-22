@@ -6,7 +6,6 @@ import process.fund.utils.FundDataBaseUtil;
 import process.fund.utils.FundUtil;
 import utils.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -92,7 +91,6 @@ public class FundApp {
         ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
 
         // 2、初始化文件路径和内容
-        // todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "base-" + todayDate);
         // 防止重复运行报错
         FileUtil.deleteFile(path);
@@ -131,7 +129,7 @@ public class FundApp {
     }
 
     private static void testCSV(String testId) {
-        String todayDate = TimeUtil.YYYY_MM_DD_SDF.format(new Date());
+        String todayDate = DateUtil.YYYY_MM_DD_SDF.format(DateUtil.getDate());
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldAnnotationValue(FundBean.class, ","), true);

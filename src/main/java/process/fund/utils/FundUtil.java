@@ -4,10 +4,10 @@ import process.fund.FundHandlerContext;
 import process.fund.bean.FundBean;
 import process.fund.handler.FundHandlerEnum;
 import process.fund.model.FundDataExcelModel;
+import utils.CollectionUtil;
 import utils.ExcelUtil;
 import utils.ExceptionUtil;
 import utils.LogUtil;
-import utils.NewUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -82,7 +82,7 @@ public class FundUtil {
             LogUtil.error("!!!异常信息：{}", ExceptionUtil.getStackTraceAsString(e));
         }
 
-        Set<String> res = NewUtil.treeSet();
+        Set<String> res = CollectionUtil.treeSet();
         int count = 0;
         for (int i = 0; i < stringFromText.size(); i += 5) {
             res.add(stringFromText.get(i));
@@ -152,9 +152,9 @@ public class FundUtil {
         List<FundBean> beanList = context.getBeanList();
         String filePath = context.getPath();
 
-        Map<String, List<Object>> res = NewUtil.treeMap();
+        Map<String, List<Object>> res = CollectionUtil.treeMap();
 
-        List<Object> allData = NewUtil.arrayList(beanList.size());
+        List<Object> allData = CollectionUtil.arrayList(beanList.size());
         for (FundBean bean : beanList) {
             FundDataExcelModel model = FundDataExcelModel.valueOf(bean);
             allData.add(model);

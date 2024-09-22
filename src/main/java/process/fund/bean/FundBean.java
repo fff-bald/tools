@@ -2,7 +2,7 @@ package process.fund.bean;
 
 import process.fund.utils.FundDataBaseUtil;
 import tag.DescriptionField;
-import utils.TimeUtil;
+import utils.DateUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -122,13 +122,13 @@ public class FundBean implements Comparable<FundBean> {
     private double monthAvgChange;
 
     public static FundBean valueOf(String id) {
-        return valueOf(id, LocalDate.now());
+        return valueOf(id, DateUtil.getLocalDate());
     }
 
     public static FundBean valueOf(String id, LocalDate updateTime) {
         FundBean res = new FundBean();
         res.id = id;
-        res.dayBeanList = FundDataBaseUtil.getDataBeforeDate(id, updateTime.format(TimeUtil.YYYY_MM_DD_DTF));
+        res.dayBeanList = FundDataBaseUtil.getDataBeforeDate(id, updateTime.format(DateUtil.YYYY_MM_DD_DTF));
         res.updateTime = updateTime;
         return res;
     }
