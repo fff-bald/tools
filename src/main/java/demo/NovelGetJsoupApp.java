@@ -9,8 +9,8 @@ import utils.JsoupUtil;
 public class NovelGetJsoupApp {
 
     private static final String PARAGRAPH_SELECTOR = "div.txtnav p";
-    private static final String FILE_PATH = "C:\\Mine\\Downloads\\novel.txt";
-    private static final String INITIAL_URL = "https://69shu.me/txt/58965/38361338"; // 小说链接
+    private static final String FILE_PATH = "C:\\Mine\\Downloads\\无尽债务（完结）.txt";
+    private static final String INITIAL_URL = "https://69shuba.cx/txt/51195/33417537"; // 小说链接
 
     /**
      * 从给定的网页内容中提取小说文本内容

@@ -69,19 +69,21 @@ public class FundCalUtil {
 
         // 初始峰值为时间最早的值（列表最后一个元素）
         double peak = netValues.get(netValues.size() - 1).getAllPrize();
+        double peakPrice = netValues.get(netValues.size() - 1).getPrice();
         // 最大回撤初始化为0
         double maxDrawDown = 0.0;
 
-        // 从最后一天开始，逐日向前遍历
-        for (int i = netValues.size() - 1; i >= 0; i--) {
+        // 从倒数第二天开始，逐日向前遍历
+        for (int i = netValues.size() - 2; i >= 0; i--) {
             double netValue = netValues.get(i).getAllPrize();
 
             // 如果当前净值高于之前的峰值，则更新峰值
             if (netValue > peak) {
                 peak = netValue;
+                peakPrice = netValues.get(i).getPrice();
             } else {
-                // 计算当前净值与峰值之间的回撤
-                double drawDown = (peak - netValue) / peak;
+                // 回撤公式：（峰值当天累计净值 - 今天累计净值）/峰值当天单位净值
+                double drawDown = (peak - netValue) / peakPrice;
                 // 如果当前回撤大于之前的最大回撤，则更新最大回撤
                 if (drawDown > maxDrawDown) {
                     maxDrawDown = drawDown;
@@ -106,21 +108,27 @@ public class FundCalUtil {
     /**
      * 计算标准差
      *
-     * @param growthRates
-     * @return
+     * @param nums 输入的数字列表
+     * @return 标准差
      */
-    public static double calculateStandardDeviation(List<Double> growthRates) {
-        double sum = 0.0;
-        for (double rate : growthRates) {
-            sum += rate;
+    public static double calculateStandardDeviation(List<Double> nums) {
+        // 检查输入列表是否为空
+        if (nums == null || nums.isEmpty()) {
+            return 0;
         }
-        double mean = sum / growthRates.size();
 
+        double sum = 0.0;
         double sumOfSquares = 0.0;
-        for (double rate : growthRates) {
-            sumOfSquares += Math.pow(rate - mean, 2);
+        int size = nums.size();
+
+        // 一次遍历同时计算总和和平方和
+        for (double num : nums) {
+            sum += num;
+            sumOfSquares += num * num;
         }
-        double variance = sumOfSquares / growthRates.size();
+
+        double mean = sum / size;
+        double variance = (sumOfSquares / size) - (mean * mean);
 
         return Math.sqrt(variance);
     }

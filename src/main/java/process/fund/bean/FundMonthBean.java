@@ -22,7 +22,7 @@ public class FundMonthBean implements Comparable<FundMonthBean> {
         FundMonthBean res = new FundMonthBean();
         res.year = year;
         res.month = month;
-        res.change = 100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getAllPrize();
+        res.change = 100 * (endDay.getAllPrize() - startDay.getAllPrize()) / startDay.getPrice();
         res.startDay = startDay;
         res.endDay = endDay;
         return res;
