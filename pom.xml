@@ -79,7 +79,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>demo.StartDemo</mainClass> <!-- 指定主类 -->
+                            <mainClass>process.StartApp</mainClass> <!-- 指定主类 -->
                         </manifest>
                     </archive>
                 </configuration>

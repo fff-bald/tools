@@ -1,4 +1,4 @@
-package demo;
+package process;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -6,7 +6,7 @@ import org.jsoup.select.Elements;
 import utils.FileUtil;
 import utils.JsoupUtil;
 
-public class NovelGetJsoupDemo {
+public class NovelGetJsoupApp {
 
     private static final String PARAGRAPH_SELECTOR = "div.txtnav p";
     private static final String FILE_PATH = "C:\\Mine\\Downloads\\无尽债务（完结）.txt";
