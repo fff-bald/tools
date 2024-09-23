@@ -20,7 +20,7 @@ import java.nio.file.Paths;
  * @author: cjl
  * @date: 2024-06-01 22:56
  **/
-public class ImageCrawlerApp {
+public class ImageCrawlerDemo {
 
     private static final String USER_AGENT = "Mozilla/5.0";
     private static final String IMAGE_SAVE_DIR = "downloaded_images";

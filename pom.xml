@@ -79,7 +79,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>demo.StartApp</mainClass> <!-- 指定主类 -->
+                            <mainClass>demo.StartDemo</mainClass> <!-- 指定主类 -->
                         </manifest>
                     </archive>
                 </configuration>
