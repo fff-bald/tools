@@ -30,11 +30,13 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
 //        testCSV("008229");
-        workExcel("2024-09-20");
+        workExcel("2024-09-21");
 //        workCSV("2024-08-30");
 
         List<String> deleteIds = FundBeanFactory.getInstance().getInstanceContext().getDeleteIds();
         FundDataBaseUtil.clearFundDataInDataBase(deleteIds);
+
+        CmdUtil.winCommmand("shutdown -s -t 120");
 
         LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
