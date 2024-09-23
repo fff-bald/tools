@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class FundDataBaseUtil {
 
-    private static final String INIT_PATH = ".\\fund_data\\%s.txt";
+    private static final String DATA_FILE_PATH = ".\\resources\\fund_data\\%s.txt";
 
     // ---------- public ----------
 
@@ -160,7 +160,7 @@ public class FundDataBaseUtil {
 
     private static String getFilePath(String id) {
         int fileNum = id.hashCode() & (128 - 1);
-        return String.format(INIT_PATH, fileNum);
+        return String.format(DATA_FILE_PATH, fileNum);
     }
 
     // ---------- main ----------
