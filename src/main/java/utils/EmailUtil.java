@@ -50,8 +50,8 @@ public class EmailUtil {
                 properties.put("mail.smtp.port", "25");
                 properties.put("mail.smtp.auth", "true");
                 properties.put("mail.smtp.starttls.enable", "true");
-                properties.put("mailFrom", "your-email@163.com");
-                properties.put("password", "your-email-password");
+                properties.put("mailFrom", ConfigUtil.getProperties().getProperty("email.163.name", ""));
+                properties.put("password", ConfigUtil.getProperties().getProperty("email.163.password", ""));
                 return properties;
             }
         };

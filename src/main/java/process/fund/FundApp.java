@@ -89,7 +89,7 @@ public class FundApp {
         if (FundConstant.NEED_EMAIL) {
             try {
                 // 收件人信息
-                String mailTo = "recipient@example.com";
+                String mailTo = FundConstant.RECEIVER_EMAIL_NAME;
                 String subject = "程序自动：FundData" + context.getDate();
                 String message = "附件生成时间：" + DateUtil.getDate();
                 // 附件文件路径

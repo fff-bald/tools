@@ -48,4 +48,9 @@ public interface FundConstant {
     String ALL_DATA = "2、全量数据";
 
     String LONG_TIME_FUNDS = "3、长线稳健基金";
+
+    // ---------- EMAIL ----------
+
+    String RECEIVER_EMAIL_NAME = "recipient@example.com";
+
 }

@@ -1,6 +1,9 @@
 package utils;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,7 +56,7 @@ public class FileUtil {
      * @param isAppend 是否为追加写入
      */
     public static void writeStringToFile(String path, String str, boolean isAppend) {
-        checkAndBuildDirectory(path);
+        checkAndCreatePath(path);
 
         BufferedWriter writer = null;
         try {
@@ -81,7 +84,7 @@ public class FileUtil {
      * @param isAppend 是否为追加写入
      */
     public static void writeStringLineToFile(String path, List<String> lines, boolean isAppend) {
-        checkAndBuildDirectory(path);
+        checkAndCreatePath(path);
 
         BufferedWriter writer = null;
         try {
@@ -115,25 +118,32 @@ public class FileUtil {
     // ---------- private ----------
 
     /**
-     * 检查所有文件目录是否创建，存在没创建的就创建
+     * 创建路径上的所有文件夹，如果路径是文件，则在创建所有文件夹的同时创建文件
      *
-     * @param filePath
+     * @param pathStr 路径字符串
+     * @throws IOException 如果创建文件或文件夹失败
      */
-    private static void checkAndBuildDirectory(String filePath) {
-        // 从文件路径中分离出目录部分
-        File file = new File(filePath);
-        File directory = file.getParentFile();
+    public static void checkAndCreatePath(String pathStr) {
+        Path path = Paths.get(pathStr);
 
-        // 检查目录是否存在，如果不存在则创建它
-        if (!directory.exists()) {
-            boolean result = directory.mkdirs();
-
-            if (result) {
-                System.out.println("目录创建成功: " + directory.getAbsolutePath());
+        try {
+            if (Files.isDirectory(path) || pathStr.endsWith(File.separator)) {
+                // 如果路径是文件夹或以文件夹分隔符结尾，则创建所有文件夹
+                Files.createDirectories(path);
+                LogUtil.info("Directories created: {}", path);
             } else {
-                System.out.println("目录创建失败，请检查权限或磁盘空间");
-                // 在这里可以添加额外的错误处理逻辑
+                // 如果路径是文件，则创建所有文件夹并创建文件
+                Files.createDirectories(path.getParent());
+                if (Files.notExists(path)) {
+                    Files.createFile(path);
+                    LogUtil.info("File created: {}", path);
+                } else {
+                    LogUtil.info("File already exists: {}", path);
+                }
             }
+        } catch (IOException e) {
+            LogUtil.error("Failed to create path: {}", ExceptionUtil.getStackTraceAsString(e));
         }
     }
 }
+
