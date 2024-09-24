@@ -8,6 +8,10 @@ package process.fund.constant;
  */
 public interface FundConstant {
 
+    // ---------- STATE ----------
+
+    boolean NEED_EMAIL = false;
+
     // --------- DATE ----------
 
     String START_DATE = "";

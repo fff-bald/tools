@@ -1,11 +1,13 @@
 package process.fund;
 
 import process.fund.bean.FundBean;
+import process.fund.constant.FundConstant;
 import process.fund.task.FundDataGetRunnable;
 import process.fund.utils.FundDataBaseUtil;
 import process.fund.utils.FundUtil;
 import utils.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -82,6 +84,24 @@ public class FundApp {
 
         // 4、根据数据生成Excel
         FundUtil.createExcel(context);
+
+        // 5、发邮件
+        if (FundConstant.NEED_EMAIL) {
+            try {
+                // 收件人信息
+                String mailTo = "recipient@example.com";
+                String subject = "程序自动：FundData" + context.getDate();
+                String message = "附件生成时间：" + DateUtil.getDate();
+                // 附件文件路径
+                String[] attachFiles = {context.getPath()};
+
+                EmailUtil.sendEmail(EmailUtil.EmailSendType.ONE_SIX_THREE
+                        , mailTo, subject, message, attachFiles);
+                LogUtil.info("Email sent successfully.");
+            } catch (MessagingException ex) {
+                LogUtil.error("Could not send email, logReason:{}", ExceptionUtil.getStackTraceAsString(ex));
+            }
+        }
     }
 
     /**
