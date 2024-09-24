@@ -41,6 +41,19 @@ public class EmailUtil {
                 properties.put("password", "your-email-password");
                 return properties;
             }
+        },
+        ONE_SIX_THREE {
+            @Override
+            public Properties getProperties() {
+                Properties properties = new Properties();
+                properties.put("mail.smtp.host", "smtp.163.com");
+                properties.put("mail.smtp.port", "25");
+                properties.put("mail.smtp.auth", "true");
+                properties.put("mail.smtp.starttls.enable", "true");
+                properties.put("mailFrom", "your-email@163.com");
+                properties.put("password", "your-email-password");
+                return properties;
+            }
         };
 
         public abstract Properties getProperties();
@@ -118,10 +131,10 @@ public class EmailUtil {
         String message = "This is a test email with attachments.";
 
         // 附件文件路径
-        String[] attachFiles = {"path/to/file1.txt"};
+        String[] attachFiles = {"C:\\Desktop\\111.txt"};
 
         try {
-            sendEmail(EmailSendType.QQ, mailTo, subject, message, attachFiles);
+            sendEmail(EmailSendType.ONE_SIX_THREE, mailTo, subject, message, attachFiles);
             System.out.println("Email sent successfully.");
         } catch (MessagingException ex) {
             System.out.println("Could not send email.");

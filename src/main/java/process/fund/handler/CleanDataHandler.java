@@ -74,11 +74,6 @@ public class CleanDataHandler extends AbstractFundHandler {
             if (!repairDayDataByOtherDays(dayBean, dayBeanList.get(i + 1), i - 1 >= 0 ? dayBeanList.get(i - 1) : null)) {
                 hasError = true;
             }
-
-            // 遍历的时候把累计净值有问题的也标记一下
-            if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-                isWarn = true;
-            }
         }
 
         // ~从倒数第二天开始，列表从后向前修复数据
@@ -86,6 +81,11 @@ public class CleanDataHandler extends AbstractFundHandler {
             for (int i = dayBeanList.size() - 2; i >= 0; i--) {
                 FundDayBean dayBean = dayBeanList.get(i);
                 if (!repairDayDataByOtherDays(dayBean, dayBeanList.get(i + 1), i - 1 >= 0 ? dayBeanList.get(i - 1) : null)) {
+                    isWarn = true;
+                }
+
+                // 遍历的时候把累计净值有问题的也标记一下
+                if (dayBean.getAllPrize() == Double.MIN_VALUE) {
                     isWarn = true;
                 }
             }
@@ -153,6 +153,28 @@ public class CleanDataHandler extends AbstractFundHandler {
             if (preDayBean != null && dayBean.getPrice() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
                 dayBean.setChange((dayBean.getPrice() - preDayBean.getPrice()) / preDayBean.getPrice());
                 isSuccess = true;
+            }
+        }
+
+        // 尝试修复当天累计净值
+        if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+            isSuccess = false;
+
+            // 通过邻近的单位净值计算当天累计净值，但这个方法计算出的修复值会受（单位净值分红拆分）影响，导致误差
+            // 但考虑到分红拆分是少数，误差影响对最终结果应该不大
+            if (dayBean.getPrice() != Double.MIN_VALUE) {
+                // 公式：今天的累计净值 = 今天的单位净值 - 昨天的单位净值 + 昨天的累计净值
+                if (preDayBean != null && preDayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
+                    dayBean.setAllPrize(dayBean.getPrice() - preDayBean.getPrice() + preDayBean.getAllPrize());
+                    isSuccess = true;
+                }
+
+                // 公式：今天的累计净值 = 明天的累计净值 - （明天的单位净值 - 今天的单位净值）
+                if (!isSuccess && nextDayBean != null && nextDayBean.getAllPrize() != Double.MIN_VALUE
+                        && nextDayBean.getPrice() != Double.MIN_VALUE) {
+                    dayBean.setAllPrize(nextDayBean.getAllPrize() - (nextDayBean.getPrice() - dayBean.getPrice()));
+                    isSuccess = true;
+                }
             }
         }
 

@@ -1,11 +1,13 @@
 package utils;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Jsoup封装工具类
@@ -87,5 +89,50 @@ public class JsoupUtil {
         }
 
         return document;
+    }
+
+    /**
+     * 模拟浏览器请求获取网页内容
+     *
+     * @param url 要抓取的网页 URL
+     * @return 抓取到的网页内容的 Document 对象，可能为null
+     */
+    public static Document getDocumentSimulate(String url) {
+        // 设置 User-Agent 和其他头部信息
+        Map<String, String> headers = CollectionUtil.hashMap();
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+        headers.put("Referer", "https://www.google.com/");
+        headers.put("Accept-Language", "en-US,en;q=0.9");
+        headers.put("Accept-Encoding", "gzip, deflate, br");
+        headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+
+        // 设置 Cookies
+        Map<String, String> cookies = CollectionUtil.hashMap();
+        cookies.put("cookie_name", "cookie_value");
+
+        Document doc = null;
+        try {
+            // 创建 Jsoup 连接并设置头部信息和 Cookies
+            Connection connection = Jsoup.connect(url)
+                    .headers(headers)
+                    .cookies(cookies)
+                    .timeout(10000) // 设置超时时间为 10 秒
+                    .method(Connection.Method.GET);
+
+            // 发送 GET 请求并获取响应的 Document 对象
+            doc = connection.get();
+        } catch (IOException e) {
+            // 捕获并打印异常
+            e.printStackTrace();
+        }
+
+        // 返回抓取到的 Document 对象
+        return doc;
+    }
+
+    // ---------- main ----------
+    public static void main(String[] args) {
+        Document documentSimulate = getDocumentSimulate("https://69shuba.cx/txt/76475/39108317");
+        System.out.println(documentSimulate.text());
     }
 }
