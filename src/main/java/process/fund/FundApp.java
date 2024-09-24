@@ -32,7 +32,7 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
 //        testCSV("008229");
-        workExcel("2024-09-21");
+        workExcel("2024-09-24");
 //        workCSV("2024-08-30");
 
         List<String> deleteIds = FundBeanFactory.getInstance().getInstanceContext().getDeleteIds();
@@ -93,10 +93,10 @@ public class FundApp {
                 String subject = "程序自动：FundData" + context.getDate();
                 String message = "附件生成时间：" + DateUtil.getDate();
                 // 附件文件路径
-                String[] attachFiles = {context.getPath()};
+                String attachFile = context.getPath();
 
                 EmailUtil.sendEmail(EmailUtil.EmailSendType.ONE_SIX_THREE
-                        , mailTo, subject, message, attachFiles);
+                        , mailTo, subject, message, attachFile);
                 LogUtil.info("Email sent successfully.");
             } catch (MessagingException ex) {
                 LogUtil.error("Could not send email, logReason:{}", ExceptionUtil.getStackTraceAsString(ex));

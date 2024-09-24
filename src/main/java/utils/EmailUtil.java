@@ -59,17 +59,23 @@ public class EmailUtil {
         public abstract Properties getProperties();
     }
 
+    public static void sendEmail(EmailSendType type, String toAddress, String subject, String message, String attachFile) throws MessagingException {
+        String[] toAddressArray = {toAddress};
+        String[] attachFileArray = {attachFile};
+        sendEmail(type, toAddressArray, subject, message, attachFileArray);
+    }
+
     /**
      * 发送电子邮件
      *
      * @param type        邮件发送类型
-     * @param toAddress   收件人的电子邮件地址
+     * @param toAddress   收件人的电子邮件地址（可多个）
      * @param subject     邮件主题
      * @param message     邮件内容
      * @param attachFiles 附件文件路径数组（可选）
      * @throws MessagingException 如果发送邮件失败
      */
-    public static void sendEmail(EmailSendType type, String toAddress, String subject, String message, String... attachFiles) throws MessagingException {
+    public static void sendEmail(EmailSendType type, String[] toAddress, String subject, String message, String... attachFiles) throws MessagingException {
         Properties properties = type.getProperties();
 
         String userName = properties.getProperty("mailFrom");
@@ -89,7 +95,10 @@ public class EmailUtil {
         // 设置发件人地址
         msg.setFrom(new InternetAddress(userName));
         // 设置收件人地址
-        InternetAddress[] toAddresses = {new InternetAddress(toAddress)};
+        InternetAddress[] toAddresses = new InternetAddress[toAddress.length];
+        for (int index = 0; index < toAddress.length; index++) {
+            toAddresses[index] = new InternetAddress(toAddress[index]);
+        }
         msg.setRecipients(Message.RecipientType.TO, toAddresses);
         // 设置邮件主题
         msg.setSubject(subject);
@@ -131,10 +140,10 @@ public class EmailUtil {
         String message = "This is a test email with attachments.";
 
         // 附件文件路径
-        String[] attachFiles = {".\\src\\main\\java\\process\\fund\\constant\\FundConstant.java"};
+        String attachFile = ".\\src\\main\\java\\process\\fund\\constant\\FundConstant.java";
 
         try {
-            sendEmail(EmailSendType.ONE_SIX_THREE, mailTo, subject, message, attachFiles);
+            sendEmail(EmailSendType.ONE_SIX_THREE, mailTo, subject, message, attachFile);
             System.out.println("Email sent successfully.");
         } catch (MessagingException ex) {
             System.out.println("Could not send email.");
