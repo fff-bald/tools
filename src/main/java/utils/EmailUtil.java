@@ -107,7 +107,7 @@ public class EmailUtil {
 
         // 创建消息部分
         MimeBodyPart messageBodyPart = new MimeBodyPart();
-        messageBodyPart.setContent(message, "text/html");
+        messageBodyPart.setContent(message, "text/html; charset=UTF-8");
 
         // 创建多部分
         Multipart multipart = new MimeMultipart();
