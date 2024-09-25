@@ -59,10 +59,9 @@ public class EmailUtil {
         public abstract Properties getProperties();
     }
 
-    public static void sendEmail(EmailSendType type, String toAddress, String subject, String message, String attachFile) throws MessagingException {
+    public static void sendEmail(EmailSendType type, String toAddress, String subject, String message, String... attachFiles) throws MessagingException {
         String[] toAddressArray = {toAddress};
-        String[] attachFileArray = {attachFile};
-        sendEmail(type, toAddressArray, subject, message, attachFileArray);
+        sendEmail(type, toAddressArray, subject, message, attachFiles);
     }
 
     /**
