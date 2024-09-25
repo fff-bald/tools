@@ -115,8 +115,6 @@ public class FileUtil {
         }
     }
 
-    // ---------- private ----------
-
     /**
      * 创建路径上的所有文件夹，如果路径是文件，则在创建所有文件夹的同时创建文件
      *
@@ -137,13 +135,14 @@ public class FileUtil {
                 if (Files.notExists(path)) {
                     Files.createFile(path);
                     LogUtil.info("File created: {}", path);
-                } else {
-                    LogUtil.info("File already exists: {}", path);
                 }
             }
         } catch (IOException e) {
             LogUtil.error("Failed to create path: {}", ExceptionUtil.getStackTraceAsString(e));
         }
     }
+
+    // ---------- private ----------
+
 }
 

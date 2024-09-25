@@ -112,7 +112,7 @@ public class CleanDataHandler extends AbstractFundHandler {
                     LogUtil.warn("【{}】累计净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
                 }
             }
-            LogUtil.error("【{}】基金每日数据存在无法修复的情况", bean.getId());
+            LogUtil.warn("【{}】基金每日数据存在无法修复的情况", bean.getId());
         }
     }
 
