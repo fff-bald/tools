@@ -89,7 +89,7 @@ public class FundDataBaseUtil {
     }
 
     /**
-     * 获取文件路径内所有基金每日数据
+     * 读取文件中所有基金每日数据
      *
      * @param filePath 文件路径
      * @return
