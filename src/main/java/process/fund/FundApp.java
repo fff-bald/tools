@@ -2,6 +2,7 @@ package process.fund;
 
 import process.fund.bean.FundBean;
 import process.fund.constant.FundConstant;
+import process.fund.handler.CleanDataHandler;
 import process.fund.task.FundDataGetRunnable;
 import process.fund.utils.FundDataBaseUtil;
 import process.fund.utils.FundUtil;
@@ -91,7 +92,8 @@ public class FundApp {
                 // 收件人信息
                 String mailTo = FundConstant.RECEIVER_EMAIL_NAME;
                 String subject = "程序自动：FundData" + context.getDate();
-                String message = "附件生成时间：" + DateUtil.getDate();
+                String message = "附件生成时间：" + DateUtil.getDate() + "\n"
+                        + "缺失数据统计结果：" + CleanDataHandler.counterMap.toString();
                 // 附件文件路径
                 String attachFile = context.getPath();
 

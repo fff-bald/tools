@@ -2,15 +2,32 @@ package process.fund.handler;
 
 import process.fund.bean.FundBean;
 import process.fund.bean.FundDayBean;
+import utils.CollectionUtil;
 import utils.LogUtil;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 按照一定策略，对Bean数据进行清洗
  */
 public class CleanDataHandler extends AbstractFundHandler {
+
+    public static Map<Integer, AtomicInteger> counterMap;
+
+    static {
+        counterMap = CollectionUtil.ConcurrentHashMap();
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                for (int k = 0; k < 2; k++) {
+                    counterMap.put(i * 100 + j * 10 + k, new AtomicInteger(0));
+                }
+            }
+        }
+    }
+
     CleanDataHandler(int id) {
         super(id);
     }
@@ -46,6 +63,23 @@ public class CleanDataHandler extends AbstractFundHandler {
             // 如果每日数据为空，记录错误日志并返回
             bean.setFailReason("基金每日数据为空");
             return;
+        }
+
+        for (FundDayBean fundDayBean : bean.getDayBeanList()) {
+            int mark = 0;
+            if (fundDayBean.getPrice() == Double.MIN_VALUE) {
+                mark += 100;
+            }
+
+            if (fundDayBean.getAllPrize() == Double.MIN_VALUE) {
+                mark += 10;
+            }
+
+            if (fundDayBean.getChange() == Double.MIN_VALUE) {
+                mark += 1;
+            }
+
+            counterMap.get(mark).incrementAndGet();
         }
 
         // ~给最早一天的数据设置默认值：
