@@ -7,6 +7,9 @@ package utils;
  * @since 2024/7/11 21:21
  */
 public class StringUtil {
+
+    public static final String SPLIT_DAOHAO = ",";
+
     /**
      * 判断字符串是否为null或长度为0
      *
@@ -20,9 +23,9 @@ public class StringUtil {
     /**
      * 返回第一个字符串中被第二个和第三个字符串包围的子字符串。
      *
-     * @param input     要处理的字符串
-     * @param startStr  包围子字符串的起始字符串
-     * @param endStr    包围子字符串的结束字符串
+     * @param input    要处理的字符串
+     * @param startStr 包围子字符串的起始字符串
+     * @param endStr   包围子字符串的结束字符串
      * @return 被包围的子字符串，如果未找到则返回null
      */
     public static String getSubstringBetween(String input, String startStr, String endStr) {

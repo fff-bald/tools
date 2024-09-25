@@ -60,7 +60,7 @@ public class EmailUtil {
     }
 
     public static void sendEmail(EmailSendType type, String toAddress, String subject, String message, String... attachFiles) throws MessagingException {
-        String[] toAddressArray = {toAddress};
+        String[] toAddressArray = toAddress.split(StringUtil.SPLIT_DAOHAO);
         sendEmail(type, toAddressArray, subject, message, attachFiles);
     }
 
