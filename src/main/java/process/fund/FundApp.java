@@ -40,7 +40,7 @@ public class FundApp {
 
         CmdUtil.winCommand("shutdown -s -t 120");
 
-        LogUtil.info("!!!所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
+        LogUtil.info("所有任务完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
     /**
@@ -99,7 +99,7 @@ public class FundApp {
                         , mailTo, subject, message, attachFile);
                 LogUtil.info("Email sent successfully.");
             } catch (MessagingException ex) {
-                LogUtil.error("Could not send email, logReason:{}", ExceptionUtil.getStackTraceAsString(ex));
+                LogUtil.error("Could not send email, logReason: {}", ExceptionUtil.getStackTraceAsString(ex));
             }
         }
     }

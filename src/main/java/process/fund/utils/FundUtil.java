@@ -79,7 +79,7 @@ public class FundUtil {
             conn.disconnect();
 
         } catch (Exception e) {
-            LogUtil.error("!!!异常信息：{}", ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("异常信息：{}", ExceptionUtil.getStackTraceAsString(e));
         }
 
         Set<String> res = CollectionUtil.treeSet();

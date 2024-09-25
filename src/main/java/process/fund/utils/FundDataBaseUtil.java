@@ -133,7 +133,7 @@ public class FundDataBaseUtil {
             }
         }
         FileUtil.writeStringLineToFile(getFilePath(ids.get(0)), res, false);
-        LogUtil.info(">>>数据库清除任务完成，清除ID为{}，清除记录{}条", ids, data.size() - res.size());
+        LogUtil.info("数据库清除任务完成，清除ID为{}，清除记录{}条", ids, data.size() - res.size());
     }
 
     /**

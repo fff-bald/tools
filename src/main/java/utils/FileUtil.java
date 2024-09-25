@@ -128,17 +128,17 @@ public class FileUtil {
             if (Files.isDirectory(path) || pathStr.endsWith(File.separator)) {
                 // 如果路径是文件夹或以文件夹分隔符结尾，则创建所有文件夹
                 Files.createDirectories(path);
-                LogUtil.info("Directories created: {}", path);
+                LogUtil.info("[FileUtil]Directories created: {}", path);
             } else {
                 // 如果路径是文件，则创建所有文件夹并创建文件
                 Files.createDirectories(path.getParent());
                 if (Files.notExists(path)) {
                     Files.createFile(path);
-                    LogUtil.info("File created: {}", path);
+                    LogUtil.info("[FileUtil]File created: {}", path);
                 }
             }
         } catch (IOException e) {
-            LogUtil.error("Failed to create path: {}", ExceptionUtil.getStackTraceAsString(e));
+            LogUtil.error("[FileUtil]Failed to create path: {}", ExceptionUtil.getStackTraceAsString(e));
         }
     }
 

@@ -47,10 +47,10 @@ public class CmdUtil {
                 exitCode = process.waitFor();
                 LogUtil.info("【CmdUtil】命令执行完成，退出码：{}", exitCode);
             } catch (IOException e) {
-                LogUtil.error("【CmdUtil】Win命令执行异常：IOException --- {}"
+                LogUtil.error("【CmdUtil】Win命令执行异常：{}"
                         , ExceptionUtil.getStackTraceAsString(e));
             } catch (InterruptedException e) {
-                LogUtil.error("【CmdUtil】Win命令执行异常：InterruptedException --- {}"
+                LogUtil.error("【CmdUtil】Win命令执行异常：{}"
                         , ExceptionUtil.getStackTraceAsString(e));
                 Thread.currentThread().interrupt(); // 恢复中断状态
                 if (process != null) {
@@ -58,7 +58,7 @@ public class CmdUtil {
                     LogUtil.info("【CmdUtil】进程被中断，已强制终止");
                 }
             } catch (Exception e) {
-                LogUtil.error("【CmdUtil】Win命令执行异常：Exception --- {}"
+                LogUtil.error("【CmdUtil】Win命令执行异常：{}"
                         , ExceptionUtil.getStackTraceAsString(e));
                 if (process != null) {
                     process.destroy(); // 强制终止进程
