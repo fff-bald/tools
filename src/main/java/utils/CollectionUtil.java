@@ -1,6 +1,7 @@
 package utils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
@@ -27,6 +28,11 @@ public class CollectionUtil {
 
     public static <K, V> Map<K, V> hashMap() {
         return new HashMap<>(4);
+    }
+
+    public static <K, V> Map<K, V> ConcurrentHashMap() {
+        return new ConcurrentHashMap<>(4) {
+        };
     }
 
     public static <K> Set<K> hashSet() {
