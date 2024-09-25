@@ -97,19 +97,27 @@ public class CleanDataHandler extends AbstractFundHandler {
                 FundDayBean dayBean = dayBeanList.get(i);
                 FundDayBean preDayBean = dayBeanList.get(i + 1);
 
+                StringBuilder logContent = new StringBuilder();
+
                 if (dayBean.getPrice() == Double.MIN_VALUE) {
                     dayBean.setPrice(preDayBean.getPrice());
-                    LogUtil.warn("【{}】单位净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
+                    logContent.append("单位净值");
                 }
 
                 if (dayBean.getChange() == Double.MIN_VALUE) {
                     dayBean.setChange(0);
-                    LogUtil.warn("【{}】单日变化率无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
+                    logContent.append("、单日变化率");
                 }
 
                 if (dayBean.getAllPrize() == Double.MIN_VALUE) {
                     dayBean.setAllPrize(preDayBean.getAllPrize());
-                    LogUtil.warn("【{}】累计净值无法修复，日期：{}", dayBean.getId(), dayBean.getDate());
+                    logContent.append("、累计净值");
+                }
+
+                if (logContent.length() > 0) {
+                    String nextDayBeanStr = i - 1 >= 0 ? dayBeanList.get(i - 1).toString() : "";
+                    LogUtil.warn("【{}】基金每日数据（{}）无法修复，今天{}，昨天{}，明天{}"
+                            , bean.getId(), dayBean.toString(), preDayBean.toString(), nextDayBeanStr);
                 }
             }
             LogUtil.warn("【{}】基金每日数据存在无法修复的情况", bean.getId());

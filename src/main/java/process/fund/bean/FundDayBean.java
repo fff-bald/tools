@@ -136,4 +136,14 @@ public class FundDayBean implements Comparable<FundDayBean> {
         // 字符串顺序，从大到小
         return o.getDate().compareTo(this.getDate());
     }
+
+    @Override
+    public String toString() {
+        return "FundDayBean{" +
+                "date='" + date + '\'' +
+                ", price=" + price +
+                ", allPrize=" + allPrize +
+                ", change=" + change +
+                '}';
+    }
 }
