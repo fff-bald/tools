@@ -89,6 +89,30 @@ public class FundDataBaseUtil {
     }
 
     /**
+     * 获取文件路径内所有基金每日数据
+     *
+     * @param filePath 文件路径
+     * @return
+     */
+    public static List<FundDayBean> getData(String filePath) {
+        List<String> strings = FileUtil.readFileByLine(filePath);
+        List<FundDayBean> res = CollectionUtil.arrayList();
+        for (String str : strings) {
+            if (StringUtil.isBlank(str)) {
+                continue;
+            }
+            FundDayBean dayBean = null;
+            try {
+                dayBean = JsonUtil.toObject(str, FundDayBean.class);
+            } catch (Exception e) {
+                LogUtil.error("【FundDataBaseUtil】异常信息：{}", ExceptionUtil.getStackTraceAsString(e));
+            }
+            res.add(dayBean);
+        }
+        return res;
+    }
+
+    /**
      * 检查该数据是否已经在数据库中存在
      *
      * @param dataDayBean
@@ -105,7 +129,7 @@ public class FundDataBaseUtil {
      */
     public static void clearFundDataInDataBaseByIds(List<String> ids) {
 
-        if (ids == null || ids.size() == 0) {
+        if (ids == null || ids.isEmpty()) {
             return;
         }
 
@@ -166,5 +190,27 @@ public class FundDataBaseUtil {
     // ---------- main ----------
 
     public static void main(String[] args) {
+        Map<Integer, Integer> counter = CollectionUtil.hashMap();
+        for (int i = 0; i <= 128; i++) {
+            String filePath = String.format(DATA_FILE_PATH, i);
+            for (FundDayBean dayBean : getData(filePath)) {
+                int mark = 0;
+                if (dayBean.getPrice() == Double.MIN_VALUE) {
+                    mark += 100;
+                }
+
+                if (dayBean.getAllPrize() == Double.MIN_VALUE) {
+                    mark += 10;
+                }
+
+                if (dayBean.getChange() == Double.MIN_VALUE) {
+                    mark += 1;
+                }
+
+                counter.put(mark, counter.getOrDefault(mark, 0) + 1);
+            }
+        }
+
+        System.out.println(counter);
     }
 }
