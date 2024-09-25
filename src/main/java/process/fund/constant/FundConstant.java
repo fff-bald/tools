@@ -1,5 +1,7 @@
 package process.fund.constant;
 
+import utils.ConfigUtil;
+
 /**
  * 魔法值
  *
@@ -51,6 +53,6 @@ public interface FundConstant {
 
     // ---------- EMAIL ----------
 
-    String RECEIVER_EMAIL_NAME = "recipient@example.com";
+    String RECEIVER_EMAIL_NAME = ConfigUtil.getProperties().getProperty("email.common.receiver.address", "");
 
 }

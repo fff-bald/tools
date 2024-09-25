@@ -211,6 +211,8 @@ public class FundDataBaseUtil {
             }
         }
 
+        // {0=21020157, 1=356549, 10=15054, 11=465, 111=569}
+        // 全部有、缺change、缺allPrice、只有price、全部没有
         System.out.println(counter);
     }
 }

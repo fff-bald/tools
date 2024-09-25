@@ -32,7 +32,7 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
 //        testCSV("008229");
-        workExcel("2024-09-24");
+        workExcel("2024-09-25");
 //        workCSV("2024-08-30");
 
         List<String> deleteIds = FundBeanFactory.getInstance().getInstanceContext().getDeleteIds();
@@ -89,7 +89,7 @@ public class FundApp {
         if (FundConstant.NEED_EMAIL) {
             try {
                 // 收件人信息
-                String mailTo = FundConstant.RECEIVER_EMAIL_NAME;
+                String[] mailTo = FundConstant.RECEIVER_EMAIL_NAME.split(",");
                 String subject = "自动发送：FundData" + context.getDate();
                 String message = "附件生成时间：" + DateUtil.getDate();
                 // 附件文件路径
