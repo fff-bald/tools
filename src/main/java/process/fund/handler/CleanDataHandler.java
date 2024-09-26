@@ -2,7 +2,6 @@ package process.fund.handler;
 
 import process.fund.bean.FundBean;
 import process.fund.bean.FundDayBean;
-import utils.LogUtil;
 
 import java.util.Collections;
 import java.util.List;
@@ -97,30 +96,18 @@ public class CleanDataHandler extends AbstractFundHandler {
                 FundDayBean dayBean = dayBeanList.get(i);
                 FundDayBean preDayBean = dayBeanList.get(i + 1);
 
-                StringBuilder logContent = new StringBuilder();
-
                 if (dayBean.getPrice() == Double.MIN_VALUE) {
                     dayBean.setPrice(preDayBean.getPrice());
-                    logContent.append("单位净值");
                 }
 
                 if (dayBean.getChange() == Double.MIN_VALUE) {
                     dayBean.setChange(0);
-                    logContent.append("、单日变化率");
                 }
 
                 if (dayBean.getAllPrize() == Double.MIN_VALUE) {
                     dayBean.setAllPrize(preDayBean.getAllPrize());
-                    logContent.append("、累计净值");
-                }
-
-                if (logContent.length() > 0) {
-                    String nextDayBeanStr = i - 1 >= 0 ? dayBeanList.get(i - 1).toString() : "";
-                    LogUtil.warn("【{}】基金每日数据（{}）无法修复，今天{}，昨天{}，明天{}"
-                            , bean.getId(), dayBean.toString(), preDayBean.toString(), nextDayBeanStr);
                 }
             }
-            LogUtil.warn("【{}】基金每日数据存在无法修复的情况", bean.getId());
         }
     }
 
@@ -138,29 +125,12 @@ public class CleanDataHandler extends AbstractFundHandler {
         // 尝试修复单位净值数据
         if (dayBean.getPrice() == Double.MIN_VALUE) {
             isSuccess = false;
-            // 第一次尝试：今天单位净值 = 昨天单位值 * (今天变化值 + 1)
-            if (preDayBean != null && dayBean.getChange() != Double.MIN_VALUE) {
-                if (preDayBean.getPrice() != Double.MIN_VALUE) {
-                    dayBean.setPrice(preDayBean.getPrice() * (1 + dayBean.getChange()));
-                    isSuccess = true;
-                }
-            }
-
-            // 第二次尝试：今天单位净值 = 明天单位值 / (明天变化值 + 1)
-            if (!isSuccess && nextDayBean != null) {
+            // 第一次尝试：今天单位净值 = 明天单位值 / (明天变化值 + 1)
+            if (nextDayBean != null) {
                 if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getPrice() != Double.MIN_VALUE) {
                     dayBean.setPrice(nextDayBean.getPrice() / (1 + nextDayBean.getChange()));
                     isSuccess = true;
                 }
-            }
-        }
-
-        // 尝试修复当天变化值
-        if (dayBean.getChange() == Double.MIN_VALUE) {
-            isSuccess = false;
-            if (preDayBean != null && dayBean.getPrice() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
-                dayBean.setChange((dayBean.getPrice() - preDayBean.getPrice()) / preDayBean.getPrice());
-                isSuccess = true;
             }
         }
 
@@ -183,6 +153,18 @@ public class CleanDataHandler extends AbstractFundHandler {
                     dayBean.setAllPrize(nextDayBean.getAllPrize() - (nextDayBean.getPrice() - dayBean.getPrice()));
                     isSuccess = true;
                 }
+            }
+        }
+
+        // 尝试修复当天变化值
+        if (dayBean.getChange() == Double.MIN_VALUE) {
+            isSuccess = false;
+            // 公式：当天变化率 = （今天累计净值 - 昨天累计净值）/ 昨天单位净值
+            if (preDayBean != null && dayBean.getAllPrize() != Double.MIN_VALUE
+                    && preDayBean.getAllPrize() != Double.MIN_VALUE
+                    && preDayBean.getPrice() != Double.MIN_VALUE) {
+                dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getPrice());
+                isSuccess = true;
             }
         }
 
