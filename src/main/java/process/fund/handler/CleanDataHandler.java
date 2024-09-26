@@ -149,8 +149,8 @@ public class CleanDataHandler extends AbstractFundHandler {
                     dayBean.setAllPrize(nextDayBean.getAllPrize() - (nextDayBean.getPrice() - dayBean.getPrice()));
                     isAllPrizeSuccess = true;
                 }
-                isSuccess = isAllPrizeSuccess & isSuccess;
             }
+            isSuccess = isAllPrizeSuccess & isSuccess;
         }
 
         // 尝试修复当天变化值
