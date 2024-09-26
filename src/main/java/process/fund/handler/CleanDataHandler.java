@@ -65,7 +65,6 @@ public class CleanDataHandler extends AbstractFundHandler {
         }
 
         boolean hasError = false;
-        boolean isWarn = false;
         // ~列表从前向后修复数据，首日数据不需要检查
         for (int i = 0; i < dayBeanList.size() - 1; i++) {
             FundDayBean dayBean = dayBeanList.get(i);
@@ -77,21 +76,17 @@ public class CleanDataHandler extends AbstractFundHandler {
 
         // ~从倒数第二天开始，列表从后向前修复数据
         if (hasError) {
+            hasError = false;
             for (int i = dayBeanList.size() - 2; i >= 0; i--) {
                 FundDayBean dayBean = dayBeanList.get(i);
                 if (!repairDayDataByOtherDays(dayBean, dayBeanList.get(i + 1), i - 1 >= 0 ? dayBeanList.get(i - 1) : null)) {
-                    isWarn = true;
-                }
-
-                // 遍历的时候把累计净值有问题的也标记一下
-                if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-                    isWarn = true;
+                    hasError = true;
                 }
             }
         }
 
         // ~给无法修复的数据加上默认值
-        if (isWarn) {
+        if (hasError) {
             for (int i = dayBeanList.size() - 2; i >= 0; i--) {
                 FundDayBean dayBean = dayBeanList.get(i);
                 FundDayBean preDayBean = dayBeanList.get(i + 1);
@@ -124,19 +119,20 @@ public class CleanDataHandler extends AbstractFundHandler {
 
         // 尝试修复单位净值数据
         if (dayBean.getPrice() == Double.MIN_VALUE) {
-            isSuccess = false;
+            boolean isPriceSuccess = false;
             // 第一次尝试：今天单位净值 = 明天单位值 / (明天变化值 + 1)
             if (nextDayBean != null) {
                 if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getPrice() != Double.MIN_VALUE) {
                     dayBean.setPrice(nextDayBean.getPrice() / (1 + nextDayBean.getChange()));
-                    isSuccess = true;
+                    isPriceSuccess = true;
                 }
             }
+            isSuccess = isPriceSuccess;
         }
 
         // 尝试修复当天累计净值
         if (dayBean.getAllPrize() == Double.MIN_VALUE) {
-            isSuccess = false;
+            boolean isAllPrizeSuccess = false;
 
             // 通过邻近的单位净值计算当天累计净值，但这个方法计算出的修复值会受（单位净值分红拆分）影响，导致误差
             // 但考虑到分红拆分是少数，误差影响对最终结果应该不大
@@ -144,28 +140,30 @@ public class CleanDataHandler extends AbstractFundHandler {
                 // 公式：今天的累计净值 = 今天的单位净值 - 昨天的单位净值 + 昨天的累计净值
                 if (preDayBean != null && preDayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
                     dayBean.setAllPrize(dayBean.getPrice() - preDayBean.getPrice() + preDayBean.getAllPrize());
-                    isSuccess = true;
+                    isAllPrizeSuccess = true;
                 }
 
                 // 公式：今天的累计净值 = 明天的累计净值 - （明天的单位净值 - 今天的单位净值）
-                if (!isSuccess && nextDayBean != null && nextDayBean.getAllPrize() != Double.MIN_VALUE
+                if (!isAllPrizeSuccess && nextDayBean != null && nextDayBean.getAllPrize() != Double.MIN_VALUE
                         && nextDayBean.getPrice() != Double.MIN_VALUE) {
                     dayBean.setAllPrize(nextDayBean.getAllPrize() - (nextDayBean.getPrice() - dayBean.getPrice()));
-                    isSuccess = true;
+                    isAllPrizeSuccess = true;
                 }
+                isSuccess = isAllPrizeSuccess & isSuccess;
             }
         }
 
         // 尝试修复当天变化值
         if (dayBean.getChange() == Double.MIN_VALUE) {
-            isSuccess = false;
+            boolean isChangeSuccess = false;
             // 公式：当天变化率 = （今天累计净值 - 昨天累计净值）/ 昨天单位净值
             if (preDayBean != null && dayBean.getAllPrize() != Double.MIN_VALUE
                     && preDayBean.getAllPrize() != Double.MIN_VALUE
                     && preDayBean.getPrice() != Double.MIN_VALUE) {
                 dayBean.setChange((dayBean.getAllPrize() - preDayBean.getAllPrize()) / preDayBean.getPrice());
-                isSuccess = true;
+                isChangeSuccess = true;
             }
+            isSuccess = isChangeSuccess & isSuccess;
         }
 
         return isSuccess;
