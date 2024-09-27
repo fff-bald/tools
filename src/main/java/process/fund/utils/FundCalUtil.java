@@ -68,7 +68,7 @@ public class FundCalUtil {
         }
 
         // 初始峰值为时间最早的值（列表最后一个元素）
-        double peak = netValues.get(netValues.size() - 1).getAllPrize();
+        double peak = markDate == null ? netValues.get(netValues.size() - 1).getAllPrize() : Double.MIN_VALUE;
         double peakPrice = netValues.get(netValues.size() - 1).getPrice();
         // 最大回撤初始化为0
         double maxDrawDown = 0.0;
@@ -81,6 +81,8 @@ public class FundCalUtil {
                 LocalDate dayBeanDate = LocalDate.parse(fundDayBean.getDate(), YYYY_MM_DD_DTF);
                 if (markDate.isAfter(dayBeanDate)) {
                     continue;
+                } else if (peak == Double.MIN_VALUE) {
+                    peak = fundDayBean.getAllPrize();
                 }
             }
             double netValue = fundDayBean.getAllPrize();
