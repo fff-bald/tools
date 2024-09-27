@@ -51,7 +51,8 @@ public class CalDataHandler extends AbstractFundHandler {
         int tradingDay = dayList.size();
 
         // 最新一日相关信息
-        bean.setUpdateTime(LocalDate.parse(endDay.getDate()));
+        LocalDate updateLocalDate = LocalDate.parse(endDay.getDate());
+        bean.setUpdateTime(updateLocalDate);
         bean.setBuyState(endDay.getBuyState());
         bean.setSellState(endDay.getSellState());
 
@@ -73,7 +74,7 @@ public class CalDataHandler extends AbstractFundHandler {
 
         // 历史最大回撤
         bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList, null));
-        bean.setFiveYearMostReduceRate(FundCalUtil.calMostReduceRate(dayList, bean.getUpdateTime().minusYears(5)));
+        bean.setFiveYearMostReduceRate(FundCalUtil.calMostReduceRate(dayList, updateLocalDate.minusYears(5)));
 
         // 上升日比例
         double upDay = 0;

@@ -2,7 +2,6 @@ package process.fund.model;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import process.fund.bean.FundBean;
-import tag.DescriptionField;
 
 import static process.fund.constant.FundConstant.EXCEL_FUND_LINK;
 
