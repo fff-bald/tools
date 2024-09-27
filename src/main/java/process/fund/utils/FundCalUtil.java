@@ -61,7 +61,7 @@ public class FundCalUtil {
      *
      * @return
      */
-    public static double calMostReduceRate(List<FundDayBean> netValues) {
+    public static double calMostReduceRate(List<FundDayBean> netValues, LocalDate markDate) {
         // 检查输入列表是否为空或只有一个元素
         if (netValues == null || netValues.isEmpty() || netValues.size() == 1) {
             return 0.0;
@@ -75,7 +75,15 @@ public class FundCalUtil {
 
         // 从倒数第二天开始，逐日向前遍历
         for (int i = netValues.size() - 2; i >= 0; i--) {
-            double netValue = netValues.get(i).getAllPrize();
+            FundDayBean fundDayBean = netValues.get(i);
+            // 如果 markDate 不为空，只查找到markDate之前的数据，包括 markDate 当天
+            if (markDate != null) {
+                LocalDate dayBeanDate = LocalDate.parse(fundDayBean.getDate(), YYYY_MM_DD_DTF);
+                if (markDate.isAfter(dayBeanDate)) {
+                    break;
+                }
+            }
+            double netValue = fundDayBean.getAllPrize();
 
             // 如果当前净值高于之前的峰值，则更新峰值
             if (netValue > peak) {

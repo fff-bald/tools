@@ -50,6 +50,9 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "最大回撤")
     private double mostReduceRate;
 
+    @DescriptionField(value = "五年内最大回撤")
+    private double fiveYearMostReduceRate;
+
     @DescriptionField(value = "每月涨跌幅的最大值对比中值的倍数")
     private double monthMostChangeToAvg;
 
@@ -371,6 +374,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setMonthAvgChange(double monthAvgChange) {
         this.monthAvgChange = monthAvgChange;
+    }
+
+    public double getFiveYearMostReduceRate() {
+        return fiveYearMostReduceRate;
+    }
+
+    public void setFiveYearMostReduceRate(double fiveYearMostReduceRate) {
+        this.fiveYearMostReduceRate = fiveYearMostReduceRate;
     }
 
     @Override

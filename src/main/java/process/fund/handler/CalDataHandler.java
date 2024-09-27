@@ -72,7 +72,8 @@ public class CalDataHandler extends AbstractFundHandler {
         bean.setThreeYearChange(FundCalUtil.calTimeChange(dayList, bean.getUpdateTime(), 3 * 365));
 
         // 历史最大回撤
-        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList));
+        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList, null));
+        bean.setFiveYearMostReduceRate(FundCalUtil.calMostReduceRate(dayList, bean.getUpdateTime().minusYears(5)));
 
         // 上升日比例
         double upDay = 0;
@@ -118,8 +119,7 @@ public class CalDataHandler extends AbstractFundHandler {
 
             // 检查是否是月末，计算增长量
             if (index == 0 || LocalDate.parse(dayList.get(index - 1).getDate(), YYYY_MM_DD_DTF).getMonthValue() != localDate.getMonthValue()) {
-                FundMonthBean monthBean = FundMonthBean.valueOf(localDate.getYear(),
-                        localDate.getMonthValue(), monthlyGrowth.get(yearMonth), dayBean);
+                FundMonthBean monthBean = FundMonthBean.valueOf(localDate.getYear(), localDate.getMonthValue(), monthlyGrowth.get(yearMonth), dayBean);
                 monthBeans.add(monthBean);
             }
         }
