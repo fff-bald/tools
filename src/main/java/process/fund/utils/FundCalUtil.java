@@ -80,7 +80,7 @@ public class FundCalUtil {
             if (markDate != null) {
                 LocalDate dayBeanDate = LocalDate.parse(fundDayBean.getDate(), YYYY_MM_DD_DTF);
                 if (markDate.isAfter(dayBeanDate)) {
-                    break;
+                    continue;
                 }
             }
             double netValue = fundDayBean.getAllPrize();
