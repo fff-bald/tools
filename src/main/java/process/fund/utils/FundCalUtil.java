@@ -233,8 +233,8 @@ public class FundCalUtil {
             if (dataExcelModel.getMonthMostChangeToAvg() < 0 || dataExcelModel.getMonthMostChangeToAvg() > 15) {
                 continue;
             }
-            // 最大回撤小于1.2%
-            if (dataExcelModel.getMostReduceRate() > 1.2) {
+            // 五年内最大回撤小于1.2%
+            if (dataExcelModel.getFiveYearMostReduceRate() > 1.2) {
                 continue;
             }
             // 复利年化收益率大于3.5%

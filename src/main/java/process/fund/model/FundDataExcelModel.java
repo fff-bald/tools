@@ -2,6 +2,7 @@ package process.fund.model;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import process.fund.bean.FundBean;
+import tag.DescriptionField;
 
 import static process.fund.constant.FundConstant.EXCEL_FUND_LINK;
 
@@ -41,6 +42,9 @@ public class FundDataExcelModel {
 
     @ExcelProperty(value = "最大回撤")
     private double mostReduceRate;
+
+    @ExcelProperty(value = "五年内最大回撤")
+    private double fiveYearMostReduceRate;
 
     @ExcelProperty(value = "每月涨跌幅的最大值对比中值的倍数")
     private double monthMostChangeToAvg;
@@ -95,6 +99,7 @@ public class FundDataExcelModel {
         res.upMonthRate = bean.getUpMonthRate();
         res.yearChangePro = bean.getYearChangePro();
         res.mostReduceRate = bean.getMostReduceRate();
+        res.fiveYearMostReduceRate = bean.getFiveYearMostReduceRate();
         res.monthMostChangeToAvg = bean.getMonthMostChangeToAvg();
         res.sevenDayChange = bean.getSevenDayChange();
         res.monthChange = bean.getMonthChange();
@@ -301,5 +306,13 @@ public class FundDataExcelModel {
 
     public void setSellState(String sellState) {
         this.sellState = sellState;
+    }
+
+    public double getFiveYearMostReduceRate() {
+        return fiveYearMostReduceRate;
+    }
+
+    public void setFiveYearMostReduceRate(double fiveYearMostReduceRate) {
+        this.fiveYearMostReduceRate = fiveYearMostReduceRate;
     }
 }
