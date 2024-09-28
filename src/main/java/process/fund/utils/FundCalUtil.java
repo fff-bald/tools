@@ -222,25 +222,28 @@ public class FundCalUtil {
             if (dataExcelModel.getMoney() < 1) {
                 continue;
             }
-
             // 成立年数大于3
             if (dataExcelModel.getDurationDay() < 3) {
                 continue;
             }
-            // 上涨月份比例大于90% && 上涨日数比例大于85%
-            if (dataExcelModel.getUpMonthRate() < 90 || dataExcelModel.getUpDayRate() < 85) {
+            // 上涨月份比例大于85% && 上涨日数比例大于80%
+            if (dataExcelModel.getUpMonthRate() < 85 || dataExcelModel.getUpDayRate() < 80) {
                 continue;
             }
             // 月涨跌幅最大异常要在0和15之间
             if (dataExcelModel.getMonthMostChangeToAvg() < 0 || dataExcelModel.getMonthMostChangeToAvg() > 15) {
                 continue;
             }
-            // 五年内最大回撤小于1.2%
-            if (dataExcelModel.getFiveYearMostReduceRate() > 1.2) {
+            // 五年内最大回撤小于2%
+            if (dataExcelModel.getFiveYearMostReduceRate() > 2) {
                 continue;
             }
-            // 复利年化收益率大于3.5%
-            if (dataExcelModel.getYearChangePro() < 3.5) {
+            // 复利年化收益率大于4%
+            if (dataExcelModel.getYearChangePro() < 4) {
+                continue;
+            }
+            // 近三年收益率大于14%
+            if (dataExcelModel.getThreeMonthChange() < 14) {
                 continue;
             }
             // 个人投资者占比份额为0
