@@ -84,6 +84,8 @@ public class FundDataExcelModel {
     @ExcelProperty(value = "最新一日赎回状态")
     private String sellState;
 
+    // ---------- 不那么重要的 ----------
+
     public static FundDataExcelModel valueOf(FundBean bean) {
         FundDataExcelModel res = new FundDataExcelModel();
         // 将id接入Excel超链接
