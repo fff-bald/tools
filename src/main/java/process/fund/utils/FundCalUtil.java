@@ -243,7 +243,7 @@ public class FundCalUtil {
                 continue;
             }
             // 近三年收益率大于14%
-            if (dataExcelModel.getThreeMonthChange() < 14) {
+            if (dataExcelModel.getThreeYearChange() < 14) {
                 continue;
             }
             // 个人投资者占比份额为0
