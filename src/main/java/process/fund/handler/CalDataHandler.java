@@ -84,7 +84,7 @@ public class CalDataHandler extends AbstractFundHandler {
         bean.setUpDayRate(100 * upDay / tradingDay);
 
         // 日涨跌幅标准差
-        List<Double> growthRates = dayList.stream().map(fundDayBean -> fundDayBean.getChange() * 100).collect(Collectors.toList());
+        List<Double> growthRates = dayList.stream().map(FundDayBean::getChange).collect(Collectors.toList());
         bean.setDayStandardDeviation(FundCalUtil.calculateStandardDeviation(growthRates));
 
         // 计算月份数据

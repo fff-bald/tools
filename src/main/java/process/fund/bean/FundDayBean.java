@@ -101,11 +101,11 @@ public class FundDayBean implements Comparable<FundDayBean> {
     }
 
     public double getChange() {
-        return change / 100;
+        return change;
     }
 
     public void setChange(double change) {
-        this.change = change * 100;
+        this.change = change;
     }
 
     public String getBuyState() {

@@ -123,7 +123,7 @@ public class CleanDataHandler extends AbstractFundHandler {
             // 第一次尝试：今天单位净值 = 明天单位值 / (明天变化值 + 1)
             if (nextDayBean != null) {
                 if (nextDayBean.getChange() != Double.MIN_VALUE && nextDayBean.getPrice() != Double.MIN_VALUE) {
-                    dayBean.setPrice(nextDayBean.getPrice() / (1 + nextDayBean.getChange()));
+                    dayBean.setPrice(nextDayBean.getPrice() / (1 + nextDayBean.getChange() / 100));
                     isPriceSuccess = true;
                 }
             }
