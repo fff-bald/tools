@@ -55,14 +55,14 @@ public class CmdUtil {
                 Thread.currentThread().interrupt(); // 恢复中断状态
                 if (process != null) {
                     process.destroy(); // 强制终止进程
-                    LogUtil.info("【CmdUtil】进程被中断，已强制终止");
+                    LogUtil.error("【CmdUtil】进程被中断，已强制终止");
                 }
             } catch (Exception e) {
                 LogUtil.error("【CmdUtil】Win命令执行异常：{}"
                         , ExceptionUtil.getStackTraceAsString(e));
                 if (process != null) {
                     process.destroy(); // 强制终止进程
-                    LogUtil.info("【CmdUtil】进程发生异常，已强制终止");
+                    LogUtil.error("【CmdUtil】进程发生异常，已强制终止");
                 }
             }
             return exitCode;

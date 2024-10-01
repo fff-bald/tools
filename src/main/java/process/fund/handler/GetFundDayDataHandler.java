@@ -42,9 +42,11 @@ public class GetFundDayDataHandler extends AbstractFundHandler {
             return;
         }
 
+        FundHandlerContext context = getContext();
         Set<String> onlySet = CollectionUtil.hashSet();
         for (FundDayBean dayBean : dayBeanList) {
             if (onlySet.contains(dayBean.getDate())) {
+                context.getDeleteIds().add(bean.getId());
                 bean.setFailReason(String.format("每日数据中存在重复数据，日期：%s", dayBean.getDate()));
                 LogUtil.error("【{}】每日数据中存在重复数据，日期：{}", bean.getId()
                         , dayBean.getDate());
@@ -54,7 +56,6 @@ public class GetFundDayDataHandler extends AbstractFundHandler {
         }
 
         if (dayBeanList.size() != bean.getTradeDay()) {
-            FundHandlerContext context = getContext();
             context.getDeleteIds().add(bean.getId());
             bean.setFailReason("每日数据量和交易日天数不一致");
             LogUtil.error("【{}】每日数据是否大于交易日天数：{}", bean.getId()
