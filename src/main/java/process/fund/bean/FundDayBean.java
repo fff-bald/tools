@@ -62,7 +62,7 @@ public class FundDayBean implements Comparable<FundDayBean> {
         res.price = StringUtil.isBlank(p) ? Double.MIN_VALUE : Double.parseDouble(p);
         res.allPrize = StringUtil.isBlank(ap) ? Double.MIN_VALUE : Double.parseDouble(ap);
         res.change = StringUtil.isBlank(c) ? Double.MIN_VALUE :
-                Double.parseDouble(c.substring(0, c.lastIndexOf("%"))) / 100;
+                Double.parseDouble(c.substring(0, c.lastIndexOf("%")));
         res.buyState = buyState;
         res.sellState = sellState;
         return res;
@@ -101,11 +101,11 @@ public class FundDayBean implements Comparable<FundDayBean> {
     }
 
     public double getChange() {
-        return change;
+        return change / 100;
     }
 
     public void setChange(double change) {
-        this.change = change;
+        this.change = change * 100;
     }
 
     public String getBuyState() {
