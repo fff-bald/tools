@@ -40,6 +40,26 @@ public class DateUtil {
     }
 
     /**
+     * 提供默认的LocalDate转换为String
+     *
+     * @param localDate
+     * @return
+     */
+    public static String localDateToString(LocalDate localDate) {
+        return localDate.format(YYYY_MM_DD_DTF);
+    }
+
+    /**
+     * 提供默认的String转换为LocalDate
+     *
+     * @param s
+     * @return
+     */
+    public static LocalDate stringToLocalDate(String s) {
+        return LocalDate.parse(s, YYYY_MM_DD_DTF);
+    }
+
+    /**
      * 计算两个日期间的天数差
      *
      * @param start 起始时间 格式为yyyy-MM-dd

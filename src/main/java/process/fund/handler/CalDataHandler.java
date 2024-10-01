@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static utils.DateUtil.YYYY_MM_DD_DTF;
-
 /**
  * Bean参数计算处理器
  */
@@ -104,7 +102,7 @@ public class CalDataHandler extends AbstractFundHandler {
         Map<Integer, FundDayBean> monthlyGrowth = CollectionUtil.hashMap();
         for (int index = dayList.size() - 1; index >= 0; index--) {
             FundDayBean dayBean = dayList.get(index);
-            LocalDate localDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
+            LocalDate localDate = DateUtil.stringToLocalDate(dayBean.getDate());
             int yearMonth = localDate.getYear() * 100 + localDate.getMonthValue();
 
             if (!monthlyGrowth.containsKey(yearMonth)) {
@@ -119,7 +117,7 @@ public class CalDataHandler extends AbstractFundHandler {
             }
 
             // 检查是否是月末，计算增长量
-            if (index == 0 || LocalDate.parse(dayList.get(index - 1).getDate(), YYYY_MM_DD_DTF).getMonthValue() != localDate.getMonthValue()) {
+            if (index == 0 || DateUtil.stringToLocalDate(dayList.get(index - 1).getDate()).getMonthValue() != localDate.getMonthValue()) {
                 FundMonthBean monthBean = FundMonthBean.valueOf(localDate.getYear(), localDate.getMonthValue(), monthlyGrowth.get(yearMonth), dayBean);
                 monthBeans.add(monthBean);
             }

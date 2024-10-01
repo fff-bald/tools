@@ -131,7 +131,7 @@ public class FundBean implements Comparable<FundBean> {
     public static FundBean valueOf(String id, LocalDate updateTime) {
         FundBean res = new FundBean();
         res.id = id;
-        res.dayBeanList = FundDataBaseUtil.getDataBeforeDate(id, updateTime.format(DateUtil.YYYY_MM_DD_DTF));
+        res.dayBeanList = FundDataBaseUtil.getDataBeforeDate(id, DateUtil.localDateToString(updateTime));
         res.updateTime = updateTime;
         return res;
     }

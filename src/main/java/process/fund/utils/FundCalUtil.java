@@ -2,17 +2,17 @@ package process.fund.utils;
 
 import model.CommonExcelModel;
 import model.Pair;
+import process.fund.FundBeanFactory;
 import process.fund.FundHandlerContext;
 import process.fund.bean.FundDayBean;
 import process.fund.bean.FundMonthBean;
 import process.fund.model.FundDataExcelModel;
 import utils.CollectionUtil;
+import utils.DateUtil;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
-import static utils.DateUtil.YYYY_MM_DD_DTF;
 
 /**
  * 数据计算工具类
@@ -42,7 +42,7 @@ public class FundCalUtil {
 
         // 查找指定天数前的基金数据
         for (FundDayBean dayBean : dayList) {
-            LocalDate dayBeanDate = LocalDate.parse(dayBean.getDate(), YYYY_MM_DD_DTF);
+            LocalDate dayBeanDate = DateUtil.stringToLocalDate(dayBean.getDate());
             if (markDate.isBefore(dayBeanDate) || markDate.isEqual(dayBeanDate)) {
                 startDayBean = dayBean;
             } else {
@@ -78,7 +78,7 @@ public class FundCalUtil {
             FundDayBean fundDayBean = netValues.get(i);
             // 如果 markDate 不为空，只查找到markDate之前的数据，包括 markDate 当天
             if (markDate != null) {
-                LocalDate dayBeanDate = LocalDate.parse(fundDayBean.getDate(), YYYY_MM_DD_DTF);
+                LocalDate dayBeanDate = DateUtil.stringToLocalDate(fundDayBean.getDate());
                 if (markDate.isAfter(dayBeanDate)) {
                     continue;
                 } else if (peak == Double.MIN_VALUE) {
@@ -247,7 +247,13 @@ public class FundCalUtil {
                 continue;
             }
             // 个人投资者占比份额为0
-            if ("0.00%".equals(dataExcelModel.getPersonRate()) || "未匹配成功".equals(dataExcelModel.getPersonRate())) {
+            if ("0.00%".equals(dataExcelModel.getPersonRate()) || "0.01%".equals(dataExcelModel.getPersonRate())
+                    || "未匹配成功".equals(dataExcelModel.getPersonRate())) {
+                continue;
+            }
+            // 最新更新日期的一个星期后是标记日期，标记日期 在 当前日期 前 的数据需要过滤掉
+            LocalDate markLocalDate = DateUtil.stringToLocalDate(dataExcelModel.getUpdateTime()).plusWeeks(1);
+            if (DateUtil.stringToLocalDate(FundBeanFactory.getInstance().getInstanceContext().getDate()).isAfter(markLocalDate)) {
                 continue;
             }
             result.add(data);
