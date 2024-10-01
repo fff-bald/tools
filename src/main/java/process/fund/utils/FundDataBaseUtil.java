@@ -77,6 +77,9 @@ public class FundDataBaseUtil {
             FundDayBean dayBean = null;
             try {
                 dayBean = JsonUtil.toObject(str, FundDayBean.class);
+                if(!isAll && !dayBean.getId().equals(id)) {
+                    continue;
+                }
             } catch (Exception e) {
                 LogUtil.error("【{}】异常信息：{}", id, ExceptionUtil.getStackTraceAsString(e));
             }

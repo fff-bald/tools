@@ -137,16 +137,16 @@ public class CleanDataHandler extends AbstractFundHandler {
             // 通过邻近的单位净值计算当天累计净值，但这个方法计算出的修复值会受（单位净值分红拆分）影响，导致误差
             // 但考虑到分红拆分是少数，误差影响对最终结果应该不大
             if (dayBean.getPrice() != Double.MIN_VALUE) {
-                // 公式：今天的累计净值 = 今天的单位净值 - 昨天的单位净值 + 昨天的累计净值
-                if (preDayBean != null && preDayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
-                    dayBean.setAllPrize(dayBean.getPrice() - preDayBean.getPrice() + preDayBean.getAllPrize());
+                // 公式：今天的累计净值 = 明天的累计净值 - （明天的单位净值 - 今天的单位净值）
+                if (nextDayBean != null && nextDayBean.getAllPrize() != Double.MIN_VALUE
+                        && nextDayBean.getPrice() != Double.MIN_VALUE) {
+                    dayBean.setAllPrize(nextDayBean.getAllPrize() - (nextDayBean.getPrice() - dayBean.getPrice()));
                     isAllPrizeSuccess = true;
                 }
 
-                // 公式：今天的累计净值 = 明天的累计净值 - （明天的单位净值 - 今天的单位净值）
-                if (!isAllPrizeSuccess && nextDayBean != null && nextDayBean.getAllPrize() != Double.MIN_VALUE
-                        && nextDayBean.getPrice() != Double.MIN_VALUE) {
-                    dayBean.setAllPrize(nextDayBean.getAllPrize() - (nextDayBean.getPrice() - dayBean.getPrice()));
+                // 公式：今天的累计净值 = 今天的单位净值 - 昨天的单位净值 + 昨天的累计净值
+                if (!isAllPrizeSuccess && preDayBean != null && preDayBean.getAllPrize() != Double.MIN_VALUE && preDayBean.getPrice() != Double.MIN_VALUE) {
+                    dayBean.setAllPrize(dayBean.getPrice() - preDayBean.getPrice() + preDayBean.getAllPrize());
                     isAllPrizeSuccess = true;
                 }
             }
