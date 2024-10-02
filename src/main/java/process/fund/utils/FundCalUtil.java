@@ -170,7 +170,8 @@ public class FundCalUtil {
         final String FUND_TYPE_LIMIT = "基金类别=长债&中短债";
         final String MAX_CHANGE_LIMIT = "月涨跌幅异常：<10";
         final String NUM_LABEL = "总数：%s";
-        final String MOST_REDUCE_NUM = "五年最大回撤数：%s";
+        final String MOST_REDUCE_NUM_LABEL = "当月新增五年内最大回撤数：%s";
+        final String MOST_REDUCE_RATE_LABEL = "比例：%.2f（百分比）";
         final String MONTH_CHANGE_LABEL = "月涨跌幅范围";
         final String TOTAL_NUM_LABEL = "汇总数量";
         final String TOTAL_LABEL = "总量";
@@ -183,9 +184,12 @@ public class FundCalUtil {
         int contextMonth = contextDate.getMonthValue();
 
         // 添加标题行
+        int totalNum = context.getStatisticsFundCounter().get();
+        int fiveYearMostReduceNum = context.getStatisticsNewMonthMostReduceRateCounter().get();
         result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", ""));
-        result.add(CommonExcelModel.valueOf(String.format(NUM_LABEL, context.getStatisticsFundCounter().get()), "",
-                String.format(MOST_REDUCE_NUM, context.getStatisticsNewMonthMostReduceRateCounter().get())));
+        result.add(CommonExcelModel.valueOf(String.format(NUM_LABEL, totalNum),
+                String.format(MOST_REDUCE_NUM_LABEL, fiveYearMostReduceNum)
+                , String.format(MOST_REDUCE_RATE_LABEL, (fiveYearMostReduceNum * 1.0 / totalNum) * 100)));
         result.add(CommonExcelModel.valueOf(MAX_CHANGE_LIMIT, "", ""));
         result.add(new CommonExcelModel()); // 空行或分隔行
 
