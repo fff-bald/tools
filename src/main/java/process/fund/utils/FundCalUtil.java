@@ -107,7 +107,7 @@ public class FundCalUtil {
         }
 
         // 返回 最大回撤发生的日期 和 最大回撤的百分比（转换为百分比形式）
-        return new Pair<>(date, maxDrawDown * 100);
+        return new Pair<>(date, maxDrawDown * 100.0);
     }
 
     /**
