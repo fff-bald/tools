@@ -34,6 +34,23 @@ public class JsoupUtil {
     }
 
     /**
+     * 返回包含特定attr的第一个Element
+     *
+     * @param divElements
+     * @param attrName
+     * @return 存在多个返回仅第一个，找不到就抛异常
+     */
+    public static Element findElementWithAttr(Elements divElements, String attrName) {
+        for (Element res : divElements) {
+            if (res.hasAttr(attrName)) {
+                return res;
+            }
+        }
+        // 如果没有找到匹配项，返回一个默认值或抛出异常
+        throw new IllegalArgumentException("No Exist Element With This Attr");
+    }
+
+    /**
      * 查找第一个文本为指定字符串的元素，并返回该元素指向的网址。
      *
      * @param document   传入的Jsoup Document对象

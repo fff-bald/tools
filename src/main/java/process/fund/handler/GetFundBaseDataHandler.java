@@ -1,17 +1,17 @@
 package process.fund.handler;
 
-import process.fund.bean.FundBean;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import utils.ExceptionUtil;
-import utils.JsoupUtil;
-import utils.LogUtil;
-import utils.StringUtil;
+import org.jsoup.select.Elements;
+import process.fund.bean.FundBean;
+import utils.*;
 
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static process.fund.constant.FundConstant.*;
+import static process.fund.constant.FundConstant.FUND_DATA_GET_URL;
+import static process.fund.constant.FundConstant.OCCUPY_PROPORTION_URL;
 
 /**
  * 爬取基金基础信息
@@ -122,7 +122,19 @@ public class GetFundBaseDataHandler extends AbstractFundHandler {
      */
     private boolean checkFundHtml(Document document, FundBean bean) {
 
-        String html = document.html();
+        final String attributeKey = "data-date";
+
+        // 尝试获取最近更新时间
+        Elements divElements = document.select("div.titleItems.tabBtn.titleItemActive");
+        // 获取data-date属性的值
+        Element elementWithAttr = JsoupUtil.findElementWithAttr(divElements, attributeKey);
+        String dataDate = elementWithAttr.attr(attributeKey);
+        LocalDate markDate = DateUtil.stringToLocalDate(dataDate).plusDays(30);
+        LocalDate curDate = bean.getUpdateTime();
+        if (markDate.isBefore(curDate)) {
+            bean.setFailReason("距离上次更新时间大于30天");
+            return false;
+        }
 
         return true;
     }
