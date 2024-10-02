@@ -38,7 +38,7 @@ public class JsoupUtil {
      *
      * @param divElements
      * @param attrName
-     * @return 存在多个返回仅第一个，找不到就抛异常
+     * @return 存在多个仅返回第一个，找不到就返回null
      */
     public static Element findElementWithAttr(Elements divElements, String attrName) {
         for (Element res : divElements) {
@@ -46,8 +46,8 @@ public class JsoupUtil {
                 return res;
             }
         }
-        // 如果没有找到匹配项，返回一个默认值或抛出异常
-        throw new IllegalArgumentException("No Exist Element With This Attr");
+        // 如果没有则返回null
+        return null;
     }
 
     /**

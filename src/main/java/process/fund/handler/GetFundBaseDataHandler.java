@@ -128,12 +128,14 @@ public class GetFundBaseDataHandler extends AbstractFundHandler {
         Elements divElements = document.select("div.titleItems.tabBtn.titleItemActive");
         // 获取data-date属性的值
         Element elementWithAttr = JsoupUtil.findElementWithAttr(divElements, attributeKey);
-        String dataDate = elementWithAttr.attr(attributeKey);
-        LocalDate markDate = DateUtil.stringToLocalDate(dataDate).plusDays(30);
-        LocalDate curDate = bean.getUpdateTime();
-        if (markDate.isBefore(curDate)) {
-            bean.setFailReason("距离上次更新时间大于30天");
-            return false;
+        if (elementWithAttr != null) {
+            String dataDate = elementWithAttr.attr(attributeKey);
+            LocalDate markDate = DateUtil.stringToLocalDate(dataDate).plusDays(30);
+            LocalDate curDate = bean.getUpdateTime();
+            if (markDate.isBefore(curDate)) {
+                bean.setFailReason("距离上次更新时间大于30天");
+                return false;
+            }
         }
 
         return true;
