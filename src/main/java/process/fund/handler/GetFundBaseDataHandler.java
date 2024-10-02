@@ -130,6 +130,10 @@ public class GetFundBaseDataHandler extends AbstractFundHandler {
         Element elementWithAttr = JsoupUtil.findElementWithAttr(divElements, attributeKey);
         if (elementWithAttr != null) {
             String dataDate = elementWithAttr.attr(attributeKey);
+            if (StringUtil.isBlank(dataDate)) {
+                bean.setFailReason("最新更新数据为空");
+                return false;
+            }
             LocalDate markDate = DateUtil.stringToLocalDate(dataDate).plusDays(30);
             LocalDate curDate = bean.getUpdateTime();
             if (markDate.isBefore(curDate)) {

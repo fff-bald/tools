@@ -25,6 +25,15 @@ public class FundHandlerContext {
     private final Map<Double, Integer> newMonthChangeCountMap;
     private final List<FundBean> beanList;
 
+    /**
+     * 长债&中短债数量
+     */
+    private final AtomicInteger statisticsFundCounter;
+    /**
+     * 长债&中短债 近一月产生最大回撤数量
+     */
+    private final AtomicInteger statisticsNewMonthMostReduceRateCounter;
+
     private final boolean writeCsv;
     private final boolean writeExcel;
 
@@ -43,6 +52,8 @@ public class FundHandlerContext {
         this.path = builder.path;
         this.newMonthChangeCountMap = builder.newMonthChangeCountMap;
         this.monthChangeCountMap = builder.monthChangeCountMap;
+        this.statisticsFundCounter = builder.statisticsFundCounter;
+        this.statisticsNewMonthMostReduceRateCounter = builder.statisticsNewMonthMostReduceRateCounter;
     }
 
     public AtomicInteger getFinishCounter() {
@@ -89,6 +100,14 @@ public class FundHandlerContext {
         return deleteIds;
     }
 
+    public AtomicInteger getStatisticsFundCounter() {
+        return statisticsFundCounter;
+    }
+
+    public AtomicInteger getStatisticsNewMonthMostReduceRateCounter() {
+        return statisticsNewMonthMostReduceRateCounter;
+    }
+
     @Override
     public String toString() {
         return "FundHandlerContext{" +
@@ -115,6 +134,8 @@ public class FundHandlerContext {
         private String path;
         private Map<Integer, Pair<Integer, Integer>> monthChangeCountMap;
         private Map<Double, Integer> newMonthChangeCountMap;
+        private AtomicInteger statisticsFundCounter;
+        private AtomicInteger statisticsNewMonthMostReduceRateCounter;
 
         public Builder setAllIdCount(int allIdCount) {
             this.allIdCount = allIdCount;
@@ -139,6 +160,8 @@ public class FundHandlerContext {
             this.beanList = CollectionUtil.arraySycnList();
             this.monthChangeCountMap = CollectionUtil.treeMap();
             this.newMonthChangeCountMap = CollectionUtil.treeMap();
+            this.statisticsFundCounter = new AtomicInteger(0);
+            this.statisticsNewMonthMostReduceRateCounter = new AtomicInteger(0);
             return this;
         }
 

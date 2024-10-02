@@ -1,10 +1,11 @@
 package process.fund.handler;
 
+import model.Pair;
 import process.fund.FundHandlerContext;
 import process.fund.bean.FundBean;
 import process.fund.bean.FundMonthBean;
-import model.Pair;
 import utils.CollectionUtil;
+import utils.DateUtil;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
         if (context.isWriteExcel()) {
             statisticsLastMonthChangeCount(bean, 5);
             statisticsNewMonthChangeCount(bean);
+            statisticsNewMonthMostReduceRateCount(bean);
         }
     }
 
@@ -81,7 +83,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
      *
      * @param bean
      */
-    public void statisticsNewMonthChangeCount(FundBean bean) {
+    private void statisticsNewMonthChangeCount(FundBean bean) {
 
         if (!bean.getType().contains("长债") && !bean.getType().contains("中短债")) {
             return;
@@ -92,7 +94,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
         }
 
         FundHandlerContext context = getContext();
-        LocalDate today = LocalDate.parse(context.getDate());
+        LocalDate today = DateUtil.stringToLocalDate(context.getDate());
         FundMonthBean monthBean = bean.getMonthBeanList().get(0);
         if (today.getYear() != monthBean.getYear() || today.getMonthValue() != monthBean.getMonth()) {
             return;
@@ -110,6 +112,26 @@ public class AnalyzeHandler extends AbstractFundHandler {
         synchronized (statisticsNewMonthChangeCountLock) {
             Integer updateValue = newMonthChangeCountMap.getOrDefault(changeKey, 0);
             newMonthChangeCountMap.put(changeKey, updateValue + 1);
+        }
+    }
+
+    /**
+     * 统计这个月长债、中短债的数量 和 其中当月产生五年内最大回撤的数量
+     *
+     * @param bean
+     */
+    private void statisticsNewMonthMostReduceRateCount(FundBean bean) {
+        if (!bean.getType().contains("长债") && !bean.getType().contains("中短债")) {
+            return;
+        }
+
+        FundHandlerContext context = getContext();
+        context.getStatisticsFundCounter().incrementAndGet();
+        LocalDate today = DateUtil.stringToLocalDate(context.getDate());
+        LocalDate mostReduceDate = DateUtil.stringToLocalDate(bean.getFiveYearMostReduceRateDate());
+
+        if (today.getYear() == mostReduceDate.getYear() && today.getMonthValue() == mostReduceDate.getMonthValue()) {
+            context.getStatisticsNewMonthMostReduceRateCounter().incrementAndGet();
         }
     }
 }

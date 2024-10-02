@@ -124,6 +124,11 @@ public class FundBean implements Comparable<FundBean> {
      */
     private double monthAvgChange;
 
+    /**
+     * 历史五年内最大回撤创造的日期
+     */
+    private String fiveYearMostReduceRateDate;
+
     public static FundBean valueOf(String id) {
         return valueOf(id, DateUtil.getLocalDate());
     }
@@ -382,6 +387,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setFiveYearMostReduceRate(double fiveYearMostReduceRate) {
         this.fiveYearMostReduceRate = fiveYearMostReduceRate;
+    }
+
+    public String getFiveYearMostReduceRateDate() {
+        return fiveYearMostReduceRateDate;
+    }
+
+    public void setFiveYearMostReduceRateDate(String fiveYearMostReduceRateDate) {
+        this.fiveYearMostReduceRateDate = fiveYearMostReduceRateDate;
     }
 
     @Override

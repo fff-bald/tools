@@ -1,5 +1,6 @@
 package process.fund.handler;
 
+import model.Pair;
 import process.fund.bean.FundBean;
 import process.fund.bean.FundDayBean;
 import process.fund.bean.FundMonthBean;
@@ -71,8 +72,10 @@ public class CalDataHandler extends AbstractFundHandler {
         bean.setThreeYearChange(FundCalUtil.calTimeChange(dayList, bean.getUpdateTime(), 3 * 365));
 
         // 历史最大回撤
-        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList, null));
-        bean.setFiveYearMostReduceRate(FundCalUtil.calMostReduceRate(dayList, updateLocalDate.minusYears(5)));
+        bean.setMostReduceRate(FundCalUtil.calMostReduceRate(dayList, null).getSecond());
+        Pair<String, Double> fiveMostReduceRatePair = FundCalUtil.calMostReduceRate(dayList, updateLocalDate.minusYears(5));
+        bean.setFiveYearMostReduceRate(fiveMostReduceRatePair.getSecond());
+        bean.setFiveYearMostReduceRateDate(fiveMostReduceRatePair.getFirst());
 
         // 上升日比例
         double upDay = 0;

@@ -57,21 +57,25 @@ public class FundCalUtil {
     }
 
     /**
-     * 计算最大回撤
+     * 计算最大回撤 和 最大回撤发生的日期
      *
+     * @param netValues
+     * @param markDate  只统计到标记日期当天，标记日期之前的不算，包括当天
      * @return
      */
-    public static double calMostReduceRate(List<FundDayBean> netValues, LocalDate markDate) {
+    public static Pair<String, Double> calMostReduceRate(List<FundDayBean> netValues, LocalDate markDate) {
+        // 最大回撤初始化为0
+        double maxDrawDown = 0.0;
+        String date = "1976-01-01";
+
         // 检查输入列表是否为空或只有一个元素
         if (netValues == null || netValues.isEmpty() || netValues.size() == 1) {
-            return 0.0;
+            return new Pair<>(date, maxDrawDown);
         }
 
         // 初始峰值为时间最早的值（列表最后一个元素）
         double peak = markDate == null ? netValues.get(netValues.size() - 1).getAllPrize() : Double.MIN_VALUE;
         double peakPrice = netValues.get(netValues.size() - 1).getPrice();
-        // 最大回撤初始化为0
-        double maxDrawDown = 0.0;
 
         // 从倒数第二天开始，逐日向前遍历
         for (int i = netValues.size() - 2; i >= 0; i--) {
@@ -97,12 +101,13 @@ public class FundCalUtil {
                 // 如果当前回撤大于之前的最大回撤，则更新最大回撤
                 if (drawDown > maxDrawDown) {
                     maxDrawDown = drawDown;
+                    date = fundDayBean.getDate();
                 }
             }
         }
 
-        // 返回最大回撤的百分比（转换为百分比形式）
-        return maxDrawDown * 100.0;
+        // 返回 最大回撤发生的日期 和 最大回撤的百分比（转换为百分比形式）
+        return new Pair<>(date, maxDrawDown);
     }
 
     /**
@@ -164,6 +169,8 @@ public class FundCalUtil {
         // 定义字符串常量
         final String FUND_TYPE_LIMIT = "基金类别=长债&中短债";
         final String MAX_CHANGE_LIMIT = "月涨跌幅异常：<10";
+        final String NUM_LABEL = "总数：%s";
+        final String MOST_REDUCE_NUM = "五年最大回撤数：%s";
         final String MONTH_CHANGE_LABEL = "月涨跌幅范围";
         final String TOTAL_NUM_LABEL = "汇总数量";
         final String TOTAL_LABEL = "总量";
@@ -177,6 +184,8 @@ public class FundCalUtil {
 
         // 添加标题行
         result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
+        result.add(CommonExcelModel.valueOf(String.format(NUM_LABEL, context.getStatisticsFundCounter().get()), "",
+                String.format(MOST_REDUCE_NUM, context.getStatisticsNewMonthMostReduceRateCounter().get())));
         result.add(new CommonExcelModel()); // 空行或分隔行
 
         // 1、当月涨跌分布
