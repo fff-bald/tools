@@ -183,9 +183,10 @@ public class FundCalUtil {
         int contextMonth = contextDate.getMonthValue();
 
         // 添加标题行
-        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", MAX_CHANGE_LIMIT));
+        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", ""));
         result.add(CommonExcelModel.valueOf(String.format(NUM_LABEL, context.getStatisticsFundCounter().get()), "",
                 String.format(MOST_REDUCE_NUM, context.getStatisticsNewMonthMostReduceRateCounter().get())));
+        result.add(CommonExcelModel.valueOf(MAX_CHANGE_LIMIT, "", ""));
         result.add(new CommonExcelModel()); // 空行或分隔行
 
         // 1、当月涨跌分布
