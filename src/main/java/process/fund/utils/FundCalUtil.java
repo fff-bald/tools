@@ -167,13 +167,24 @@ public class FundCalUtil {
      */
     public static List<Object> calculateMonthlyAnalysis(FundHandlerContext context) {
         // 定义字符串常量
-        final String FUND_TYPE_LIMIT = "基金类别=长债&中短债";
-        final String MAX_CHANGE_LIMIT = "月涨跌幅异常：<10";
-        final String NUM_LABEL = "总数：%s";
+        final String LONG_TIME_FUNDS_DESC_LABEL = "长线稳健基金要求：";
+        final String LONG_TIME_FUNDS_LIMIT_ONE_LABEL = "规模大于1亿元 && " +
+                                                       "成立年数大于3 && " +
+                                                       "个人投资者占比份额不能为0 && " +
+                                                       "最近一星期有数据更新 && " +
+                                                       "月涨跌幅最大异常要在0和15之间";
+        final String LONG_TIME_FUNDS_LIMIT_TWO_LABEL = "上涨月份比例大于85% && 上涨日数比例大于80% && " +
+                                                       "五年内最大回撤小于2% && " +
+                                                       "复利年化收益率大于4% && 近三年收益率大于14%";
+
+        final String FUND_TYPE_LIMIT_LABEL = "基金类别 = 长债或中短债";
+        final String FUND_TYPE_NUM_LABEL = "总数：%s";
         final String MOST_REDUCE_NUM_LABEL = "当月新增五年内最大回撤数：%s";
         final String MOST_REDUCE_RATE_LABEL = "比例：%.2f（百分比）";
+
+        final String MAX_CHANGE_LIMIT_LABEL = "当月涨跌幅对比中值的倍数 < 10";
         final String MONTH_CHANGE_LABEL = "月涨跌幅范围";
-        final String TOTAL_NUM_LABEL = "汇总数量";
+        final String MONTH_CHANGE_NUM_LABEL = "汇总数量";
         final String TOTAL_LABEL = "总量";
         final String INCREASE_LABEL = "上涨数";
         final String DECREASE_LABEL = "下跌数";
@@ -183,18 +194,23 @@ public class FundCalUtil {
         LocalDate contextDate = LocalDate.parse(context.getDate());
         int contextMonth = contextDate.getMonthValue();
 
-        // 添加标题行
-        int totalNum = context.getStatisticsFundCounter().get();
-        int fiveYearMostReduceNum = context.getStatisticsNewMonthMostReduceRateCounter().get();
-        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT, "", ""));
-        result.add(CommonExcelModel.valueOf(String.format(NUM_LABEL, totalNum),
-                String.format(MOST_REDUCE_NUM_LABEL, fiveYearMostReduceNum)
-                , String.format(MOST_REDUCE_RATE_LABEL, (fiveYearMostReduceNum * 1.0 / totalNum) * 100)));
-        result.add(CommonExcelModel.valueOf(MAX_CHANGE_LIMIT, "", ""));
+        // 常用筛选要求
+        result.add(CommonExcelModel.valueOf(LONG_TIME_FUNDS_DESC_LABEL, LONG_TIME_FUNDS_LIMIT_ONE_LABEL, LONG_TIME_FUNDS_LIMIT_TWO_LABEL));
         result.add(new CommonExcelModel()); // 空行或分隔行
 
+        // 基金类别要求
+        int totalNum = context.getStatisticsFundCounter().get();
+        int fiveYearMostReduceNum = context.getStatisticsNewMonthMostReduceRateCounter().get();
+        result.add(CommonExcelModel.valueOf(FUND_TYPE_LIMIT_LABEL, "", ""));
+        result.add(CommonExcelModel.valueOf(String.format(FUND_TYPE_NUM_LABEL, totalNum),
+                String.format(MOST_REDUCE_NUM_LABEL, fiveYearMostReduceNum)
+                , String.format(MOST_REDUCE_RATE_LABEL, (fiveYearMostReduceNum * 1.0 / totalNum) * 100)));
+        result.add(new CommonExcelModel()); // 空行或分隔行
+
+        // 长债和中短债最近的分布情况
+        result.add(CommonExcelModel.valueOf(MAX_CHANGE_LIMIT_LABEL, "", ""));
         // 1、当月涨跌分布
-        result.add(CommonExcelModel.valueOf(contextMonth + MONTH_CHANGE_LABEL, TOTAL_NUM_LABEL, ""));
+        result.add(CommonExcelModel.valueOf(contextMonth + MONTH_CHANGE_LABEL, MONTH_CHANGE_NUM_LABEL, ""));
         for (Map.Entry<Double, Integer> entry : context.getNewMonthChangeCountMap().entrySet()) {
             result.add(CommonExcelModel.valueOf(entry.getKey() + "%", String.valueOf(entry.getValue()), ""));
         }
@@ -260,7 +276,7 @@ public class FundCalUtil {
             if (dataExcelModel.getThreeYearChange() < 14) {
                 continue;
             }
-            // 个人投资者占比份额为0
+            // 个人投资者占比份额不能为0
             if ("0.00%".equals(dataExcelModel.getPersonRate()) || "0.01%".equals(dataExcelModel.getPersonRate())
                     || "未匹配成功".equals(dataExcelModel.getPersonRate())) {
                 continue;
