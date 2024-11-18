@@ -174,8 +174,8 @@ public class FundCalUtil {
                                                        "最近一星期有数据更新 && " +
                                                        "月涨跌幅最大异常要在0和15之间";
         final String LONG_TIME_FUNDS_LIMIT_TWO_LABEL = "上涨月份比例大于85% && 上涨日数比例大于80% && " +
-                                                       "五年内最大回撤小于2% && " +
-                                                       "复利年化收益率大于4% && 近三年收益率大于14%";
+                                                       "五年内最大回撤小于2%";
+        final String LONG_TIME_FUNDS_LIMIT_THREE_LABEL = "复利年化收益率大于4% && 近三年收益率大于12% && 近一年收益率大于4%";
 
         final String FUND_TYPE_LIMIT_LABEL = "基金类别 = 长债或中短债";
         final String FUND_TYPE_NUM_LABEL = "总数：%s";
@@ -195,7 +195,7 @@ public class FundCalUtil {
         int contextMonth = contextDate.getMonthValue();
 
         // 常用筛选要求
-        result.add(CommonExcelModel.valueOf(LONG_TIME_FUNDS_DESC_LABEL, LONG_TIME_FUNDS_LIMIT_ONE_LABEL, LONG_TIME_FUNDS_LIMIT_TWO_LABEL));
+        result.add(CommonExcelModel.valueOf(LONG_TIME_FUNDS_DESC_LABEL, LONG_TIME_FUNDS_LIMIT_ONE_LABEL, LONG_TIME_FUNDS_LIMIT_TWO_LABEL, LONG_TIME_FUNDS_LIMIT_THREE_LABEL, ""));
         result.add(new CommonExcelModel()); // 空行或分隔行
 
         // 基金类别要求
@@ -272,8 +272,12 @@ public class FundCalUtil {
             if (dataExcelModel.getYearChangePro() < 4) {
                 continue;
             }
-            // 近三年收益率大于14%
-            if (dataExcelModel.getThreeYearChange() < 14) {
+            // 近三年收益率大于12%
+            if (dataExcelModel.getThreeYearChange() < 12) {
+                continue;
+            }
+            // 近一年收益率大于4%
+            if (dataExcelModel.getYearChange() < 4) {
                 continue;
             }
             // 个人投资者占比份额不能为0
