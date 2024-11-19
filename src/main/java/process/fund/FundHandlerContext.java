@@ -130,7 +130,7 @@ public class FundHandlerContext {
         private boolean writeCsv;
         private boolean writeExcel;
         private boolean needReserve;
-        private String date = DateUtil.YYYY_MM_DD_SDF.format(DateUtil.getDate());
+        private String date = DateUtil.localDateToString(DateUtil.getCurrentDate());
         private String path;
         private Map<Integer, Pair<Integer, Integer>> monthChangeCountMap;
         private Map<Double, Integer> newMonthChangeCountMap;

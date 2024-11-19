@@ -91,7 +91,7 @@ public class FundApp {
                 // 收件人信息
                 String mailTo = FundConstant.RECEIVER_EMAIL_NAME;
                 String subject = "自动发送：FundData" + context.getDate();
-                String message = "附件生成时间：" + DateUtil.getDate();
+                String message = "附件生成时间：" + DateUtil.getCurrentDateTime();
                 // 附件文件路径
                 String attachFile = context.getPath();
 
@@ -151,7 +151,7 @@ public class FundApp {
     }
 
     private static void testCSV(String testId) {
-        String todayDate = DateUtil.YYYY_MM_DD_SDF.format(DateUtil.getDate());
+        String todayDate = DateUtil.localDateToString(DateUtil.getCurrentDate());
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);
         FileUtil.writeStringToFile(path, ReflectUtil.getAllDescriptionFieldAnnotationValue(FundBean.class, ","), true);

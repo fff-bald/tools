@@ -130,7 +130,7 @@ public class FundBean implements Comparable<FundBean> {
     private String fiveYearMostReduceRateDate;
 
     public static FundBean valueOf(String id) {
-        return valueOf(id, DateUtil.getLocalDate());
+        return valueOf(id, DateUtil.getCurrentDate());
     }
 
     public static FundBean valueOf(String id, LocalDate updateTime) {
