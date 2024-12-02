@@ -13,6 +13,7 @@ import utils.DateUtil;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 数据计算工具类
@@ -211,16 +212,16 @@ public class FundCalUtil {
         result.add(CommonExcelModel.valueOf(MAX_CHANGE_LIMIT_LABEL, "", ""));
         // 1、当月涨跌分布
         result.add(CommonExcelModel.valueOf(contextMonth + MONTH_CHANGE_LABEL, MONTH_CHANGE_NUM_LABEL, ""));
-        for (Map.Entry<Double, Integer> entry : context.getNewMonthChangeCountMap().entrySet()) {
-            result.add(CommonExcelModel.valueOf(entry.getKey() + "%", String.valueOf(entry.getValue()), ""));
+        for (Map.Entry<Double, AtomicInteger> entry : context.getNewMonthChangeCountMap().entrySet()) {
+            result.add(CommonExcelModel.valueOf(entry.getKey() + "%", String.valueOf(entry.getValue().get()), ""));
         }
 
         // 2、近几月的涨跌比例
         result.add(new CommonExcelModel()); // 空行或分隔行
         result.add(CommonExcelModel.valueOf("", INCREASE_RATE_LABEL, TOTAL_LABEL, INCREASE_LABEL, DECREASE_LABEL));
-        for (Map.Entry<Integer, Pair<Integer, Integer>> entry : context.getMonthChangeCountMap().entrySet()) {
-            int totalCount = entry.getValue().getFirst();
-            int decreaseCount = entry.getValue().getSecond();
+        for (Map.Entry<Integer, Pair<AtomicInteger, AtomicInteger>> entry : context.getMonthChangeCountMap().entrySet()) {
+            int totalCount = entry.getValue().getFirst().get();
+            int decreaseCount = entry.getValue().getSecond().get();
             int increaseCount = totalCount - decreaseCount;
 
             result.add(CommonExcelModel.valueOf(

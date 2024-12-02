@@ -18,11 +18,11 @@ public class FundHandlerContext {
      * 每月统计 长债&中短债 基金数量
      * （年份*100+月份，（基金总数，月度收益为负的基金总数））
      */
-    private final Map<Integer, Pair<Integer, Integer>> monthChangeCountMap;
+    private final Map<Integer, Pair<AtomicInteger, AtomicInteger>> monthChangeCountMap;
     /**
      * 最近一个月，长债&中短债 基金收益分布
      */
-    private final Map<Double, Integer> newMonthChangeCountMap;
+    private final Map<Double, AtomicInteger> newMonthChangeCountMap;
     private final List<FundBean> beanList;
 
     /**
@@ -88,11 +88,11 @@ public class FundHandlerContext {
         return path;
     }
 
-    public Map<Integer, Pair<Integer, Integer>> getMonthChangeCountMap() {
+    public Map<Integer, Pair<AtomicInteger, AtomicInteger>> getMonthChangeCountMap() {
         return monthChangeCountMap;
     }
 
-    public Map<Double, Integer> getNewMonthChangeCountMap() {
+    public Map<Double, AtomicInteger> getNewMonthChangeCountMap() {
         return newMonthChangeCountMap;
     }
 
@@ -132,8 +132,8 @@ public class FundHandlerContext {
         private boolean needReserve;
         private String date = DateUtil.localDateToString(DateUtil.getCurrentDate());
         private String path;
-        private Map<Integer, Pair<Integer, Integer>> monthChangeCountMap;
-        private Map<Double, Integer> newMonthChangeCountMap;
+        private Map<Integer, Pair<AtomicInteger, AtomicInteger>> monthChangeCountMap;
+        private Map<Double, AtomicInteger> newMonthChangeCountMap;
         private AtomicInteger statisticsFundCounter;
         private AtomicInteger statisticsNewMonthMostReduceRateCounter;
 

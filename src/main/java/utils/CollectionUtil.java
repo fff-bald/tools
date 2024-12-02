@@ -74,6 +74,33 @@ public class CollectionUtil {
     }
 
     /**
+     * computeIfAbsentAndReturnNewValue线程安全版本，保证新建插入元素时是线程安全的
+     * @param map
+     * @param key
+     * @param valueSupplier
+     * @return
+     * @param <K>
+     * @param <V>
+     */
+    public static <K, V> V computeIfAbsentAndReturnNewValueSync(Map<K, V> map, K key, Function<K, V> valueSupplier){
+        // 首先检查键是否存在
+        if (!map.containsKey(key)) {
+            // 双重校验锁保证创建是线程安全的
+            synchronized (CollectionUtil.class) {
+                if (!map.containsKey(key)) {
+                    // 键不存在，构建新值并放入
+                    V newValue = valueSupplier.apply(key);
+                    map.put(key, newValue);
+                    return newValue; // 返回新值
+                }
+            }
+        }
+
+        // 键已存在，返回旧值
+        return map.get(key);
+    }
+
+    /**
      * 查找列表中指定值的索引。
      *
      * @param <T>   列表元素的类型。

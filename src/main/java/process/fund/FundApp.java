@@ -47,6 +47,7 @@ public class FundApp {
      * 全量爬取
      */
     private static void workExcel(String todayDate) {
+        long startTime = TimeUtil.now();
 
         // 1、构建一个按照参数创建的线程池
         ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
@@ -91,7 +92,8 @@ public class FundApp {
                 // 收件人信息
                 String mailTo = FundConstant.RECEIVER_EMAIL_NAME;
                 String subject = "自动发送：FundData" + context.getDate();
-                String message = "附件生成时间：" + DateUtil.getCurrentDateTime();
+                String message = "workExcel方法执行耗时（s）：" + ((TimeUtil.now() - startTime) / 1000) +
+                        "\n附件生成时间戳：" + DateUtil.getCurrentDateTime();
                 // 附件文件路径
                 String attachFile = context.getPath();
 
@@ -102,6 +104,8 @@ public class FundApp {
                 LogUtil.error("Could not send email, logReason: {}", ExceptionUtil.getStackTraceAsString(ex));
             }
         }
+
+        LogUtil.info("workExcel方法执行完成，耗时：{}(ms)", TimeUtil.now() - startTime);
     }
 
     /**

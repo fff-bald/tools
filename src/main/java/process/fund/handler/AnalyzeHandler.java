@@ -9,14 +9,12 @@ import utils.DateUtil;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 整体数据分析处理器
  */
 public class AnalyzeHandler extends AbstractFundHandler {
-
-    private final Object statisticsLastMonthChangeCountLock = new Object();
-    private final Object statisticsNewMonthChangeCountLock = new Object();
 
     AnalyzeHandler(int id) {
         super(id);
@@ -48,7 +46,7 @@ public class AnalyzeHandler extends AbstractFundHandler {
         }
 
         FundHandlerContext context = getContext();
-        Map<Integer, Pair<Integer, Integer>> monthChangeCountMap = context.getMonthChangeCountMap();
+        Map<Integer, Pair<AtomicInteger, AtomicInteger>> monthChangeCountMap = context.getMonthChangeCountMap();
 
         // 只记录特定几个月的数据
         LocalDate mark = LocalDate.parse(context.getDate()).minusMonths(count - 1);
@@ -67,13 +65,11 @@ public class AnalyzeHandler extends AbstractFundHandler {
             }
 
             int dateKey = monthBean.getYear() * 100 + monthBean.getMonth();
-            // 锁细化，只所修改到共享数据的地方
-            synchronized (statisticsLastMonthChangeCountLock) {
-                Pair<Integer, Integer> counter = CollectionUtil.computeIfAbsentAndReturnNewValue(monthChangeCountMap, dateKey, key -> new Pair<>(0, 0));
-                counter.setFirst(counter.getFirst() + 1);
-                if (monthBean.getChange() < 0) {
-                    counter.setSecond(counter.getSecond() + 1);
-                }
+            Pair<AtomicInteger, AtomicInteger> counter = CollectionUtil.computeIfAbsentAndReturnNewValueSync(monthChangeCountMap,
+                    dateKey, key -> new Pair<>(new AtomicInteger(0), new AtomicInteger(0)));
+            counter.getFirst().incrementAndGet();
+            if (monthBean.getChange() < 0) {
+                counter.getSecond().incrementAndGet();
             }
         }
     }
@@ -104,15 +100,13 @@ public class AnalyzeHandler extends AbstractFundHandler {
             return;
         }
 
-        Map<Double, Integer> newMonthChangeCountMap = context.getNewMonthChangeCountMap();
+        Map<Double, AtomicInteger> newMonthChangeCountMap = context.getNewMonthChangeCountMap();
 
         // 0.0%，四舍五入
         double changeKey = Math.round(monthBean.getChange() * 10.0) / 10.0;
-        // 锁细化，只所修改到共享数据的地方
-        synchronized (statisticsNewMonthChangeCountLock) {
-            Integer updateValue = newMonthChangeCountMap.getOrDefault(changeKey, 0);
-            newMonthChangeCountMap.put(changeKey, updateValue + 1);
-        }
+        AtomicInteger updateValue = CollectionUtil.computeIfAbsentAndReturnNewValueSync(newMonthChangeCountMap,
+                changeKey, key -> new AtomicInteger(0));
+        updateValue.incrementAndGet();
     }
 
     /**
