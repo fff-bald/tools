@@ -25,6 +25,9 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "类型")
     private String type;
 
+    @DescriptionField(value = "风险等级")
+    private String riskLevel;
+
     @DescriptionField(value = "管理人")
     private String manager;
 
@@ -44,7 +47,7 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "上涨月份比例")
     private double upMonthRate;
 
-    @DescriptionField(value = "复利年化收益率(百分比)")
+    @DescriptionField(value = "复利年化收益率(%)")
     private double yearChangePro;
 
     @DescriptionField(value = "最大回撤")
@@ -56,22 +59,22 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "每月涨跌幅的最大值对比中值的倍数")
     private double monthMostChangeToAvg;
 
-    @DescriptionField(value = "近7天收益率(百分比)")
+    @DescriptionField(value = "近7天收益率(%)")
     private double sevenDayChange;
 
-    @DescriptionField(value = "近一月收益率(百分比)")
+    @DescriptionField(value = "近一月收益率(%)")
     private double monthChange;
 
-    @DescriptionField(value = "近三月收益率(百分比)")
+    @DescriptionField(value = "近三月收益率(%)")
     private double threeMonthChange;
 
-    @DescriptionField(value = "近六月收益率(百分比)")
+    @DescriptionField(value = "近六月收益率(%)")
     private double sixMonthChange;
 
-    @DescriptionField(value = "近一年收益率(百分比)")
+    @DescriptionField(value = "近一年收益率(%)")
     private double yearChange;
 
-    @DescriptionField(value = "近三年收益率(百分比)")
+    @DescriptionField(value = "近三年收益率(%)")
     private double threeYearChange;
 
     @DescriptionField(value = "日涨跌幅标准差")
@@ -83,13 +86,13 @@ public class FundBean implements Comparable<FundBean> {
     @DescriptionField(value = "最新個人投資者份額占比")
     private String personRate;
 
-    @DescriptionField(value = "最新一日时间")
+    @DescriptionField(value = "最新净值发布日期")
     private LocalDate updateTime;
 
-    @DescriptionField(value = "最新一日申购状态")
+    @DescriptionField(value = "最新申购状态")
     private String buyState;
 
-    @DescriptionField(value = "最新一日赎回状态")
+    @DescriptionField(value = "最新赎回状态")
     private String sellState;
 
     // ---------- 中间值 ----------
@@ -395,6 +398,14 @@ public class FundBean implements Comparable<FundBean> {
 
     public void setFiveYearMostReduceRateDate(String fiveYearMostReduceRateDate) {
         this.fiveYearMostReduceRateDate = fiveYearMostReduceRateDate;
+    }
+
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
     }
 
     @Override

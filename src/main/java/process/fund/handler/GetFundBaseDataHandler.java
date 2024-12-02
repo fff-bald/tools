@@ -20,6 +20,7 @@ public class GetFundBaseDataHandler extends AbstractFundHandler {
 
     private static final String IGNORE_FUND_TYPE = "货币型-普通货币";
     private static final Pattern PERSON_PATTERN = Pattern.compile("个人投资者持有(\\d+\\.\\d+)亿份，占总份额的(\\d+\\.\\d+%)");
+    private static final Pattern RISK_PATTERN = Pattern.compile(".*\\|\\s*(中高风险|中低风险|低风险|高风险|中风险)\\s*");
 
     GetFundBaseDataHandler(int id) {
         super(id);
@@ -67,6 +68,19 @@ public class GetFundBaseDataHandler extends AbstractFundHandler {
 
             Element tbody = document.select("tbody").get(2);
             bean.setType(tbody.select("a").get(0).text());
+
+            Element riskElement = tbody.select("td:contains(风险)").first();
+            if (riskElement != null) {
+                String text = riskElement.text();
+                Matcher matcher = RISK_PATTERN.matcher(text);
+                if (matcher.matches()) {
+                    // 输出匹配到的风险等级
+                    String riskLevel = matcher.group(1);
+                    bean.setRiskLevel(riskLevel);
+                } else {
+                    bean.setRiskLevel("未知风险");
+                }
+            }
 
             String money = tbody.select("td").get(1).text();
             bean.setMoney(money.substring(money.indexOf("：") + 1, money.indexOf("（") - 2));
