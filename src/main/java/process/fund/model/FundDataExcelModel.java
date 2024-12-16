@@ -2,6 +2,7 @@ package process.fund.model;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import process.fund.bean.FundBean;
+import tag.DescriptionField;
 
 import static process.fund.constant.FundConstant.EXCEL_FUND_LINK;
 
@@ -16,6 +17,9 @@ public class FundDataExcelModel {
 
     @ExcelProperty(value = "类型")
     private String type;
+
+    @ExcelProperty(value = "风险等级")
+    private String riskLevel;
 
     @ExcelProperty(value = "管理人")
     private String manager;
@@ -114,6 +118,7 @@ public class FundDataExcelModel {
         res.updateTime = bean.getUpdateTime().toString();
         res.buyState = bean.getBuyState();
         res.sellState = bean.getSellState();
+        res.riskLevel = bean.getRiskLevel();
         return res;
     }
 
@@ -315,5 +320,13 @@ public class FundDataExcelModel {
 
     public void setFiveYearMostReduceRate(double fiveYearMostReduceRate) {
         this.fiveYearMostReduceRate = fiveYearMostReduceRate;
+    }
+
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
     }
 }
