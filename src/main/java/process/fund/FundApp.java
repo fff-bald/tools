@@ -91,7 +91,7 @@ public class FundApp {
             try {
                 // 收件人信息
                 String mailTo = FundConstant.RECEIVER_EMAIL_NAME;
-                String subject = "自动发送：FundData" + context.getDate();
+                String subject = "自动发送 ----------> 文档：FundData" + context.getDate();
                 String message = "workExcel方法执行耗时（s）：" + ((TimeUtil.now() - startTime) / 1000) +
                         "\n附件生成时间戳：" + DateUtil.getCurrentDateTime();
                 // 附件文件路径

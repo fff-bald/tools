@@ -135,7 +135,7 @@ public class EmailUtil {
     public static void main(String[] args) {
         // 收件人信息
         String mailTo = ConfigUtil.getProperties().getProperty("email.common.receiver.address");
-        String subject = "FundConstant";
+        String subject = "文档：FundConstant";
         String message = "This is a test email with attachments.";
 
         // 附件文件路径
