@@ -2,6 +2,8 @@ package utils;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.write.metadata.WriteSheet;
 
 import java.util.List;
@@ -93,5 +95,39 @@ public class ExcelUtil {
         // 注意：doWrite方法（虽然在这个例子中未直接调用，但ExcelWriter的write方法内部会执行写入逻辑）执行后，
         // 文件写入操作就完成了，try-with-resources块确保了ExcelWriter的自动关闭。
         System.out.println("数据写入完成，文件路径：" + filePath);
+    }
+
+    /**
+     * 读取Excel文件到Map列表（适用于不确定列结构的情况）
+     *
+     * @param filePath      Excel文件路径
+     * @param sheetNo       工作表编号（从0开始）
+     * @param headRowNumber 表头行数
+     * @return List<Map < Integer, String>> 每行数据的Map列表
+     */
+    public static List<Map<Integer, String>> readExcelToMapList(String filePath,
+                                                                Integer sheetNo,
+                                                                Integer headRowNumber) {
+        List<Map<Integer, String>> dataList = CollectionUtil.arrayList();
+
+        try {
+            EasyExcel.read(filePath, new ReadListener<Map<Integer, String>>() {
+                @Override
+                public void invoke(Map<Integer, String> data, AnalysisContext context) {
+                    dataList.add(data);
+                }
+
+                @Override
+                public void doAfterAllAnalysed(AnalysisContext context) {
+                    LogUtil.info("Excel读取完成，共读取{}行数据", dataList.size());
+                }
+            }).sheet(sheetNo).headRowNumber(headRowNumber).doRead();
+
+        } catch (Exception e) {
+            LogUtil.error("读取Excel文件失败: {}", e.getMessage(), e);
+            throw new RuntimeException("读取Excel文件失败", e);
+        }
+
+        return dataList;
     }
 }
