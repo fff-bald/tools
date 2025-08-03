@@ -32,7 +32,7 @@ public class FundApp {
         long startTime = TimeUtil.now();
 
 //        testCSV("008229");
-        workExcel("2024-10-18");
+        workExcel("2025-03-07");
 //        workCSV("2024-08-30");
 
         List<String> deleteIds = FundBeanFactory.getInstance().getInstanceContext().getDeleteIds();
