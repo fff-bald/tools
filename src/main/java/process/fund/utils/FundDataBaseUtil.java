@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class FundDataBaseUtil {
 
-    private static final String DATA_FILE_PATH = ".\\resources\\fund_data\\%s.txt";
+    private static final String DATA_FILE_PATH = ".\\data\\fund_data\\%s.txt";
 
     // ---------- public ----------
 

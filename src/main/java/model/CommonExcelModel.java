@@ -23,7 +23,7 @@ public class CommonExcelModel {
     @ExcelProperty(value = "五")
     private String str5;
 
-    @ExcelProperty(value = "刘")
+    @ExcelProperty(value = "六")
     private String str6;
 
     @ExcelProperty(value = "七")

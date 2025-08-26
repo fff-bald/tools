@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package process;
+package demo;
 
 import com.aliyun.oss.*;
 import com.aliyun.oss.model.*;
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * This sample demonstrates how to create an empty folder under
  * specfied bucket to Aliyun OSS using the OSS SDK for Java.
  */
-public class AliOSSApp {
+public class AliOSSDemo {
 
     private static String endpoint = "";
     private static String accessKeyId = "";
