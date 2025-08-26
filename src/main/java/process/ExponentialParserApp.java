@@ -1,6 +1,7 @@
 package process;
 
 import utils.CollectionUtil;
+import utils.ConfigUtil;
 import utils.ExcelUtil;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class ExponentialParserApp {
 
-    private static final String FILE_PATH = "";
+    private static final String FILE_PATH = ConfigUtil.loadConfig().getProperty("process.exponential_parser.filepath");
 
     public static void main(String[] args) {
         analyzeData(FILE_PATH, false);

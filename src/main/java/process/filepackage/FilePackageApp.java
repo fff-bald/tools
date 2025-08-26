@@ -180,7 +180,8 @@ public class FilePackageApp {
             if (state == 1) {
                 // 示例1：创建路径列表文件
                 String[] filesToPack = {
-                        "src/main/resources"
+                        "src/main/resources",
+                        "src/main/java/process/fund/constant/FundConstant.java"
                 };
                 manager.createPathListFile(filesToPack, "src/main/file_paths.txt");
 

@@ -36,12 +36,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class AliOSSDemo {
 
+    private static OSS client = null;
+
     private static String endpoint = "";
     private static String accessKeyId = "";
     private static String accessKeySecret = "";
     private static String bucketName = "";
-
-    private static OSS client = null;
 
     private static final String key = "";
     private static final String localFilePath = "";
