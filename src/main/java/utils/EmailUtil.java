@@ -50,8 +50,8 @@ public class EmailUtil {
                 properties.put("mail.smtp.port", "25");
                 properties.put("mail.smtp.auth", "true");
                 properties.put("mail.smtp.starttls.enable", "true");
-                properties.put("mailFrom", ConfigUtil.loadConfig().getProperty("email.163.address", ""));
-                properties.put("password", ConfigUtil.loadConfig().getProperty("email.163.password", ""));
+                properties.put("mailFrom", ConfigUtil.getInitConfig("email.163.address"));
+                properties.put("password", ConfigUtil.getInitConfig("email.163.password"));
                 return properties;
             }
         };
@@ -134,7 +134,7 @@ public class EmailUtil {
 
     public static void main(String[] args) {
         // 收件人信息
-        String mailTo = ConfigUtil.loadConfig().getProperty("email.common.receiver.address");
+        String mailTo = ConfigUtil.getInitConfig("email.common.receiver.address");
         String subject = "文档：FundConstant";
         String message = "This is a test email with attachments.";
 

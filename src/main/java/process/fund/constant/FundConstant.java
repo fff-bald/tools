@@ -53,6 +53,6 @@ public interface FundConstant {
 
     // ---------- EMAIL ----------
 
-    String RECEIVER_EMAIL_NAME = ConfigUtil.loadConfig().getProperty("email.common.receiver.address", "");
+    String RECEIVER_EMAIL_NAME = ConfigUtil.getInitConfig("email.common.receiver.address");
 
 }

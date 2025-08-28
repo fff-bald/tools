@@ -184,7 +184,7 @@ public class FilePackageApp {
         FilePackageApp manager = new FilePackageApp();
 
         // 1是打包2是解包
-        int state = 2;
+        int state = 1;
         String backupFilePath = "backup.zip";
         String dicPath = "src/main/resources/file_paths.txt";
         String[] filesToPack = {
