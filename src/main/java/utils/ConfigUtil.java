@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class ConfigUtil {
 
-    private static final String CONFIG_INIT_FILE_PATH = "config.properties";
+    private static final String CONFIG_INIT_FILE_PATH = "init_config.properties";
     private static Properties properties = null;
 
     /**
@@ -21,10 +21,11 @@ public class ConfigUtil {
         // 使用类加载器获取资源文件的输入流
         try (InputStream inputStream = ConfigUtil.class
                 .getClassLoader()
-                .getResourceAsStream(CONFIG_INIT_FILE_PATH)) {
+                .getResourceAsStream(path)) {
 
             if (inputStream == null) {
                 LogUtil.error("无法找到config.properties文件");
+                return properties;
             }
 
             // 加载properties文件
@@ -44,8 +45,7 @@ public class ConfigUtil {
     public static Properties loadInitConfig() {
 
         if (ConfigUtil.properties == null) {
-            Properties newProperties = loadConfig(CONFIG_INIT_FILE_PATH);
-            ConfigUtil.properties = newProperties;
+            ConfigUtil.properties = loadConfig(CONFIG_INIT_FILE_PATH);
         }
         return ConfigUtil.properties;
     }
