@@ -31,9 +31,9 @@ public class FundApp {
     public static void main(String[] args) {
         long startTime = TimeUtil.now();
 
-//        testCSV("008229");
+        testCSV("");
         workExcel("2025-03-07");
-//        workCSV("2024-08-30");
+        workCSV("");
 
         List<String> deleteIds = FundBeanFactory.getInstance().getInstanceContext().getDeleteIds();
         FundDataBaseUtil.clearFundDataInDataBase(deleteIds);
@@ -47,6 +47,10 @@ public class FundApp {
      * 全量爬取
      */
     private static void workExcel(String todayDate) {
+        if (StringUtil.isBlank(todayDate)) {
+            return;
+        }
+
         long startTime = TimeUtil.now();
 
         // 1、构建一个按照参数创建的线程池
@@ -112,6 +116,9 @@ public class FundApp {
      * 全量爬取，生成csv文件
      */
     private static void workCSV(String todayDate) {
+        if (StringUtil.isBlank(todayDate)) {
+            return;
+        }
 
         // 1、构建一个按照参数创建的线程池
         ThreadPoolExecutor threadPoolExecutor = ThreadPooUtil.createCommonPool();
@@ -155,6 +162,10 @@ public class FundApp {
     }
 
     private static void testCSV(String testId) {
+        if (StringUtil.isBlank(testId)) {
+            return;
+        }
+
         String todayDate = DateUtil.localDateToString(DateUtil.getCurrentDate());
         String path = String.format(CSV_FILE_ABSOLUTE_PATH, "test-" + todayDate);
         FileUtil.deleteFile(path);

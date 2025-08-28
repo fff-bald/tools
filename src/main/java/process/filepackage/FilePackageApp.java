@@ -99,7 +99,7 @@ public class FilePackageApp {
      * @param targetDirectory 目标解压目录（可选，如果为null则按原路径解压）
      * @throws IOException 文件操作异常
      */
-    public void extractAndReplaceFiles(String zipFilePath, String targetDirectory) throws IOException {
+    public void extractAndReplaceFiles(String zipFilePath, String targetDirectory, boolean needBackup) throws IOException {
         try (FileInputStream fis = new FileInputStream(zipFilePath);
              ZipInputStream zis = new ZipInputStream(fis)) {
 
@@ -129,7 +129,7 @@ public class FilePackageApp {
                     }
 
                     // 如果文件已存在，先备份
-                    if (targetFile.exists()) {
+                    if (targetFile.exists() && needBackup) {
                         String backupPath = targetPath + ".backup." + System.currentTimeMillis();
                         Files.copy(targetFile.toPath(), Paths.get(backupPath));
                         System.out.println("备份原文件: " + backupPath);
@@ -154,6 +154,17 @@ public class FilePackageApp {
     }
 
     /**
+     * 解压压缩包并按路径替换对应文件
+     *
+     * @param zipFilePath     压缩包路径
+     * @param targetDirectory 目标解压目录（可选，如果为null则按原路径解压）
+     * @throws IOException 文件操作异常
+     */
+    public void extractAndReplaceFiles(String zipFilePath, String targetDirectory) throws IOException {
+        extractAndReplaceFiles(zipFilePath, targetDirectory, true);
+    }
+
+    /**
      * 创建文件路径列表文件的辅助方法
      *
      * @param filePaths  文件路径数组
@@ -173,20 +184,20 @@ public class FilePackageApp {
         FilePackageApp manager = new FilePackageApp();
 
         // 1是打包2是解包
-        int state = 1;
+        int state = 2;
         String backupFilePath = "backup.zip";
+        String dicPath = "src/main/resources/file_paths.txt";
+        String[] filesToPack = {
+                "src/main/resources",
+                "src/main/java/process/fund/constant/FundConstant.java"
+        };
 
         try {
             if (state == 1) {
                 // 示例1：创建路径列表文件
-                String[] filesToPack = {
-                        "src/main/resources",
-                        "src/main/java/process/fund/constant/FundConstant.java"
-                };
-                manager.createPathListFile(filesToPack, "src/main/file_paths.txt");
-
+                manager.createPathListFile(filesToPack, dicPath);
                 // 示例2：打包文件
-                manager.packFilesToZip("src/main/file_paths.txt", backupFilePath);
+                manager.packFilesToZip(dicPath, backupFilePath);
 
                 // 示例3：解压并替换文件（解压到指定目录）
                 // manager.extractAndReplaceFiles("backup.zip", "C:/restore");
@@ -200,7 +211,7 @@ public class FilePackageApp {
                 LogUtil.info("Email sent successfully.");
             } else if (state == 2) {
                 // 示例4：解压并按原路径替换文件
-                manager.extractAndReplaceFiles("backup.zip", null);
+                manager.extractAndReplaceFiles("backup.zip", null, false);
             }
         } catch (IOException e) {
             System.err.println("操作失败: " + e.getMessage());
